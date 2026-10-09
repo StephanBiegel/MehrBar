@@ -43,16 +43,16 @@ created: "2026-10-09"
 
 Criterion-level map from research; the planner binds task IDs in the PLAN files.
 
-| Criterion | Behavior | Test Type | Automated Command | File Exists | Status |
-|-----------|----------|-----------|-------------------|-------------|--------|
-| SC5 (Zoom) | Cursor anchor matches uncropped edges of the four series ±6 px; `center` keeps the middle | unit | `dotnet test` (filter `*ZoomAnchor*` if MTP-v2 filter syntax confirmed) | ❌ W0 | ⬜ pending |
-| SC5 (Tooling) | Spike host builds with CsWin32; `dotnet test` green | smoke | `dotnet build` spike host `-c Release` && `dotnet test` | ❌ W0 | ⬜ pending |
-| SC1 | Click capture/pass-through, focus, base visibility, first frame at bottom | integration (Driver) | `dotnet run --project spikes/Driver -- case hit ...` | ❌ W0 | ⬜ pending |
-| SC2 | Trigger × guard matrix, gap/cover | integration (Driver, after checkpoint) | `dotnet run --project spikes/Driver -- case zorder ...` | ❌ W0 | ⬜ pending |
-| SC3 | Menu points per variant (synthetic input) | integration (Driver) | `dotnet run --project spikes/Driver -- case menu ...` | ❌ W0 | ⬜ pending |
-| SC4 | Render runs: p95 cost, drops, CPU %, core equivalents | integration (Driver + Host, PresentMon elevated if usable) | `powershell -File spikes/tools/run-render-matrix.ps1` | ❌ W0 | ⬜ pending |
-| SC5 (Icons) | Cases × size/alpha/latency, contact sheet | integration | `dotnet run --project spikes/Icons -- --all ...` | ❌ W0 | ⬜ pending |
-| all | One note per spike with exactly one decision line | smoke | `powershell -File spikes/tools/check-notes.ps1` | ❌ W0 | ⬜ pending |
+| Criterion | Behavior | Test Type | Automated Command | Plan/Task | File Exists | Status |
+|-----------|----------|-----------|-------------------|-----------|-------------|--------|
+| SC5 (Zoom) | Cursor anchor predicts uncropped edges of the four series ±6 px from independently measured inputs; `center` misses (falsification control) and keeps the middle | unit | `dotnet test` (filter syntax recorded in 01-SPIKE-tooling.md) | 01-05 T1–T3 | ❌ W0 | ⬜ pending |
+| SC5 (Tooling) | Spike host builds with CsWin32; `dotnet test` green | smoke | `dotnet build spikes/WindowHost -c Release -warnaserror && dotnet test` | 01-01 T1, 01-02 T1, 01-08 T1–T2; H6 in 01-17 T2; fallback in 01-18 T2 | ❌ W0 | ⬜ pending |
+| SC1 | Click capture/pass-through, focus, base visibility, first frame at bottom | integration (Driver, after checkpoint) | `spikes/Driver/bin/Release/net10.0-windows/Driver.exe hit --variants H1,H2,H3 …` via `powershell -File spikes/tools/run-q1.ps1` | instrument 01-03, 01-04, 01-07, 01-09; run 01-13 T1–T3 | ❌ W0 | ⬜ pending |
+| SC2 | Trigger × guard matrix, gap/cover | integration (Driver, after consent checkpoint) | `powershell -File spikes/tools/run-zorder.ps1 -AllowExplorer [-AllowDisplay]` | instrument 01-10 T1–T2; run 01-14 T1–T3 | ❌ W0 | ⬜ pending |
+| SC3 | Menu points per variant (synthetic input) | integration (Driver, after checkpoint) | `powershell -File spikes/tools/run-menu.ps1` | instrument 01-11 T1–T2; run 01-15 T1–T3 | ❌ W0 | ⬜ pending |
+| SC4 | Render runs: p95 cost, drop share per PresentMon only (D-18; UNKLAR + labelled substitute when PresentMon has no data), CPU %, core equivalents | integration (Driver + Host, PresentMon elevated if usable) | `powershell -File spikes/tools/run-render-matrix.ps1` + `render-report.ps1` | instrument 01-12 T1–T3; run 01-16 T1–T3 | ❌ W0 | ⬜ pending |
+| SC5 (Icons) | Cases × size/alpha/latency, contact sheet | integration | `spikes/Icons/bin/Release/net10.0-windows/Icons.exe --all` / `--latency` | 01-06 T1–T3; H7 in 01-17 T2 | ❌ W0 | ⬜ pending |
+| all | One note per spike with exactly one decision line | smoke | `powershell -File spikes/tools/check-notes.ps1` | 01-01 T2 (checker), each note task, 01-17 T3 (seven notes), 01-18 T3 (all) | ❌ W0 | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -76,6 +76,7 @@ Criterion-level map from research; the planner binds task IDs in the PLAN files.
 | "No flash" on window appearance | SC1 | Human eye | Manual part H1 |
 | Lock/unlock, real key per trigger | SC2 | Secure desktop / real hardware keys | Manual part H2/H3 |
 | Real keyboard in menus, foreground visible, look | SC3 | D-07 requires real keyboard once per variant | Manual part H4 |
+| Real-mouse feel of the render load (D-07 cross-check of the sweep) | SC4 | Perceived smoothness, real input | Manual part H5 |
 | VS Code Test Explorer discovers tests | SC5 | Dev Kit UI, no CLI | Manual part H6 |
 | Eye check of icon contact sheet | SC5 | Visual alpha quality | Manual part H7 |
 
