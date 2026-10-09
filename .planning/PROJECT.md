@@ -4,7 +4,7 @@
 
 MehrBar ist ein schlanker Programmstarter für Windows im Stil von RocketDock: eine Leiste am Bildschirmrand, deren Symbole beim Überfahren mit der Maus stufenlos vergrößern, mit Beschriftung, Trennlinien, Drag & Drop und RocketDock-Skin-Unterstützung. Version 1 ist für den Eigengebrauch des Entwicklers (Stephan) und ersetzt seine RocketDock-Leiste oben am Bildschirm; der eigentliche Anlass ist eine zweite Leiste am rechten Rand, die nach V1 kommt.
 
-Vollständiges Konzept mit Begründung jeder Entscheidung: `docs/PROJEKT_START.md` (Hauptteil Abschnitte 1–12, Grill-Protokoll Q1–Q16).
+Vollständiges Konzept mit Begründung jeder Entscheidung: `docs/PROJEKT_START.md` (Hauptteil Abschnitte 1–12, Grill-Protokoll Q1–Q20).
 
 ## Core Value
 

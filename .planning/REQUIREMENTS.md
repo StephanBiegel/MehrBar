@@ -124,12 +124,63 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
+| LEIS-01 | Phase 2 | Pending |
+| LEIS-02 | Phase 2 | Pending |
+| LEIS-03 | Phase 2 | Pending |
+| LEIS-04 | Phase 2 | Pending |
+| LEIS-05 | Phase 2 | Pending |
+| LEIS-06 | Phase 2 | Pending |
+| LEIS-07 | Phase 2 | Pending |
+| ZOOM-01 | Phase 3 | Pending |
+| ZOOM-02 | Phase 3 | Pending |
+| ZOOM-03 | Phase 3 | Pending |
+| ZOOM-04 | Phase 3 | Pending |
+| ZOOM-05 | Phase 3 | Pending |
+| ZOOM-06 | Phase 3 | Pending |
+| ZOOM-07 | Phase 3 | Pending |
+| ZOOM-08 | Phase 3 | Pending |
+| LABL-01 | Phase 3 | Pending |
+| LABL-02 | Phase 3 | Pending |
+| ITEM-01 | Phase 2 | Pending |
+| ITEM-02 | Phase 5 | Pending |
+| ITEM-03 | Phase 2 | Pending |
+| ITEM-04 | Phase 3 | Pending |
+| ITEM-05 | Phase 7 | Pending |
+| ITEM-06 | Phase 7 | Pending |
+| ITEM-07 | Phase 3 | Pending |
+| ITEM-08 | Phase 5 | Pending |
+| DND-01 | Phase 2 | Pending |
+| DND-02 | Phase 2 | Pending |
+| DND-03 | Phase 5 | Pending |
+| DND-04 | Phase 5 | Pending |
+| DND-05 | Phase 5 | Pending |
+| DND-06 | Phase 5 | Pending |
+| MENU-01 | Phase 5 | Pending |
+| MENU-02 | Phase 5 | Pending |
+| MENU-03 | Phase 2 | Pending |
+| MENU-04 | Phase 5 | Pending |
+| SKIN-01 | Phase 4 | Pending |
+| SKIN-02 | Phase 4 | Pending |
+| SKIN-03 | Phase 6 | Pending |
+| SKIN-04 | Phase 4 | Pending |
+| CONF-01 | Phase 2 | Pending |
+| CONF-02 | Phase 2 | Pending |
+| CONF-03 | Phase 6 | Pending |
+| CONF-04 | Phase 6 | Pending |
+| CONF-05 | Phase 6 | Pending |
+| APP-01 | Phase 2 | Pending |
+| APP-02 | Phase 6 | Pending |
+| APP-03 | Phase 7 | Pending |
+| APP-04 | Phase 7 | Pending |
+| APP-05 | Phase 2 | Pending |
+| APP-06 | Phase 3 | Pending |
 
 **Coverage:**
 - v1 requirements: 50 total
-- Mapped to phases: 0
-- Unmapped: 50 ⚠️
+- Mapped to phases: 50
+- Unmapped: 0 ✓
+- Phase 1 (Risiko-Spikes) trägt bewusst keine Anforderung; sie senkt das Risiko für Phase 2 und 3
 
 ---
 *Requirements defined: 2026-10-09*
-*Last updated: 2026-10-09 after initial definition*
+*Last updated: 2026-10-09 after roadmap creation (traceability)*
