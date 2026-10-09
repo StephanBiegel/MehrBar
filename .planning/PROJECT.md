@@ -21,7 +21,7 @@ Vollständiges Konzept mit Begründung jeder Entscheidung: `docs/PROJEKT_START.m
 - [ ] Eine Leiste oben mittig; Datenmodell trägt mehrere Leisten, auch mehrere pro Rand
 - [ ] Position: Ausrichtung (Anfang/Mitte/Ende), Versatz entlang des Rands, Abstand zum Rand (`edgeOffset`, darf negativ sein)
 - [ ] Fensterebene „immer im Hintergrund“: ganz unten über dem Desktop, Klick holt sie nicht nach vorn, kein Fokusdiebstahl, übersteht Win+D
-- [ ] Zoom: Grundgröße, Zoomgröße, Zoom-Breite, Zoom-Dauer; Leiste wächst nur in der Breite, Mitte bleibt fest; 60 fps auch mit 60+ Symbolen; Abfall kalibriert gegen Screenshots des Originals
+- [ ] Zoom: Grundgröße, Zoomgröße, Zoom-Breite, Zoom-Dauer; Leiste wächst nur in der Breite, Symbol unter der Maus bleibt stehen; 60 fps auch mit 60+ Symbolen; Abfall kalibriert gegen Screenshots des Originals
 - [ ] Beschriftung des Symbols unter der Maus (weiß, Kontur, Schatten; ein/aus, Schriftart, Größe)
 - [ ] Eintragstypen: Programm/Datei/Verknüpfung, URL, Ordner, Trennlinie (polymorph, `group` später ohne Migration)
 - [ ] Erster Start ohne Konfiguration: leere Leiste oben mittig mit Standardwerten
@@ -82,7 +82,11 @@ Vollständiges Konzept mit Begründung jeder Entscheidung: `docs/PROJEKT_START.m
 | Keine Gruppen, kein Autohide in V1 | Nicht genutzt bzw. nicht nötig (Q8, Q9) | — Pending |
 | Fensterebene „immer im Hintergrund“ (`layer: bottom`) | So nutzt der Entwickler die Leiste (Q9, Q10) | — Pending |
 | Keine Prozent-Skalierung, Per-Monitor-DPI v2 | Doppelter Regler vermieden (Q11) | — Pending |
-| Zoom-Verankerung `center` (Mitte fest), als Parameter | Vom Entwickler gewählt, durch Messung am Original bestätigt; `cursor` umschaltbar (Q12) | — Pending |
+| Zoom-Verankerung `cursor` (Symbol unter der Maus bleibt stehen), als Parameter; `center` wählbar | Q12 revidiert: Auswertung der Messtabelle je Seite passt nur zu diesem Modell, wie das Original | — Pending |
+| Befüllen: Tray „Leiste nach vorn“ (bis Ablegen / 30 s) + „Eintrag hinzufügen…“ | Leiste liegt hinter allen Fenstern, Explorer verdeckt sie (Q17) | — Pending |
+| Keine Sonderbehandlung bei Überlauf der Bildschirmbreite | ~20 Symbole, einfachste Lösung (Q18) | — Pending |
+| Ablegen auf Programmsymbol = einfügen, nicht „öffnen mit“ | Einheitliches Verhalten (Q20) | — Pending |
+| Spike-Phase vor dem Grundgerüst | Win+D, Klick-Durchlass, Zeichenleistung, Menüs auf nicht aktivierbarem Fenster bestimmen die Architektur (Recherche) | — Pending |
 | Minimales Tray-Symbol | Notausgang, weil die Leiste im Hintergrund liegt (Q15) | — Pending |
 
 ## Evolution

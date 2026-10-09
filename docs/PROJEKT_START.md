@@ -22,7 +22,7 @@ Ein schlanker Programmstarter für Windows im Stil von RocketDock: Leisten mit Z
 1. **Eine Leiste, oben mittig** (Q7). Das Datenmodell trägt aber mehrere Leisten, auch mehrere pro Rand.
 2. **Position:** Ausrichtung am Rand (Anfang, Mitte, Ende), Versatz entlang des Rands (`offset`) und Abstand zum Bildschirmrand (`edgeOffset`, darf negativ sein) (Q7).
 3. **Fensterebene „immer im Hintergrund“** (Q9, Q10): Die Leiste liegt ganz unten in der Fensterreihenfolge, direkt über dem Desktop; jedes Fenster überdeckt sie. Ein Klick auf die Leiste holt sie nicht nach vorn und stiehlt keinen Fokus. Sie übersteht Win+D.
-4. **Zoom-Effekt** (Abschnitt 6): Grundgröße, Zoomgröße, Zoom-Breite, Zoom-Dauer; Leiste wächst nur in der Breite, Mitte bleibt fest (Q12); flüssig (60 fps, keine Ruckler bei 60+ Symbolen).
+4. **Zoom-Effekt** (Abschnitt 6): Grundgröße, Zoomgröße, Zoom-Breite, Zoom-Dauer; Leiste wächst nur in der Breite, das Symbol unter der Maus bleibt stehen (Q12, revidiert); flüssig (60 fps, keine Ruckler bei 60+ Symbolen).
 5. **Beschriftung** (Q3): Das Symbol unter der Maus zeigt seinen Namen auf der vom Rand abgewandten Seite — weiße Schrift mit Kontur und leichtem Schatten. Ein/aus, Schriftart, Schriftgröße einstellbar.
 6. **Eintragstypen:** Programm / Datei / Verknüpfung (.exe, .lnk, beliebige Datei), URL, Ordner (öffnet im Explorer), **Trennlinie**. Typen polymorph, damit `group` später ohne Migration dazukommt (Q8).
 7. **Erster Start:** Ohne `config.json` legt MehrBar eine **leere Leiste oben mittig** mit den Standardwerten an (Q4). Befüllt wird per Drag & Drop. Kein Import aus RocketDock.
@@ -157,7 +157,7 @@ Beispiel `config.json`:
       "zoomSize": 121,
       "zoomWidth": 4,
       "zoomDurationMs": 200,
-      "zoomAnchor": "center",
+      "zoomAnchor": "cursor",
       "spacing": 4,
       "label": { "show": true, "fontFamily": "Tahoma", "fontSize": 13 },
       "skin": "CrystalXP.net",
@@ -177,7 +177,7 @@ Anforderungen:
 - Feld `version` für spätere Migrationen.
 - `skinFolder` relativ ist relativ zum Programmordner (Q14).
 - `edge` kennt `top`, `bottom`, `left`, `right` — V1 nutzt nur `top`. Mehrere Leisten pro Rand sind erlaubt (Q7).
-- `layer` kennt in V1 nur `bottom` (Q10); `zoomAnchor` kennt `center` (V1) und `cursor` (Q12).
+- `layer` kennt in V1 nur `bottom` (Q10); `zoomAnchor` kennt `cursor` (Standard, wie das Original) und `center` (Q12, revidiert).
 - Umgebungsvariablen in Pfaden (`%USERPROFILE%` usw.) werden aufgelöst.
 - Unbekannte Felder beim Laden nicht verwerfen (Vorwärtskompatibilität).
 - Vor jedem Speichern Backup `config.bak.json`; Schreiben über temporäre Datei + Umbenennen, damit die Datei nie halb geschrieben ist.
@@ -192,7 +192,7 @@ Anforderungen:
 - Maus über der Leiste: Jedes Symbol bekommt eine Größe abhängig vom Abstand seiner Mitte zum Mauszeiger entlang der Leistenachse. Das Symbol unter der Maus ist am größten, Nachbarn werden stufenlos kleiner.
 - Beim Verlassen der Leiste zoomen alle Symbole animiert auf Grundgröße zurück.
 - Symbole wachsen **vom Bildschirmrand weg** (Leiste oben → nach unten). Der **Hintergrund behält seine Höhe**; gezoomte Symbole ragen über ihn hinaus (Q2).
-- **Verankerung `center`** (Q12): Die Leiste wächst nur in der Breite, um genau den Mehrplatz der gezoomten Symbole, und zwar **zu beiden Seiten gleich — die Leistenmitte bleibt fest**. Die übrigen Symbole behalten ihre Grundgröße und werden nur verschoben. Am Original gemessen (Protokoll, Nachtrag zu Q12): Mitte bleibt bis auf ±40 px fest.
+- **Verankerung `cursor`** (Q12, revidiert): Die Leiste wächst nur in der Breite, um genau den Mehrplatz der gezoomten Symbole. **Das Symbol unter der Maus bleibt stehen**; alles links davon weicht um den Mehrplatz der linken Zoom-Symbole aus, alles rechts um den der rechten. Die Leiste wächst also ungleich, je nach Mausposition. Die übrigen Symbole behalten ihre Grundgröße und werden nur verschoben. Am Original gemessen (Protokoll, Nachtrag zu Q12): passt zu allen vier Messreihen.
 - Trennlinien zoomen nicht mit, nur ihr Abstand wird mitgeschoben.
 - Ein Klick trifft das Symbol, das **sichtbar** unter dem Zeiger gezeichnet ist.
 
@@ -201,7 +201,7 @@ Anforderungen:
 - Radius `r` aus der Zoom-Breite abgeleitet: `zoomWidth` meint wie bei RocketDock die **Gesamtbreite** der Zoomzone. Ausgangspunkt `r ≈ 2,5` für `zoomWidth = 4`.
 - Wenn `d < r`: `f = (cos(π · d / r) + 1) / 2`, sonst `f = 0`. Größe = `iconSize + (zoomSize − iconSize) · f`.
 - **Kalibrierung in Meilenstein 2** gegen `samples/reference/`: gezoomt 121 px, direkte Nachbarn ca. 90–95 px, übernächste nahe Grundgröße.
-- Verankerung als Parameter (`center` jetzt, `cursor` = Symbol unter dem Zeiger bleibt fest), damit nach dem Ausprobieren ohne Umbau gewechselt werden kann.
+- Verankerung als Parameter (`cursor` Standard, `center` = Leistenmitte fest wählbar). Die vier Messreihen aus dem Nachtrag zu Q12 werden als Core-Test (±6 px) festgeschrieben.
 
 ### Technische Umsetzung
 - Das Leistenfenster ist so groß wie die **maximal gezoomte** Leiste samt Beschriftung, der Rest ist transparent.
@@ -247,7 +247,7 @@ Ein RocketDock-Skin ist ein Ordner mit PNG-Grafiken und INI-Dateien. CrystalXP.n
 ## 10. Meilensteine
 
 1. **Grundgerüst:** Solution und Projekte, Konfiguration laden/speichern (Backup, atomares Schreiben), nur eine Instanz, Tray-Symbol, Log. Erster Start legt eine leere Leiste oben mittig an. Leiste mit Fensterebene „unten“, nicht aktivierbar; Symbole in Grundgröße mit hochauflösenden Shell-Symbolen; Klick startet; Hineinziehen aus dem Explorer (anhängen) und „Entfernen“ im Kontextmenü.
-2. **Zoom:** Zoom-Berechnung in Core (achsenneutral, Verankerung `center`) mit Unit-Tests, Kalibrierung gegen die Referenz-Screenshots, flüssige Animation, Beschriftung, Klick-Durchlass für transparente Bereiche.
+2. **Zoom:** Zoom-Berechnung in Core (achsenneutral, Verankerung `cursor`) mit Unit-Tests, Kalibrierung gegen die Referenz-Screenshots, flüssige Animation, Beschriftung, Klick-Durchlass für transparente Bereiche.
 3. **Skin:** `docs/skin-format.md`, RocketDock-Skin-Loader, 9-Slice-Hintergrund mit Outside-Margins, Trennlinien (einfügen, zeichnen, löschen), Standard-Hintergrund als Rückfall, Kopie von `samples/skins/` in den Ausgabeordner.
 4. **Drag & Drop und Menüs:** Einfügemarke, Umsortieren, URLs aus dem Browser, Trennlinien verschieben, vollständige Kontextmenüs, Eigenschaften-Dialog, eigene Symbole.
 5. **Konfigurationsfenster:** alle Leisten-Einstellungen live, Zurücksetzen auf Standardwerte, Mit Windows starten.
@@ -262,7 +262,7 @@ Nach jedem Meilenstein: App muss bauen, starten und das bisher Erreichte nutzbar
 - [ ] Eine Leiste oben mittig; das Datenmodell trägt mehrere Leisten pro Rand
 - [ ] Erster Start ohne Konfiguration zeigt eine leere Leiste; Datei aus dem Explorer daraufziehen erzeugt einen funktionierenden Eintrag
 - [ ] Zoom läuft flüssig mit 60+ Symbolen auf einer Leiste
-- [ ] Beim Zoom wächst die Leiste nur in der Breite, zu beiden Seiten gleich; die Mitte bleibt fest; nichts ruckelt oder flackert
+- [ ] Beim Zoom wächst die Leiste nur in der Breite; das Symbol unter der Maus bleibt stehen; nichts ruckelt oder flackert
 - [ ] Zoom-Abfall entspricht sichtbar dem Original (Referenz-Screenshots)
 - [ ] Das Symbol unter der Maus zeigt seine Beschriftung
 - [ ] Die Leiste liegt immer hinter allen Fenstern, kommt beim Klick nicht nach vorn, stiehlt keinen Fokus und übersteht Win+D
@@ -371,7 +371,7 @@ Nach jedem Meilenstein: App muss bauen, starten und das bisher Erreichte nutzbar
 ### Q12: Verankerung beim Zoom
 **Question:** Die Leiste steht oben mittig und wird beim Zoom breiter — wer weicht aus? A: Leistenmitte bleibt fest, beide Ränder wandern gleich weit nach außen. B: Symbol unter der Maus bleibt fest, die Leiste wächst ungleich je nach Mausposition.
 **Recommended:** B (macOS-/RocketDock-Verhalten, Abnahmekriterium „Symbol unter dem Mauszeiger bleibt stabil“).
-**Answer:** **A** — Leistenmitte bleibt fest, die Leiste wächst zu beiden Seiten gleich.
+**Answer:** ~~A~~ → **revidiert am 2026-10-09: B** — das Symbol unter der Maus bleibt stehen, wie im Original. (Erst A gewählt; die Recherche hat die Messtabelle je Seite ausgewertet: Nur B passt zu allen vier Reihen. A bleibt als `center` wählbar.)
 **Follow-ups:**
 - Abnahmekriterium „Symbol unter dem Mauszeiger bleibt stabil unter dem Zeiger“ wird ersetzt durch: „Leistenmitte bleibt beim Zoom fest; die Leiste wächst nur in der Breite, zu beiden Seiten gleich; das Zoomen ruckelt und flackert nicht.“
 - Die Zoom-Stärke je Symbol wird aus den **Ruhepositionen** berechnet (wie in Abschnitt 6), nicht aus den gezoomten — sonst schaukelt sich die Verschiebung auf.
@@ -389,7 +389,7 @@ Fünf Screenshots der RocketDock-Leiste (Ruhe; Maus auf mittigem Symbol; links; 
 | Maus rechts (Publisher) | −3 | 804 | 807 | 400 |
 | Maus ganz rechts (Excel) | −3 | 733 | 736 | 365 |
 
-- **Bestätigt Variante A:** Die Mitte bleibt im Wesentlichen fest (±40 px), die Leiste wächst zu beiden Seiten.
+- ~~Bestätigt Variante A~~ **Korrigiert:** Je Seite ausgewertet (Ränder relativ zur Ruhe: Mitte −112/+114, 2. Symbol −82/+114, Publisher −112/+106, Excel −112/+35) passt nur Variante B. Der gleiche linke Rand in drei Aufnahmen kann Bildbeschnitt sein → Referenz vor Meilenstein 2 mit Vollbild-Screenshot neu aufnehmen.
 - **Zoom-Abfall ist steiler als die Konzeptformel mit `zoomWidth = 4`:** Gezoomt 121 px, direkte Nachbarn ca. 90–95 px, übernächste fast Grundgröße (~40 px). Die cos-Formel aus Abschnitt 6 trifft das mit einem Radius von etwa 2,5 Symbolen. RocketDocks `ZoomWidth` meint offenbar die **Gesamtbreite** der Zoomzone, nicht den Radius. In Meilenstein 2 gegen diese Screenshots kalibrieren.
 - Trennlinien behalten beim Zoom ihre Größe und werden nur verschoben (bestätigt Abschnitt 6).
 
@@ -417,3 +417,27 @@ Fünf Screenshots der RocketDock-Leiste (Ruhe; Maus auf mittigem Symbol; links; 
 **Recommended:** Ja — sonst liest GSD widersprüchliche Stände.
 **Answer:** Ja, passt.
 **Follow-ups:** Hauptteil (Abschnitte 1–12) am 2026-10-09 bereinigt; Meilensteine sind jetzt Abschnitt 10 (Verweise auf „Abschnitt 11“ in Q5 meinen diesen). Offene technische Punkte für die Phasen-Recherche: Klick-Durchlass, Win+D-Robustheit, Zoom-Kalibrierung, Form der Startfehler-Meldung.
+
+## Nachgrill nach der Recherche — 2026-10-09
+
+### Q17: Befüllen, wenn die Leiste hinter allen Fenstern liegt
+**Question:** Ein Explorer-Fenster verdeckt die Leiste beim Hineinziehen. Wie wird befüllt?
+**Recommended:** Tray-Eintrag „Leiste nach vorn“ (vorn, bis abgelegt wurde oder 30 s vorbei sind) plus „Eintrag hinzufügen…“ mit Dateiauswahl im Leisten-Kontextmenü.
+**Answer:** Wie empfohlen.
+**Follow-ups:** Beides in Meilenstein 1 (ohne kann Drag & Drop gar nicht getestet werden).
+
+### Q18: Mehr Symbole als Bildschirmbreite
+**Question:** Was passiert, wenn die Leiste breiter als der Bildschirm würde?
+**Recommended:** Enger rücken bis zu einer Untergrenze.
+**Answer:** Egal für V1 (ca. 20 Symbole) — einfachste Lösung.
+**Follow-ups:** Keine Sonderbehandlung in V1; Fenster wird auf den Monitor begrenzt, überstehende Symbole sind abgeschnitten. Der Leistungstest mit 60+ Symbolen läuft mit kleinerer Grundgröße.
+
+### Q19: Virtuelle Desktops
+**Question:** Muss die Leiste auf allen virtuellen Desktops erscheinen?
+**Answer:** Nein, werden nicht genutzt.
+
+### Q20: Ablegen auf ein vorhandenes Programmsymbol
+**Question:** RocketDock öffnet die Datei mit dem Programm, auf das sie fallen gelassen wird; das Konzept fügt ein.
+**Recommended:** V1 fügt neben der nächsten Grenze ein; später neu bewerten.
+**Answer:** Empfehlung übernommen (nicht eigens gefragt, Standard der Recherche).
+
