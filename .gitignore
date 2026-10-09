@@ -1,0 +1,12 @@
+# Third-party skins: local test data only, license unclear
+samples/skins/
+
+# .NET
+bin/
+obj/
+.vs/
+*.user
+
+
+# Reference screenshots of the original (contain third-party icons)
+samples/reference/
