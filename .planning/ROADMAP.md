@@ -35,12 +35,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. Mit 64 Symbolen bei 60 fps sind Frame-Zeit und CPU des transparenten Fensters gemessen (Ziel ≤ 16 ms je Frame, ≤ 15 % CPU; Hardware gegen SoftwareOnly), und die Zeichentechnik ist mit Go oder Ausweichweg entschieden
   5. Ein Core-Test bildet die vier Messreihen des Originals mit Verankerung `cursor` auf ±6 px ab; der Symbol-Spike liefert 256-px-Symbole mit sauberem Alpha für .exe (nur 48 px und 256 px), .lnk samt Store-App, Ordner, .url, PDF und Netzpfad; CsWin32-Build und Testerkennung in VS Code sind geklärt
 
-**Plans:** 1/18 plans executed (10 waves)
+**Plans:** 2/18 plans executed (10 waves)
 
 Plans:
 **Wave 1**
 - [x] 01-01-PLAN.md — Produktgerüst (global.json, Directory.Packages.props, MehrBar.sln, Core, Tests) + .gitignore + check-notes.ps1 (Welle 1)
-- [ ] 01-02-PLAN.md — Spike-Skelett mit CsWin32 (eigene spikes/Directory.Packages.props, WindowHost, Driver, RepoPaths, Stats, README) (Welle 1)
+- [x] 01-02-PLAN.md — Spike-Skelett mit CsWin32 (eigene spikes/Directory.Packages.props, WindowHost, Driver, RepoPaths, Stats, README) (Welle 1)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 01-03-PLAN.md — Messmaschine Host-Seite: Leiste unten (H1), Zeuge, Variantenregister (Welle 2)
@@ -181,7 +181,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Risiko-Spikes | 1/18 | In Progress | - |
+| 1. Risiko-Spikes | 2/18 | In Progress | - |
 | 2. Grundgerüst | 0/TBD | Not started | - |
 | 3. Zoom und Beschriftung | 0/TBD | Not started | - |
 | 4. Skin CrystalXP.net | 0/TBD | Not started | - |
