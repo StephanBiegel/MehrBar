@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 01
 current_phase_name: Risiko-Spikes
 status: executing
-stopped_at: Completed 01-02-PLAN.md
-last_updated: "2026-10-10T08:01:35.209Z"
+stopped_at: Completed 01-03-PLAN.md
+last_updated: "2026-10-10T08:09:28.394Z"
 last_activity: 2026-10-10
 last_activity_desc: Phase 01 execution started
-state_head: 6a148cceacf21f1257cf3ecc752642a7a9c48e02
+state_head: 42807363a50af65b5a9893d6a6e49dc07b2f9dd7
 progress:
   total_phases: 7
   completed_phases: 0
   total_plans: 18
-  completed_plans: 2
+  completed_plans: 3
   percent: 0
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-10-09)
 ## Current Position
 
 Phase: 01 (Risiko-Spikes) — EXECUTING
-Plan: 3 of 18
+Plan: 4 of 18
 Status: Ready to execute
 Last activity: 2026-10-10 — Phase 01 execution started
 
@@ -58,6 +58,7 @@ Progress: [░░░░░░░░░░] 0%
 |------|----------|-------|-------|
 | Phase 01 P01 | 2 min | 2 tasks | 9 files |
 | Phase 01 P02 | 5 min | 2 tasks | 13 files |
+| Phase 01 P03 | 13min | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -75,6 +76,8 @@ Recent decisions affecting current work:
 - [Phase 01]: Product Directory.Packages.props pins only xunit.v3.mtp-v2; CsWin32 pin comes with MehrBar.App (phase 2), spikes pin in their own file
 - [Phase 01]: 01-02: spikes/Directory.Packages.props is independent of the root props (nearest file wins), so deleting spikes/ leaves the product untouched
 - [Phase 01]: 01-02: RepoPaths.cs needs explicit 'using System.IO' because WPF projects drop it from implicit usings
+- [Phase 01]: 01-03: initial show of the bar window is pinned to HWND_BOTTOM by rewriting WPF's own SWP_SHOWWINDOW call in WM_WINDOWPOSCHANGING (plain WPF Show() lifts it to z-index 21); --show-mode wpf keeps the baseline
+- [Phase 01]: 01-03: host types are internal because CsWin32 types (HWND, RECT) are internal; EnumWindows uses an UnmanagedCallersOnly function pointer
 
 ### Pending Todos
 
@@ -96,6 +99,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-10T08:01:35.184Z
-Stopped at: Completed 01-02-PLAN.md
+Last session: 2026-10-10T08:09:28.366Z
+Stopped at: Completed 01-03-PLAN.md
 Resume file: None
