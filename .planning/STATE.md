@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 01
 current_phase_name: Risiko-Spikes
 status: executing
-stopped_at: Completed 01-09-PLAN.md
-last_updated: "2026-10-10T11:04:22.544Z"
+stopped_at: Completed 01-10-PLAN.md
+last_updated: "2026-10-10T11:21:22.873Z"
 last_activity: 2026-10-10
 last_activity_desc: Phase 01 execution started
-state_head: 2776d027dd94d2f9ba40cb504b75ec4f923b5047
+state_head: c63b0f5871f1fb2f58adcf009590192c3d429f21
 progress:
   total_phases: 7
   completed_phases: 0
   total_plans: 18
-  completed_plans: 9
+  completed_plans: 10
   percent: 0
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-10-09)
 ## Current Position
 
 Phase: 01 (Risiko-Spikes) — EXECUTING
-Plan: 10 of 18
+Plan: 11 of 18
 Status: Ready to execute
 Last activity: 2026-10-10 — Phase 01 execution started
 
@@ -64,6 +64,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01 P07 | 25 min | 2 tasks | 8 files |
 | Phase 01 P08 | 3 min | 2 tasks | 2 files |
 | Phase 01 P09 | 12 min | 2 tasks | 3 files |
+| Phase 01 P10 | 11 min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -88,6 +89,8 @@ Recent decisions affecting current work:
 - [Phase 01]: 01-07: witness gets --activate false so dry runs never take the foreground; started hosts die via ProcessExit plus SafetySession restore (Program.cs untouched)
 - [Phase 01]: 01-07: committed z-order output is redacted (foreign windows as class other); ToPrivateCsv writes only into RepoPaths.PrivateResults
 - [Phase 01]: Q7 GO for CLI: CsWin32 0.3.360 multi-list builds warning-free, xunit.v3.mtp-v2 19/19 green; filter syntax is --filter-method/--filter-class, list with --list-tests; VS Code Test Explorer open as H6
+- [Phase 01]: 01-10: Q2 sampling cadence is one display refresh (16.7 ms at 60 Hz) because GetPixel/BitBlt wait for the next frame; ProbeStrip reads all five probes with one BitBlt, so D-11 '1-2 samples' means 1-2 frames
+- [Phase 01]: 01-10: while the S1/S2 watcher holds the bar lifted, 'desktop shown' = no ordinary window above the desktop host (heuristic, to be confirmed with WinEvent log in 01-14)
 
 ### Pending Todos
 
@@ -109,6 +112,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-10T11:04:22.514Z
-Stopped at: Completed 01-09-PLAN.md
+Last session: 2026-10-10T11:21:22.844Z
+Stopped at: Completed 01-10-PLAN.md
 Resume file: None
