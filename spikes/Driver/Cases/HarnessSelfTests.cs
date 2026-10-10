@@ -42,6 +42,13 @@ public sealed class SafetySelfTest : IDriverCase
             Input.GapMs = 1;
             SafetySession session = ctx.BeginSafety(TimeSpan.FromSeconds(30), watchRealInput: false);
 
+            string? hotkey = session.HotkeyName;
+            Check($"abort hotkey registered ({hotkey})", hotkey is "Ctrl+Alt+Q" or "Ctrl+Alt+Shift+Q");
+            Check("hotkey is held by the session (a second registration fails)",
+                hotkey != null && session.HotkeyRegistered && !SafetySession.CanRegisterHotkey(hotkey));
+            Check("watcher thread is running", session.WatcherThreadAlive);
+            Check("no hooks installed with watchRealInput false", !session.HooksInstalled);
+
             session.OnRestore("restore-1", () => order.Add(1));
             session.OnRestore("restore-2", () => order.Add(2));
             session.OnRestore("restore-3", () => order.Add(3));
@@ -81,6 +88,20 @@ public sealed class SafetySelfTest : IDriverCase
 
             session.Dispose(); // idempotent
             Check("second Dispose is a no-op", order.Count == 3);
+
+            Check("hotkey is unregistered after Dispose",
+                !session.HotkeyRegistered && hotkey != null && SafetySession.CanRegisterHotkey(hotkey));
+            Check("watcher thread exited after Dispose", !session.WatcherThreadAlive);
+
+            // Optional (not part of the default run): install the real low-level hooks for a moment to prove
+            // they install and are removed again. Still injects nothing, but it briefly sits in the input path.
+            if (ctx.GetBool("with-hooks"))
+            {
+                SafetySession hooked = ctx.BeginSafety(TimeSpan.FromSeconds(30), watchRealInput: true);
+                Check("low-level keyboard and mouse hooks installed", hooked.HooksInstalled);
+                hooked.Dispose();
+                Check("hooks removed and watcher exited after Dispose", !hooked.HooksInstalled && !hooked.WatcherThreadAlive);
+            }
         }
 
         Console.WriteLine(failures == 0 ? "SAFETY OK" : $"SAFETY FAILED ({failures})");
