@@ -28,7 +28,7 @@ internal sealed record Options
     public string? Case { get; init; }
     public bool All { get; init; }
     public int Size { get; init; } = 256;
-    public string Threads { get; init; } = "mta";
+    public string? Threads { get; init; }
     public int Reps { get; init; } = 20;
     public int Parallel { get; init; } = 8;
     public int? TimeoutMs { get; init; }
@@ -72,6 +72,11 @@ internal static class Program
     {
         var catalogue = IconCases.Build(o.NetFile);
 
+        if (o.All)
+        {
+            return RunAll(o, catalogue);
+        }
+
         if (o.Case != null)
         {
             IconCase? c = catalogue.FirstOrDefault(x => string.Equals(x.Name, o.Case, StringComparison.OrdinalIgnoreCase));
@@ -81,7 +86,7 @@ internal static class Program
                 return 2;
             }
 
-            Apartment apartment = o.Threads.Equals("sta", StringComparison.OrdinalIgnoreCase) ? Apartment.Sta : Apartment.Mta;
+            Apartment apartment = string.Equals(o.Threads, "sta", StringComparison.OrdinalIgnoreCase) ? Apartment.Sta : Apartment.Mta;
             CaseOutcome outcome = Evaluate(c, o.Size, apartment, o.TimeoutMs);
             if (o.Cold)
             {
@@ -100,11 +105,81 @@ internal static class Program
                 WriteResults(new[] { outcome }, o, overwrite: false);
             }
 
+            if (o.Sheet)
+            {
+                WriteSheet(new[] { outcome });
+            }
+
             return outcome.Result.Ok ? 0 : 1;
         }
 
         Console.Error.WriteLine("nothing to do: use --case <name>");
         return 2;
+    }
+
+    /// <summary>
+    /// Runs every case once (or once per apartment with <c>--threads both</c>; network roots are only ever
+    /// queried once, on MTA) and overwrites the CSV. A recorded error row is a result, not a failure: the exit
+    /// code is non-zero only when something crashed.
+    /// </summary>
+    private static int RunAll(Options o, IReadOnlyList<IconCase> catalogue)
+    {
+        // Default for --all is both: the STA/MTA difference is part of the evidence (.url icons need STA).
+        var apartments = new List<Apartment>();
+        if (o.Threads == null || o.Threads.Equals("both", StringComparison.OrdinalIgnoreCase))
+        {
+            apartments.Add(Apartment.Mta);
+            apartments.Add(Apartment.Sta);
+        }
+        else
+        {
+            apartments.Add(o.Threads.Equals("sta", StringComparison.OrdinalIgnoreCase) ? Apartment.Sta : Apartment.Mta);
+        }
+
+        var outcomes = new List<CaseOutcome>();
+        foreach (IconCase c in catalogue)
+        {
+            foreach (Apartment apartment in apartments)
+            {
+                if (c.Private && apartment != apartments[0])
+                {
+                    continue; // company shares and unreachable hosts are touched once
+                }
+
+                CaseOutcome outcome = Evaluate(c, o.Size, apartment, o.TimeoutMs);
+                Console.WriteLine(Describe(outcome));
+                outcomes.Add(outcome);
+            }
+        }
+
+        // Size sweep for the source-limited icon: the shell does not upscale a 48 px-only icon but draws it small
+        // inside a frame at 64 px and above. The rows document which request size gives a clean bitmap.
+        IconCase? only48 = catalogue.FirstOrDefault(x => x.Name == "exe-only48");
+        if (only48 != null)
+        {
+            foreach (int sweepSize in new[] { 48, 64, 128 })
+            {
+                CaseOutcome sweep = Evaluate(only48, sweepSize, Apartment.Sta, o.TimeoutMs);
+                sweep = sweep with { Note = "sweep " + sweep.Note };
+                Console.WriteLine(Describe(sweep));
+                outcomes.Add(sweep);
+            }
+        }
+
+        WriteResults(outcomes, o, overwrite: true);
+        if (o.Sheet)
+        {
+            WriteSheet(outcomes);
+        }
+
+        return 0;
+    }
+
+    private static void WriteSheet(IReadOnlyList<CaseOutcome> outcomes)
+    {
+        string sheet = Path.Combine(RepoPaths.PrivateResults, "q6-contact-sheet.png");
+        ContactSheet.Write(outcomes, sheet);
+        Console.WriteLine("contact sheet written (private results folder)");
     }
 
     /// <summary>Extracts one case and measures the alpha quality of the returned bitmap.</summary>
@@ -275,7 +350,7 @@ internal static class Program
                 case "--case": o = o with { Case = Next() }; break;
                 case "--all": o = o with { All = true }; break;
                 case "--size": o = o with { Size = int.Parse(Next() ?? "256", Inv) }; break;
-                case "--threads": o = o with { Threads = Next() ?? "mta" }; break;
+                case "--threads": o = o with { Threads = Next() }; break;
                 case "--reps": o = o with { Reps = int.Parse(Next() ?? "20", Inv) }; break;
                 case "--parallel": o = o with { Parallel = int.Parse(Next() ?? "8", Inv) }; break;
                 case "--timeout-ms": o = o with { TimeoutMs = int.Parse(Next() ?? "0", Inv) }; break;
@@ -301,9 +376,62 @@ internal static class IconCases
 
     public static IReadOnlyList<IconCase> Build(string? netFile)
     {
-        return new List<IconCase>
+        string dir = FixtureDir;
+        string? Fixture(params string[] parts)
+        {
+            string path = Path.Combine(new[] { dir }.Concat(parts).ToArray());
+            return File.Exists(path) || Directory.Exists(path) ? path : null;
+        }
+
+        string? Aumid()
+        {
+            string file = Path.Combine(dir, "store-aumid.txt");
+            return File.Exists(file) ? File.ReadAllText(file).Trim() : null;
+        }
+
+        var cases = new List<IconCase>
         {
             new("exe-notepad", "exe", () => Path.Combine(Environment.SystemDirectory, "notepad.exe"), 10000),
+            new("exe-only48", "exe", () => Fixture("bin48", "Only48.exe"), 10000),
+            new("exe-only256", "exe", () => Fixture("bin256", "Only256.exe"), 10000),
+            new("lnk-file", "lnk", () => Fixture("notepad.lnk"), 10000),
+            new("lnk-store", "store", () =>
+            {
+                string lnk = Path.Combine(dir, "store.lnk");
+                string? aumid = Aumid();
+                if (aumid == null)
+                {
+                    return null;
+                }
+
+                if (!File.Exists(lnk) && StoreLink.Create(lnk, aumid) != null)
+                {
+                    return null;
+                }
+
+                return File.Exists(lnk) ? lnk : null;
+            }, 10000),
+            new("appsfolder-store", "store", () =>
+            {
+                string? aumid = Aumid();
+                return aumid == null ? null : "shell:AppsFolder\\" + aumid;
+            }, 10000),
+            new("folder", "folder", () => Fixture("Ordner"), 10000),
+            new("url-plain", "url", () => Fixture("plain.url"), 10000),
+            new("url-iconfile", "url", () => Fixture("iconfile.url"), 10000),
+            new("pdf", "pdf", () => Fixture("sample.pdf"), 10000),
+            // Company shares: one icon query on the drive root, no listing, no writes (T-01-07).
+            new("net-root-L", "net", () => "L:\\", 5000, Private: true),
+            new("net-root-M", "net", () => "M:\\", 5000, Private: true),
+            // Documentation address (RFC 5737): nothing answers, so the hard timeout must fire.
+            new("net-unreachable", "net", () => @"\\192.0.2.1\share\tool.exe", 3000, Private: true),
         };
+
+        if (!string.IsNullOrWhiteSpace(netFile))
+        {
+            cases.Add(new IconCase("net-file", "net", () => netFile, 5000, Private: true));
+        }
+
+        return cases;
     }
 }

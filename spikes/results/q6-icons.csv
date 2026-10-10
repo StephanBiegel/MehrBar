@@ -1,0 +1,27 @@
+case,kind,requested,width,height,all_opaque,corner_alpha_max,straight_ratio,fringe,ms,thread,ok,note
+exe-notepad,exe,256,256,256,false,0,0.1740,0.000,42.92,mta,true,straight edge=0.240 rawfringe=17.4
+exe-notepad,exe,256,256,256,false,0,0.1740,0.000,2.75,sta,true,straight edge=0.240 rawfringe=17.4
+exe-only48,exe,256,256,256,false,66,0.0533,0.000,10.40,mta,true,corner-box straight edge=0.886 rawfringe=111.0
+exe-only48,exe,256,256,256,false,66,0.0533,0.000,2.35,sta,true,corner-box straight edge=0.886 rawfringe=111.0
+exe-only256,exe,256,256,256,false,0,0.2981,0.000,11.38,mta,true,straight edge=0.470 rawfringe=34.1
+exe-only256,exe,256,256,256,false,0,0.2981,0.000,2.44,sta,true,straight edge=0.470 rawfringe=34.1
+lnk-file,lnk,256,256,256,false,0,0.1740,0.000,6.13,mta,true,straight edge=0.240 rawfringe=17.4
+lnk-file,lnk,256,256,256,false,0,0.1740,0.000,2.60,sta,true,straight edge=0.240 rawfringe=17.4
+lnk-store,store,256,256,256,false,0,0.0015,0.000,35.89,mta,true,straight edge=0.001 rawfringe=20.5
+lnk-store,store,256,256,256,false,0,0.0015,0.000,3.53,sta,true,straight edge=0.001 rawfringe=20.5
+appsfolder-store,store,256,256,256,false,0,0.0015,0.000,24.91,mta,true,straight edge=0.001 rawfringe=20.5
+appsfolder-store,store,256,256,256,false,0,0.0015,0.000,15.18,sta,true,straight edge=0.001 rawfringe=20.5
+folder,folder,256,256,256,false,0,0.0044,0.000,6.31,mta,true,straight edge=0.040 rawfringe=4.8
+folder,folder,256,256,256,false,0,0.0044,0.000,2.31,sta,true,straight edge=0.040 rawfringe=4.8
+url-plain,url,256,256,256,false,0,0.0001,0.000,10.99,mta,true,straight edge=0.002 rawfringe=1.2
+url-plain,url,256,256,256,false,0,0.0563,0.000,32.07,sta,true,straight edge=0.138 rawfringe=15.1
+url-iconfile,url,256,256,256,false,0,0.0001,0.000,4.69,mta,true,straight edge=0.002 rawfringe=1.2
+url-iconfile,url,256,256,256,false,0,0.0430,0.000,9.36,sta,true,straight edge=0.243 rawfringe=2.7
+pdf,pdf,256,256,256,false,0,0.0582,0.000,8.06,mta,true,straight edge=0.198 rawfringe=14.9
+pdf,pdf,256,256,256,false,0,0.0582,0.000,2.47,sta,true,straight edge=0.198 rawfringe=14.9
+net-root-L,net,256,256,256,false,0,0.0398,0.000,11.32,mta,true,straight edge=0.107 rawfringe=12.1
+net-root-M,net,256,256,256,false,0,0.0398,0.000,6.49,mta,true,straight edge=0.107 rawfringe=12.1
+net-unreachable,net,256,0,0,,,,,3000.98,mta,false,timeout
+exe-only48,exe,48,48,48,false,0,0.2971,0.000,2.14,sta,true,sweep straight edge=0.476 rawfringe=34.1
+exe-only48,exe,64,64,64,false,51,0.2863,0.000,2.30,sta,true,sweep corner-box straight edge=0.613 rawfringe=95.1
+exe-only48,exe,128,128,128,false,65,0.0932,0.000,2.66,sta,true,sweep corner-box straight edge=0.747 rawfringe=109.4
