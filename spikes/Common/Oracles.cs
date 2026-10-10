@@ -343,6 +343,27 @@ internal static unsafe class ZOrder
         return hr.Succeeded && cloaked != 0;
     }
 
+    /// <summary>
+    /// Top-level window that WindowFromPoint reports at a screen point (extra data point only, assumption A2:
+    /// its behaviour on alpha-0 pixels of a layered window is not documented). Null hwnd when nothing is there.
+    /// </summary>
+    public static (HWND Root, string Class, uint Pid) WindowAt(int x, int y)
+    {
+        HWND hit = PInvoke.WindowFromPoint(new System.Drawing.Point(x, y));
+        if (hit == HWND.Null)
+        {
+            return (HWND.Null, string.Empty, 0);
+        }
+
+        HWND root = PInvoke.GetAncestor(hit, GET_ANCESTOR_FLAGS.GA_ROOT);
+        if (root == HWND.Null)
+        {
+            root = hit;
+        }
+
+        return (root, ClassOf(root), ProcessIdOf(root));
+    }
+
     /// <summary>Raw handle value (CsWin32 handles wrap a pointer).</summary>
     public static nint Raw(HWND hwnd) => (nint)hwnd.Value;
 
