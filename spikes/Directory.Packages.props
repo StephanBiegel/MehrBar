@@ -1,0 +1,13 @@
+<Project>
+  <!--
+    Self-contained package pin for everything under spikes/ (D-01). MSBuild uses the nearest
+    Directory.Packages.props and does not import the repository root file, so the spikes never
+    depend on it. Deleting or freezing spikes/ after phase 2 leaves the product untouched.
+  -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="Microsoft.Windows.CsWin32" Version="0.3.360" />
+  </ItemGroup>
+</Project>
