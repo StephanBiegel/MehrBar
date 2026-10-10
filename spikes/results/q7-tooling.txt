@@ -1,0 +1,294 @@
+Q7 tooling capture (Plan 01-08)
+Date: 2026-10-10T10:24:20Z
+Working directory: C:\Development\MehrBar
+
+==== 1. SDK version (global.json pin) ====
+$ dotnet --version
+10.0.401
+[exit code: 0]
+
+==== 1b. global.json ====
+$ cat global.json
+{
+  "sdk": {
+    "version": "10.0.401",
+    "rollForward": "latestFeature"
+  },
+  "test": {
+    "runner": "Microsoft.Testing.Platform"
+  }
+}
+[exit code: 0]
+
+==== 1c. dotnet --list-sdks ====
+$ dotnet --list-sdks
+9.0.318 [C:\Program Files\dotnet\sdk]
+10.0.401 [C:\Program Files\dotnet\sdk]
+[exit code: 0]
+
+==== 2. dotnet test (MTP via global.json) ====
+$ dotnet test
+Ausführen von Tests von C:\Development\MehrBar\src\MehrBar.Tests\bin\Debug\net10.0\MehrBar.Tests.dll (net10.0|x64)
+C:\Development\MehrBar\src\MehrBar.Tests\bin\Debug\net10.0\MehrBar.Tests.dll (net10.0|x64) erfolgreich (742ms)
+
+Testlaufzusammenfassung: Bestanden!
+  gesamt: 19
+  fehlgeschlagen: 0
+  erfolgreich: 19
+  übersprungen: 0
+  Dauer: 936ms
+[exit code: 0]
+
+==== 3a. single-test filter, direct form ====
+$ dotnet test --filter-method "*Core_assembly*"
+Ausführen von Tests von C:\Development\MehrBar\src\MehrBar.Tests\bin\Debug\net10.0\MehrBar.Tests.dll (net10.0|x64)
+C:\Development\MehrBar\src\MehrBar.Tests\bin\Debug\net10.0\MehrBar.Tests.dll (net10.0|x64) erfolgreich (727ms)
+
+Testlaufzusammenfassung: Bestanden!
+  gesamt: 1
+  fehlgeschlagen: 0
+  erfolgreich: 1
+  übersprungen: 0
+  Dauer: 905ms
+[exit code: 0]
+
+==== 3b. single-test filter, after -- separator ====
+$ dotnet test -- --filter-method "*Core_assembly*"
+Ausführen von Tests von C:\Development\MehrBar\src\MehrBar.Tests\bin\Debug\net10.0\MehrBar.Tests.dll (net10.0|x64)
+C:\Development\MehrBar\src\MehrBar.Tests\bin\Debug\net10.0\MehrBar.Tests.dll (net10.0|x64) erfolgreich (718ms)
+
+Testlaufzusammenfassung: Bestanden!
+  gesamt: 1
+  fehlgeschlagen: 0
+  erfolgreich: 1
+  übersprungen: 0
+  Dauer: 910ms
+[exit code: 0]
+
+==== 3c. old VSTest-style filter (expected to be rejected under MTP) ====
+$ dotnet test --filter "FullyQualifiedName~Core_assembly"
+Ausführen von Tests von C:\Development\MehrBar\src\MehrBar.Tests\bin\Debug\net10.0\MehrBar.Tests.dll (net10.0|x64)
+C:\Development\MehrBar\src\MehrBar.Tests\bin\Debug\net10.0\MehrBar.Tests.dll (net10.0|x64) erfolgreich (727ms)
+
+Testlaufzusammenfassung: Bestanden!
+  gesamt: 1
+  fehlgeschlagen: 0
+  erfolgreich: 1
+  übersprungen: 0
+  Dauer: 909ms
+[exit code: 0]
+
+==== 3d. filter by class (Zoom anchor tests) ====
+$ dotnet test --filter-class "*ZoomAnchorTests"
+Ausführen von Tests von C:\Development\MehrBar\src\MehrBar.Tests\bin\Debug\net10.0\MehrBar.Tests.dll (net10.0|x64)
+C:\Development\MehrBar\src\MehrBar.Tests\bin\Debug\net10.0\MehrBar.Tests.dll (net10.0|x64) erfolgreich (735ms)
+
+Testlaufzusammenfassung: Bestanden!
+  gesamt: 18
+  fehlgeschlagen: 0
+  erfolgreich: 18
+  übersprungen: 0
+  Dauer: 912ms
+[exit code: 0]
+
+==== 3e. filter that matches nothing (proves the filter really filters) ====
+$ dotnet test --filter-method "*NoSuchTestAnywhere*"
+Ausführen von Tests von C:\Development\MehrBar\src\MehrBar.Tests\bin\Debug\net10.0\MehrBar.Tests.dll (net10.0|x64)
+C:\Development\MehrBar\src\MehrBar.Tests\bin\Debug\net10.0\MehrBar.Tests.dll (net10.0|x64) Es wurden keine Tests ausgeführt. (640ms)
+Exitcode: 8
+
+Testlaufzusammenfassung: Es wurden keine Tests ausgeführt.
+  Fehler: 1
+
+  gesamt: 0
+  fehlgeschlagen: 0
+  erfolgreich: 0
+  übersprungen: 0
+  Dauer: 841ms
+Der Testlauf wurde mit einem nicht erfolgreichen Exitcode abgeschlossen: 8 (siehe: https://aka.ms/testingplatform/exitcodes)
+[exit code: 8]
+
+==== 4a. list tests: dotnet test --list-tests ====
+$ dotnet test --list-tests
+Tests ermitteln aus C:\Development\MehrBar\src\MehrBar.Tests\bin\Debug\net10.0\MehrBar.Tests.dll (net10.0|x64)
+
+Ermittelte 19 Tests in Assembly - C:\Development\MehrBar\src\MehrBar.Tests\bin\Debug\net10.0\MehrBar.Tests.dll (net10.0|x64)
+  MehrBar.Tests.ScaffoldTests.Core_assembly_is_referenced
+  MehrBar.Tests.ZoomAnchorTests.Rest_layout_reproduces_reference_extent
+  MehrBar.Tests.ZoomAnchorTests.Kernel_matches_measured_falloff
+  MehrBar.Tests.ZoomAnchorTests.Center_anchor_keeps_bar_middle_fixed(itemIndex: 8)
+  MehrBar.Tests.ZoomAnchorTests.Center_anchor_keeps_bar_middle_fixed(itemIndex: 9)
+  MehrBar.Tests.ZoomAnchorTests.Center_anchor_keeps_bar_middle_fixed(itemIndex: 1)
+  MehrBar.Tests.ZoomAnchorTests.Center_anchor_keeps_bar_middle_fixed(itemIndex: 16)
+  MehrBar.Tests.ZoomAnchorTests.Center_anchor_keeps_bar_middle_fixed(itemIndex: 18)
+  MehrBar.Tests.ZoomAnchorTests.Measured_radius_is_the_mean_of_the_neighbour_samples
+  MehrBar.Tests.ZoomAnchorTests.Cursor_anchor_predicts_reference_row(rowIndex: 0)
+  MehrBar.Tests.ZoomAnchorTests.Cursor_anchor_predicts_reference_row(rowIndex: 1)
+  MehrBar.Tests.ZoomAnchorTests.Cursor_anchor_predicts_reference_row(rowIndex: 2)
+  MehrBar.Tests.ZoomAnchorTests.Cursor_anchor_predicts_reference_row(rowIndex: 3)
+  MehrBar.Tests.ZoomAnchorTests.Cursor_anchor_predicts_separator_lines(rowIndex: 0)
+  MehrBar.Tests.ZoomAnchorTests.Cursor_anchor_predicts_separator_lines(rowIndex: 1)
+  MehrBar.Tests.ZoomAnchorTests.Cursor_anchor_predicts_separator_lines(rowIndex: 2)
+  MehrBar.Tests.ZoomAnchorTests.Cursor_anchor_predicts_separator_lines(rowIndex: 3)
+  MehrBar.Tests.ZoomAnchorTests.Center_anchor_misses_reference_rows
+  MehrBar.Tests.ZoomAnchorTests.Fixed_separators_miss_the_rows_next_to_a_separator
+
+Ermittelte 19 Tests.
+
+[exit code: 0]
+
+==== 4b. list tests: after -- separator ====
+$ dotnet test -- --list-tests
+Ausführen von Tests von C:\Development\MehrBar\src\MehrBar.Tests\bin\Debug\net10.0\MehrBar.Tests.dll (net10.0|x64)
+C:\Development\MehrBar\src\MehrBar.Tests\bin\Debug\net10.0\MehrBar.Tests.dll (net10.0|x64) erfolgreich (563ms)
+
+Testlaufzusammenfassung: Es wurden keine Tests ausgeführt.
+  gesamt: 0
+  fehlgeschlagen: 0
+  erfolgreich: 0
+  übersprungen: 0
+  Dauer: 776ms
+[exit code: 0]
+
+==== 5a. NativeMethods.txt files under spikes/Common/native (CsWin32 name lists, one per topic) ====
+$ find spikes/Common/native -name NativeMethods.txt
+spikes/Common/native/base/NativeMethods.txt
+spikes/Common/native/host/NativeMethods.txt
+spikes/Common/native/input/NativeMethods.txt
+spikes/Common/native/oracles/NativeMethods.txt
+
+Lines per list (wc -l):
+  69 spikes/Common/native/base/NativeMethods.txt
+  10 spikes/Common/native/host/NativeMethods.txt
+  23 spikes/Common/native/input/NativeMethods.txt
+   5 spikes/Common/native/oracles/NativeMethods.txt
+ 107 total
+
+Shared CsWin32 settings (spikes/Common/NativeMethods.json):
+{
+  "$schema": "https://aka.ms/CsWin32.schema.json",
+  "allowMarshaling": false,
+  "useSafeHandles": false
+}
+
+
+CsWin32 package pin (spikes/Directory.Packages.props):
+    <PackageVersion Include="Microsoft.Windows.CsWin32" Version="0.3.360" />
+
+Project wiring (WindowHost.csproj and Driver.csproj):
+    <AdditionalFiles Include="..\Common\native\**\NativeMethods.txt" />
+    <AdditionalFiles Include="..\Common\NativeMethods.json" />
+    <AdditionalFiles Include="..\Common\native\**\NativeMethods.txt" />
+    <AdditionalFiles Include="..\Common\NativeMethods.json" />
+
+==== 5b. CsWin32 full rebuild WindowHost (--no-incremental forces the source generator to run) ====
+$ dotnet build spikes/WindowHost -c Release -warnaserror --no-incremental
+  Wiederherzustellende Projekte werden ermittelt...
+  Alle Projekte sind für die Wiederherstellung auf dem neuesten Stand.
+  WindowHost -> C:\Development\MehrBar\spikes\WindowHost\bin\Release\net10.0-windows\WindowHost.dll
+
+Der Buildvorgang wurde erfolgreich ausgeführt.
+    0 Warnung(en)
+    0 Fehler
+
+Verstrichene Zeit 00:00:01.64
+[exit code: 0]
+
+==== 5c. CsWin32 full rebuild Driver (--no-incremental forces the source generator to run) ====
+$ dotnet build spikes/Driver -c Release -warnaserror --no-incremental
+  Wiederherzustellende Projekte werden ermittelt...
+  Alle Projekte sind für die Wiederherstellung auf dem neuesten Stand.
+  Driver -> C:\Development\MehrBar\spikes\Driver\bin\Release\net10.0-windows\Driver.dll
+
+Der Buildvorgang wurde erfolgreich ausgeführt.
+    0 Warnung(en)
+    0 Fehler
+
+Verstrichene Zeit 00:00:01.36
+[exit code: 0]
+
+==== 5d. plan verify form: WindowHost ====
+$ dotnet build spikes/WindowHost -c Release -warnaserror
+  Wiederherzustellende Projekte werden ermittelt...
+  Alle Projekte sind für die Wiederherstellung auf dem neuesten Stand.
+  WindowHost -> C:\Development\MehrBar\spikes\WindowHost\bin\Release\net10.0-windows\WindowHost.dll
+
+Der Buildvorgang wurde erfolgreich ausgeführt.
+    0 Warnung(en)
+    0 Fehler
+
+Verstrichene Zeit 00:00:00.77
+[exit code: 0]
+
+==== 5e. plan verify form: Driver ====
+$ dotnet build spikes/Driver -c Release -warnaserror
+  Wiederherzustellende Projekte werden ermittelt...
+  Alle Projekte sind für die Wiederherstellung auf dem neuesten Stand.
+  Driver -> C:\Development\MehrBar\spikes\Driver\bin\Release\net10.0-windows\Driver.dll
+
+Der Buildvorgang wurde erfolgreich ausgeführt.
+    0 Warnung(en)
+    0 Fehler
+
+Verstrichene Zeit 00:00:00.71
+[exit code: 0]
+
+==== 5f. Proof that all four lists reach the generator: emit generated sources into obj/ (never into the project folder) and look for one name per list ====
+$ dotnet build spikes/Driver -c Release -warnaserror --no-incremental -p:EmitCompilerGeneratedFiles=true -p:CompilerGeneratedFilesOutputPath=C:/Development/MehrBar/spikes/Driver/obj/q7gen
+  Wiederherzustellende Projekte werden ermittelt...
+  Alle Projekte sind für die Wiederherstellung auf dem neuesten Stand.
+  Driver -> C:\Development\MehrBar\spikes\Driver\bin\Release\net10.0-windows\Driver.dll
+
+Der Buildvorgang wurde erfolgreich ausgeführt.
+    0 Warnung(en)
+    0 Fehler
+
+Verstrichene Zeit 00:00:01.49
+[exit code: 0]
+
+Generated CsWin32 files (count): 113
+SetWindowPos: Windows.Win32.PInvoke.g.cs
+SendInput: Windows.Win32.INPUT.g.cs
+GetPixel: Windows.Win32.PInvoke.GDI32.dll.g.cs
+
+Source list of each name:
+-- base:
+SetWindowPos GetWindowLong SetWindowLong HWND_BOTTOM HWND_TOPMOST HWND_NOTOPMOST GetForegroundWindow SetForegroundWindow GetWindow EnumWindows GetClassName GetWindowText IsWindowVisible IsIconic GetWindowRect GetWindowThreadProcessId DwmGetWindowAttribute DwmGetCompositionTimingInfo SetWinEventHook UnhookWinEvent SendInput GetCursorPos SetCursorPos WindowFromPoint CreatePopupMenu AppendMenu TrackPopupMenuEx DestroyMenu PostMessage ChangeDisplaySettingsEx EnumDisplaySettings LockWorkStation WTSRegisterSessionNotification WTSUnRegisterSessionNotification GetDC GetPixel ReleaseDC FindWindow FindWindowEx GetProcessTimes RegisterWindowMessage GetSystemMetrics MonitorFromWindow GetMonitorInfo AllowSetForegroundWindow SetWindowRgn CreateRectRgn GetGUIThreadInfo SHCreateItemFromParsingName IShellItemImageFactory GetDIBits GetObject BITMAP DeleteObject MA_NOACTIVATE WM_MOUSEACTIVATE WM_WINDOWPOSCHANGING EVENT_SYSTEM_FOREGROUND WINEVENT_OUTOFCONTEXT WINDOW_EX_STYLE SET_WINDOW_POS_FLAGS VIRTUAL_KEY MOUSE_EVENT_FLAGS DWMWINDOWATTRIBUTE WINDOW_LONG_PTR_INDEX KEYBD_EVENT_FLAGS TRACK_POPUP_MENU_FLAGS MENU_ITEM_FLAGS GET_WINDOW_CMD 
+-- host:
+WM_LBUTTONDOWN WM_RBUTTONDOWN WM_RBUTTONUP WM_MOUSEMOVE WM_ACTIVATE WA_INACTIVE WA_ACTIVE WA_CLICKACTIVE GetMessagePos WINDOWPOS 
+-- input:
+INPUT INPUT_TYPE KEYBDINPUT MOUSEINPUT SYSTEM_METRICS_INDEX SetWindowsHookEx UnhookWindowsHookEx CallNextHookEx MSLLHOOKSTRUCT KBDLLHOOKSTRUCT WINDOWS_HOOK_ID RegisterHotKey UnregisterHotKey HOT_KEY_MODIFIERS GetMessage PeekMessage PEEK_MESSAGE_REMOVE_TYPE MSG WM_HOTKEY WM_QUIT PostThreadMessage GetCurrentThreadId GetModuleHandle 
+-- oracles:
+IsWindow GUITHREADINFO GetAncestor GET_ANCESTOR_FLAGS ASFW_ANY 
+
+One name from every list is present in the generated output:
+WINDOWPOS: Windows.Win32.PInvoke.g.cs
+
+SetWindowsHookEx: Windows.Win32.PInvoke.USER32.dll.g.cs
+
+GetAncestor: Windows.Win32.PInvoke.USER32.dll.g.cs
+
+GetMessagePos: Windows.Win32.PInvoke.USER32.dll.g.cs
+
+GetForegroundWindow: Windows.Win32.PInvoke.USER32.dll.g.cs
+
+
+CsWin32 version resolved by restore:
+"Microsoft.Windows.CsWin32/0.3.360"
+"Microsoft.Windows.CsWin32/0.3.360"
+
+==== 6. Readout (written by hand from the blocks above) ====
+SDK:                 10.0.401 via global.json (rollForward latestFeature), runner Microsoft.Testing.Platform
+dotnet test:         19 tests, 19 passed (ScaffoldTests 1, ZoomAnchorTests 18), exit 0
+Single-test filter:  WORKS in the direct form:  dotnet test --filter-method "*Core_assembly*"   (summary: 1 test)
+                     also works after the separator:  dotnet test -- --filter-method "*Core_assembly*"
+                     class filter works:  dotnet test --filter-class "*ZoomAnchorTests"   (18 tests)
+                     a filter matching nothing exits with code 8 (zero tests run), so a typo cannot pass silently
+                     the VSTest-style  --filter "FullyQualifiedName~Core_assembly"  was also accepted here (1 test)
+List syntax:         WORKS:  dotnet test --list-tests   (19 tests, one fully qualified name per line)
+                     DOES NOT WORK:  dotnet test -- --list-tests   (exit 0 but "no tests run", nothing listed)
+CsWin32:             0.3.360 resolved for WindowHost and Driver; both build with 0 warnings / 0 errors under -warnaserror,
+                     also with --no-incremental (generator really runs); 4 NativeMethods.txt lists (base, host, input,
+                     oracles) reach the generator through one wildcard AdditionalFiles item; names from several lists are
+                     generated (113 generated files for Driver).
+Not measurable from the CLI: VS Code C# Dev Kit Test Explorer discovery -> hand part item H6.
