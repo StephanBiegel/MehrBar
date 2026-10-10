@@ -200,10 +200,7 @@ public partial class App : Application
         }
         else
         {
-            Console.Error.WriteLine("Role '" + options.Role + "' is not available yet.");
-            Console.Error.WriteLine(HostOptions.Usage);
-            Shutdown(2);
-            return;
+            window = new WitnessWindow(options, _log);
         }
 
         // READY is printed once the HWND exists and the first content has been rendered, so the
@@ -245,7 +242,7 @@ public partial class App : Application
         bool software = RenderOptions.ProcessRenderMode == RenderMode.SoftwareOnly || tier == 0;
         log.Write(
             options.Role,
-            options.Variants,
+            options.Role == "bar" ? options.Variants : string.Empty,
             string.Empty,
             "render-mode",
             string.Create(

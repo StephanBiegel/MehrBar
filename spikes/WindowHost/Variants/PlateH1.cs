@@ -95,5 +95,5 @@ internal static class PlateDrawing
     }
 
     private static Color FromRgb(int rgb) =>
-        Color.FromRgb((byte)(rgb >> 16), (byte)(rgb >> 8), (byte)rgb);
+        Color.FromRgb((byte)((rgb >> 16) & 0xFF), (byte)((rgb >> 8) & 0xFF), (byte)(rgb & 0xFF));
 }
