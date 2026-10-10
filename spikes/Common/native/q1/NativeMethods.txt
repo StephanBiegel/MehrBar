@@ -1,1 +1,3 @@
 GetDoubleClickTime
+GetWindowRgn
+GetRgnBox
