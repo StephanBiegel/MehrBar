@@ -378,8 +378,8 @@ internal interface IZTrigger
     /// <summary>The <c>--allow-*</c> flag the trigger needs, or null.</summary>
     string? RequiredFlag { get; }
 
-    /// <summary>False for triggers that send no input (none, manual); a run with only such triggers does not watch for real input.</summary>
-    bool InjectsInput { get; }
+    /// <summary>True when the developer acts during the run (manual keys, unlocking after lock): the run then does not abort on real input.</summary>
+    bool HumanParticipates { get; }
 
     /// <summary>True when sampling starts only after <see cref="Fire"/> returned (lock: after Stephan unlocked).</summary>
     bool SamplerStartsAfterFire { get; }
@@ -604,8 +604,8 @@ public sealed class ZOrderCase : IDriverCase
         TimeSpan timeout = TimeSpan.FromMilliseconds(Math.Max(TimeSpan.FromMinutes(10).TotalMilliseconds, estimateMs + 180_000));
         bool manual = triggers.Any(t => t.Name == "manual");
 
-        // Only the manual run lets the developer press the real keys; every other run aborts on real input.
-        using SafetySession safety = ctx.BeginSafety(timeout, watchRealInput: !manual);
+        // Manual keys and unlocking are real input; every other run aborts as soon as the developer touches keyboard or mouse.
+        using SafetySession safety = ctx.BeginSafety(timeout, watchRealInput: !triggers.Any(t => t.HumanParticipates));
         if (!manual)
         {
             // Registered before ClearTopArea: restore actions run newest first, so this one runs after the
@@ -997,54 +997,5 @@ internal static class Q2Summary
         }
 
         return "D-11 erfüllt";
-    }
-}
-
-/// <summary>Trigger lookup (completed with the full D-10 matrix in the second task of plan 01-10).</summary>
-internal static class ZTriggers
-{
-    public static IReadOnlyList<string> Names { get; } = ["none"];
-
-    public static bool TryResolve(
-        string text,
-        bool allowExplorer,
-        bool allowDisplay,
-        bool allowLock,
-        int manualSeconds,
-        out IReadOnlyList<IZTrigger> triggers,
-        out string? error)
-    {
-        triggers = [];
-        error = null;
-        if (text.Equals("none", StringComparison.OrdinalIgnoreCase))
-        {
-            triggers = [new NoneTrigger()];
-            return true;
-        }
-
-        error = $"trigger '{text}' is not available yet; known: {string.Join(", ", Names)}";
-        return false;
-    }
-}
-
-/// <summary>The no-op trigger: nothing is fired, the pipeline just samples for the window.</summary>
-internal sealed class NoneTrigger : IZTrigger
-{
-    public string Name => "none";
-
-    public string? RequiredFlag => null;
-
-    public bool InjectsInput => false;
-
-    public bool SamplerStartsAfterFire => false;
-
-    public int SampleMs => 3000;
-
-    public void Fire(ZContext ctx)
-    {
-    }
-
-    public void Undo(ZContext ctx)
-    {
     }
 }
