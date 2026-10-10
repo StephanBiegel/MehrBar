@@ -8,7 +8,9 @@
 # What it measures (nothing here reads the bar edges listed in docs/PROJEKT_START.md "Nachtrag zu Q12"):
 #   1. Rest geometry from image 1: separator lines, slot pitch, separator length, margins.
 #   2. Alignment of images 2..5 to image 1 by correlating the sky background below the bar.
-#   3. (-Glyphs) glyph boxes of the cursor icon and its neighbours at rest and zoomed.
+#   3. (-Glyphs) glyph boxes of the cursor icon and its neighbours at rest and zoomed, the pointer fraction of each
+#      row (from the cursor icon's own displacement), the zoom radius (from the neighbours' sizes) and the separator
+#      line positions of every screenshot.
 #
 # Usage:
 #   powershell -NoProfile -ExecutionPolicy Bypass -File spikes/tools/measure-zoom-fixture.ps1 [-Glyphs] [-Band 3,33]
@@ -16,10 +18,11 @@ param(
     [string]$RefDir = '',
     [int[]]$Band = @(3, 33),     # icon rows of the bar (image 1); default = rows where icons sit
     [switch]$Glyphs,
-    [int]$SkyThreshold = 30       # summed per-channel difference vs the aligned rest image; higher = ignore soft shadows
+    [int]$SkyThreshold = 80       # summed per-channel difference vs the aligned rest image; higher = ignore soft shadows
 )
 
 $ErrorActionPreference = 'Stop'
+[System.Threading.Thread]::CurrentThread.CurrentCulture = [System.Globalization.CultureInfo]::InvariantCulture
 Add-Type -AssemblyName System.Drawing
 
 $cs = @"
@@ -186,8 +189,11 @@ function Sky([byte[]]$b, [int]$w, [int]$x, [int]$y) { $i = ($y * $w + $x) * 4; r
 $barL = -1; for ($x = 0; $x -lt 60; $x++) { if (-not (Sky $d1.B $d1.W $x 20)) { $barL = $x; break } }
 $barR = -1; for ($x = $d1.W - 1; $x -gt 560; $x--) { if (-not (Sky $d1.B $d1.W $x 20)) { $barR = $x; break } }
 Write-Host ("bar glass spans x1 = {0}..{1} (first/last non-sky pixel at row 20)" -f $barL, $barR)
-Write-Host ("leading margin = {0}, trailing margin = {1}  (bar edge to first/last slot, using bar edge {2} / {3})" -f `
-    ($g1start - $barL), ((($barR + 1) - $g4end)), $barL, ($barR + 1))
+# The table's rest edges (109 / 698) are image-1 px 20 / 609 (table = image-1 px + 89): left rim pixel, first sky pixel.
+$tableOffset = 89
+$restL = 109 - $tableOffset; $restR = 698 - $tableOffset
+Write-Host ("leading margin = {0}, trailing margin = {1}  (bar edge {2} / {3} to first / last slot)" -f `
+    ($g1start - $restL), ($restR - $g4end), $restL, $restR)
 
 # --- 3. alignment of images 2..5 to image 1 (sky background only) ----------------------------------
 $shift = @{}
@@ -247,3 +253,66 @@ foreach ($z in $zoom) {
 }
 Set-Content -LiteralPath (Join-Path $priv 'zoom-glyphs.csv') -Value $rows -Encoding ASCII
 Write-Host "glyph boxes written to spikes/results/private/zoom-glyphs.csv"
+
+# --- 5. derived inputs (table coordinates = image-1 px + 89) -----------------------------------------
+$zoomSize = 121.0; $iconSize = 32.0
+function BoxOf([int]$n, [string]$icon) {
+    foreach ($r in $script:rows) { }
+    $line = $script:rows | Where-Object { $_ -like "$n,$icon,*" } | Select-Object -First 1
+    $f = $line -split ','
+    return @{ MinX = [int]$f[4]; MaxX = [int]$f[5]; Width = [int]$f[8]; Centre = [double]$f[9] }
+}
+Write-Host ''
+Write-Host 'pointer fraction per row  f = 0.5 - (zoomed glyph centre - rest glyph centre) / (121 - 32)  [+-2 px => +-0.02]'
+$rowDefs = @(
+    @{ n = 2; icon = 'P-touch';   slot = 8;  name = 'Maus mittig (P-touch)' },
+    @{ n = 3; icon = 'VS Code';   slot = 1;  name = 'Maus links (2. Symbol)' },
+    @{ n = 4; icon = 'Publisher'; slot = 14; name = 'Maus rechts (Publisher)' },
+    @{ n = 5; icon = 'Excel';     slot = 15; name = 'Maus ganz rechts (Excel)' }
+)
+$fraction = @{}
+foreach ($rd in $rowDefs) {
+    $rest = BoxOf 1 $rd.icon; $zm = BoxOf $rd.n $rd.icon
+    $zc = $zm.Centre - $shift[$rd.n][0]
+    $delta = $zc - $rest.Centre
+    $f = 0.5 - $delta / ($zoomSize - $iconSize)
+    $fc = [math]::Min(1.0, [math]::Max(0.0, $f))
+    $fraction[$rd.n] = $fc
+    Write-Host ('  {0,-26} rest centre {1} (table {2}), zoomed centre {3} (table {4}), shift {5:N1} px => f = {6:N3}' -f `
+        $rd.name, $rest.Centre, ($rest.Centre + $tableOffset), $zc, ($zc + $tableOffset), $delta, $fc)
+}
+
+Write-Host ''
+Write-Host 'zoom radius from the neighbours of the middle row (image 2): size = 32 * zoomed width / rest width, f = (size - 32) / 89, r = d * pi / acos(2f - 1)'
+$cursorX = (SlotStart 8) + $fraction[2] * $p      # pointer position in image-1 px
+$rVals = @()
+foreach ($nb in @(@('Ring', 7), @('PDF', 9), @('Cube', 6), @('a', 10))) {
+    $rest = BoxOf 1 $nb[0]; $zm = BoxOf 2 $nb[0]
+    $size = $iconSize * $zm.Width / $rest.Width
+    $fs = ($size - $iconSize) / ($zoomSize - $iconSize)
+    $dist = [math]::Abs($cursorX - ((SlotStart $nb[1]) + $p / 2.0)) / $p
+    $rv = $dist * [math]::PI / [math]::Acos(2 * $fs - 1)
+    $rVals += $rv
+    Write-Host ('  {0,-5} widths rest {1} / zoomed {2} => size {3:N1}, d = {4:N2} pitches, f = {5:N3} => r = {6:N2}' -f $nb[0], $rest.Width, $zm.Width, $size, $dist, $fs, $rv)
+}
+$rMean = ($rVals | Measure-Object -Average).Average
+Write-Host ('  mean r = {0:N3}, spread {1:N2} .. {2:N2}' -f $rMean, ($rVals | Measure-Object -Minimum).Minimum, ($rVals | Measure-Object -Maximum).Maximum)
+
+Write-Host ''
+Write-Host 'separator line centres (image px -> table): thin vertical lines in the bar rows, independent of the bar edges'
+$sepRows = @('image,sep1,sep2,sep3')
+foreach ($n in 1..5) {
+    $d = $img[$n]
+    $edge = 0; for ($x = 0; $x -lt 60; $x++) { if (-not (Sky $d.B $d.W $x 20)) { $edge = $x; break } }
+    $rc = $edge + 9
+    $cnt = [Zm]::BarColumns($d.B, $d.W, $d.H, $y0, $y1, $refRow, $rc, 50)
+    $found = @()
+    for ($x = 24; $x -lt $d.W - 3; $x++) {
+        if ($cnt[$x] -ge 14 -and $cnt[$x-1] -le 3 -and $cnt[$x+1] -le 3 -and $cnt[$x-2] -le 3 -and $cnt[$x+2] -le 3) { $found += $x }
+    }
+    $dxn = 0; if ($n -gt 1) { $dxn = $shift[$n][0] }
+    $tab = @(); foreach ($x in $found) { $tab += ($x + 0.5 - $dxn + $tableOffset) }
+    Write-Host ('  image {0}: line columns {1} => table {2}' -f $n, ($found -join ', '), ($tab -join ', '))
+    $sepRows += ('{0},{1}' -f $n, ($tab -join ','))
+}
+Set-Content -LiteralPath (Join-Path $priv 'zoom-fixture-separators.csv') -Value $sepRows -Encoding ASCII

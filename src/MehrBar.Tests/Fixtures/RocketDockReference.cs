@@ -61,20 +61,73 @@ internal static class RocketDockReference
     public const int ItemCount = 19;
 
     /// <summary>
+    /// Zoom radius in slot pitches, one value for all rows. Measured from the four neighbours of the cursor icon in the
+    /// "Maus mittig" screenshot (image 2) only, never from a bar edge: size = 32 * zoomed glyph width / rest glyph width,
+    /// f = (size - 32) / (121 - 32), r = d * pi / acos(2f - 1) with d the neighbour's rest distance from the pointer
+    /// (see <see cref="RadiusSamples"/>). Per neighbour: ring 2.72, PDF 2.72, cube 2.41, "a" 2.46; mean 2.577, spread
+    /// 2.41 .. 2.72 (the direct neighbours give a larger r than the next-but-one icons: the original's falloff is not a
+    /// perfect cosine). Glyph widths are +-1 px, which is about +-0.05 (direct) and +-0.1 (next-but-one) in r.
+    /// </summary>
+    public const double MeasuredRadius = 2.58;
+
+    /// <summary>One neighbour of the cursor icon in image 2 ("Maus mittig") used to measure the radius.</summary>
+    /// <param name="Name">Icon.</param>
+    /// <param name="ItemIndex">Item index in <see cref="BuildRestItems"/>.</param>
+    /// <param name="RestWidth">Glyph width at rest (image 1, icon pixels inside the slot, rows 3..32).</param>
+    /// <param name="ZoomedWidth">Glyph width in image 2 (sky rows below the bar for ring and PDF, bar rows for cube and "a").</param>
+    internal sealed record RadiusSample(string Name, int ItemIndex, double RestWidth, double ZoomedWidth);
+
+    /// <summary>The four neighbours behind the radius constant (image 1 / image 2 glyph widths, +-1 px).</summary>
+    public static readonly RadiusSample[] RadiusSamples =
+    {
+        new("Cube (next-but-one, left)", 7, 29, 35),    // image 1 x 245..273; image 2 x 248..282
+        new("Ring (neighbour, left)", 8, 31, 92),       // image 1 x 275..305; image 2 x 285..376
+        new("PDF (neighbour, right)", 10, 32, 94),      // image 1 x 338..369; image 2 x 496..589
+        new("a (next-but-one, right)", 11, 32, 39),     // image 1 x 370..401; image 2 x 591..629
+    };
+
+    /// <summary>Separator line centres at rest (image 1 columns 234, 442, 554, +0.5 for the pixel centre, +89 for the table frame).</summary>
+    public static readonly double[] RestSeparatorCentres = { 323.5, 531.5, 643.5 };
+
+    /// <summary>
     /// One reference row of the Nachtrag table. <see cref="PointerItemIndex"/> is the icon under the pointer, identified
     /// visually in images 2..5 (middle icon P-touch, 2nd icon Visual Studio Code, Publisher, Excel).
+    /// <see cref="PointerFraction"/> is where the pointer sits inside that icon's rest slot (0 = near edge), measured
+    /// from the cursor icon's own displacement only: the cursor icon keeps the pointer point fixed, so its centre moves
+    /// by (0.5 - f) * (121 - 32) against its rest centre. Uncertainty +-2 px, i.e. +-0.02 in f.
     /// <see cref="ExpectedBefore"/> / <see cref="ExpectedAfter"/> are the table's edge values (the thing predicted);
     /// <see cref="BeforeCropped"/> marks the three identical left edges of -3, which the plan treats as a bound.
+    /// <see cref="SeparatorCentres"/> are the displayed centres of the three separator lines, measured as thin vertical
+    /// lines in the bar rows of the screenshot (frame: image px - shift to image 1 + 89); they do not depend on the
+    /// bar edges and give a second, independent check of the layout.
     /// </summary>
-    internal sealed record Row(string Name, int PointerItemIndex, double ExpectedBefore, double ExpectedAfter, bool BeforeCropped);
+    internal sealed record Row(
+        string Name,
+        int PointerItemIndex,
+        double PointerFraction,
+        double ExpectedBefore,
+        double ExpectedAfter,
+        bool BeforeCropped,
+        double[] SeparatorCentres);
 
     /// <summary>The four zoomed rows of the Nachtrag table (docs/PROJEKT_START.md, "Maus mittig / links / rechts / ganz rechts").</summary>
     public static readonly Row[] Rows =
     {
-        new("Maus mittig (P-touch)", 9, -3, 812, true),
-        new("Maus links (2. Symbol)", 1, 27, 812, false),
-        new("Maus rechts (Publisher)", 16, -3, 804, true),
-        new("Maus ganz rechts (Excel)", 18, -3, 733, true),
+        // Image 2, shift to image 1: dx 114. P-touch glyph centre 323.0 (x 381..492 minus 114 = 267..378 -> 323; rest x 306..337 -> 322.0):
+        // shift +1.0 px -> f = 0.5 - 1.0 / 89 = 0.489. Separator lines at image-2 columns 236, 670, 782.
+        new("Maus mittig (P-touch)", 9, 0.489, -3, 812, true, new[] { 211.5, 645.5, 757.5 }),
+
+        // Image 3, dx 90. Visual Studio Code glyph centre 120.5 (x 154..266 minus 90; rest x 66..97 -> 82.0): shift +38.5 px
+        // -> f = 0.5 - 38.5 / 89 = 0.067. Separator lines at image-3 columns 438, 646, 758.
+        new("Maus links (2. Symbol)", 1, 0.067, 27, 812, false, new[] { 437.5, 645.5, 757.5 }),
+
+        // Image 4, dx 114. Publisher glyph centre 492.0 (x 551..660 minus 114; rest x 515..545 -> 530.5): shift -38.5 px
+        // -> f = 0.5 + 38.5 / 89 = 0.933. Separator lines at image-4 columns 236, 444, 692.
+        new("Maus rechts (Publisher)", 16, 0.933, -3, 804, true, new[] { 211.5, 419.5, 667.5 }),
+
+        // Image 5, dx 117. Excel glyph centre 563.5 (x 629..731 minus 117; rest x 563..591 -> 577.5): shift -14.0 px
+        // -> f = 0.5 + 14.0 / 89 = 0.657. Separator lines at image-5 columns 239, 447, 602.
+        new("Maus ganz rechts (Excel)", 18, 0.657, -3, 733, true, new[] { 211.5, 419.5, 574.5 }),
     };
 
     /// <summary>

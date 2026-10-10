@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Q5 report-only residual and sensitivity check (phase 1 spike, outside MehrBar.sln).
+    Depends on the product (Core + the measured fixture of the test project), never the reverse.
+    It writes spikes/results/q5-zoom-residuals.csv and nothing else.
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>MehrBar.Spikes.ZoomCheck</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\MehrBar.Core\MehrBar.Core.csproj" />
+    <Compile Include="..\..\src\MehrBar.Tests\Fixtures\RocketDockReference.cs" Link="Fixtures\RocketDockReference.cs" />
+  </ItemGroup>
+
+</Project>
