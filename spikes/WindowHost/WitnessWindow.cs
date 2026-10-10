@@ -33,7 +33,9 @@ internal sealed class WitnessWindow : Window
         WindowStyle = WindowStyle.None;
         ResizeMode = ResizeMode.NoResize;
         ShowInTaskbar = false;
-        ShowActivated = true;
+        // --activate false shows the witness without taking the foreground (dry runs on a desktop in use).
+        ShowActivated = !(options.All.TryGetValue("activate", out string? activate) &&
+                          string.Equals(activate, "false", StringComparison.OrdinalIgnoreCase));
         Topmost = false;
         Title = options.Title;
         Focusable = true;
