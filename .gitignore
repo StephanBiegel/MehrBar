@@ -10,3 +10,11 @@ obj/
 
 # Reference screenshots of the original (contain third-party icons)
 samples/reference/
+
+# Spike outputs (Phase 1): private measurements, dry runs, generated fixtures and the
+# downloaded PresentMon binary never enter the repo (third-party icons, paths, window titles)
+spikes/results/private/
+spikes/results/dry/
+spikes/fixtures/
+spikes/tools/presentmon/
+spikes/tools/PresentMon*.exe
