@@ -72,6 +72,11 @@ internal static class Program
     {
         var catalogue = IconCases.Build(o.NetFile);
 
+        if (o.Latency)
+        {
+            return LatencyBench.Run(o, catalogue);
+        }
+
         if (o.All)
         {
             return RunAll(o, catalogue);
