@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 01
 current_phase_name: Risiko-Spikes
 status: executing
-stopped_at: Completed 01-03-PLAN.md
-last_updated: "2026-10-10T08:09:28.394Z"
+stopped_at: Completed 01-04-PLAN.md
+last_updated: "2026-10-10T08:16:14.776Z"
 last_activity: 2026-10-10
 last_activity_desc: Phase 01 execution started
-state_head: 42807363a50af65b5a9893d6a6e49dc07b2f9dd7
+state_head: 5c65a7293c337f92b6f83aded4ea7ce4f766ceb7
 progress:
   total_phases: 7
   completed_phases: 0
   total_plans: 18
-  completed_plans: 3
+  completed_plans: 4
   percent: 0
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-10-09)
 ## Current Position
 
 Phase: 01 (Risiko-Spikes) — EXECUTING
-Plan: 4 of 18
+Plan: 5 of 18
 Status: Ready to execute
 Last activity: 2026-10-10 — Phase 01 execution started
 
@@ -59,6 +59,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01 P01 | 2 min | 2 tasks | 9 files |
 | Phase 01 P02 | 5 min | 2 tasks | 13 files |
 | Phase 01 P03 | 13min | 2 tasks | 8 files |
+| Phase 01 P04 | 10min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -78,6 +79,7 @@ Recent decisions affecting current work:
 - [Phase 01]: 01-02: RepoPaths.cs needs explicit 'using System.IO' because WPF projects drop it from implicit usings
 - [Phase 01]: 01-03: initial show of the bar window is pinned to HWND_BOTTOM by rewriting WPF's own SWP_SHOWWINDOW call in WM_WINDOWPOSCHANGING (plain WPF Show() lifts it to z-index 21); --show-mode wpf keeps the baseline
 - [Phase 01]: 01-03: host types are internal because CsWin32 types (HWND, RECT) are internal; EnumWindows uses an UnmanagedCallersOnly function pointer
+- [Phase 01]: 01-04: Restore actions may send input (Restoring flag lifts abort check in Dispose); real SendInputSink refuses to run without an active SafetySession; Begin fails closed without an abort hotkey
 
 ### Pending Todos
 
@@ -99,6 +101,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-10T08:09:28.366Z
-Stopped at: Completed 01-03-PLAN.md
+Last session: 2026-10-10T08:16:14.748Z
+Stopped at: Completed 01-04-PLAN.md
 Resume file: None
