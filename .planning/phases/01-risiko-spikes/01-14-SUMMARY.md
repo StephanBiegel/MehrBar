@@ -149,3 +149,7 @@ None. The plan's mitigations held: consent recorded, restoration verified (Taskb
 
 - Result files, note, script present in the worktree; commits 1cd20c9 and df8150f are on the branch.
 - check-notes.ps1 and the edited run-zorder.ps1 were not executed (sandbox); stated above. After merge the orchestrator ran both: check-notes OK, -DryRun exit 0 (the S2-only follow-up path is still unexercised).
+
+## Addendum (wave 7, plan 01-15)
+
+The open items "S2 at Win+D (one unconfirmed 5 ms sample)" and "S2 not measured for the other triggers" were followed up in wave 7, in the same hands-off window as the Q3 menu run. Results: `spikes/results/q2/s2-followup/` (`summary-s2.md`, `runs-s2.csv`, `events-s2.csv`, `S2.md`): S2 with Win+D 20/20, corner 20/20, Win+M 20/20, Aero Peek by corner 20/20 (trigger again without effect), Alt+Tab 20/20, Explorer restart 3/3, display change 3/3; largest gap 271 ms, 0 samples in front of the witness everywhere, D-11 met. Win+, was not part of that run. The decision stays GO with S2; `01-SPIKE-zorder-wind.md` carries the measurements and the revised open points. The text above is left as it was written in plan 01-14.
