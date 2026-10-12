@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 01
 current_phase_name: Risiko-Spikes
 status: executing
-stopped_at: Completed 01-11-PLAN.md
-last_updated: "2026-10-12T07:19:16.004Z"
+stopped_at: Completed 01-12-PLAN.md
+last_updated: "2026-10-12T07:39:50.135Z"
 last_activity: 2026-10-10
 last_activity_desc: Phase 01 execution started
-state_head: 5c9d4537b472a50e817ad3d6d41f93812be85653
+state_head: 993f1e2651c2380289927351b8af10fb36f5a3cd
 progress:
   total_phases: 7
   completed_phases: 0
   total_plans: 18
-  completed_plans: 11
+  completed_plans: 12
   percent: 0
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-10-09)
 ## Current Position
 
 Phase: 01 (Risiko-Spikes) — EXECUTING
-Plan: 12 of 18
+Plan: 13 of 18
 Status: Ready to execute
 Last activity: 2026-10-10 — Phase 01 execution started
 
@@ -66,6 +66,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01 P09 | 12 min | 2 tasks | 3 files |
 | Phase 01 P10 | 11 min | 2 tasks | 5 files |
 | Phase 01 P11 | 55 min | 2 tasks | 4 files |
+| Phase 01 P12 | 20 min | 3 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -93,6 +94,8 @@ Recent decisions affecting current work:
 - [Phase 01]: 01-10: Q2 sampling cadence is one display refresh (16.7 ms at 60 Hz) because GetPixel/BitBlt wait for the next frame; ProbeStrip reads all five probes with one BitBlt, so D-11 '1-2 samples' means 1-2 frames
 - [Phase 01]: 01-10: while the S1/S2 watcher holds the bar lifted, 'desktop shown' = no ordinary window above the desktop host (heuristic, to be confirmed with WinEvent log in 01-14)
 - [Phase 01]: Q3: WPF popup item rectangles come from the popup's Win32 rectangle plus in-popup offsets (PointToScreen was wrong 130 ms after open); Driver uses the newest menu-items row >= 150 ms after menu-open
+- [Phase 01]: 01-12: Q4 sweep waits use a high-resolution waitable timer (timeBeginPeriod ineffective for windowless processes on Windows 11: 13.45 ms median step vs 8.00 ms); dwm.exe CPU is n/a at normal integrity
+- [Phase 01]: 01-12: Driver render case rehearses the real input path with --record-input (RecordingSink, nothing sent); PresentMon download and flag names stay unverified until 01-16
 
 ### Pending Todos
 
@@ -114,6 +117,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-12T07:19:15.969Z
-Stopped at: Completed 01-11-PLAN.md
+Last session: 2026-10-12T07:39:50.105Z
+Stopped at: Completed 01-12-PLAN.md
 Resume file: None
