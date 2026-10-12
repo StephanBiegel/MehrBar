@@ -64,8 +64,8 @@ coverage:
     description: "01-SPIKE-window-hit.md carries exactly one decision line (GO, H1), Folgen for Phase 2/3 and the Grenzfaelle for Stephan"
     verification:
       - kind: other
-        ref: "check-notes.ps1 -Note 01-SPIKE-window-hit.md (NOT run by the executor: powershell is blocked in the sandbox; orchestrator must run it). Manual check against the script: six headings present, one **Entscheidung:** line matching 'GO' + text, Messwerte references spikes/results/q1/"
-        status: unknown
+        ref: "check-notes.ps1 -Note 01-SPIKE-window-hit.md (run by the orchestrator after merge: 'OK 01-SPIKE-window-hit.md', exit 0). Manual check against the script: six headings present, one **Entscheidung:** line matching 'GO' + text, Messwerte references spikes/results/q1/"
+        status: pass
     human_judgment: false
   - id: D3
     description: "H1 hand checks: flash check over 10 host starts, real-mouse cross-check, emergency abort key"
@@ -135,8 +135,8 @@ None - no instrument code was changed (`HitRegion.cs` and `Q1Cases.cs` untouched
 **1. Real run executed by the orchestrator from the main checkout.**
 - **Reason:** the worktree sandbox refuses powershell. The results were copied byte-identically into the worktree (`cmp` verified) and checked for redaction: no window titles, no personal paths; foreign windows appear only as class `other` with empty process, own windows as `HwndWrapper[WindowHost...]`, the desktop as `Progman`.
 
-**2. `check-notes.ps1` was not run.**
-- **Reason:** powershell is blocked in the sandbox. The note rules were checked manually against the script (six headings, exactly one `**Entscheidung:** GO <text>` line, `spikes/results/q1/` referenced in Messwerte). **The orchestrator must run** `powershell -NoProfile -ExecutionPolicy Bypass -File spikes/tools/check-notes.ps1 -Note 01-SPIKE-window-hit.md`.
+**2. `check-notes.ps1` was not run by the executor.**
+- **Reason:** powershell is blocked in the sandbox. The note rules were checked manually against the script (six headings, exactly one `**Entscheidung:** GO <text>` line, `spikes/results/q1/` referenced in Messwerte). The orchestrator ran it after the merge: `OK 01-SPIKE-window-hit.md`, exit 0.
 
 **3. Notepad cycle count.** The plan states "20 cycles" for Notepad; each cycle holds three actions (left click, right click, move), so the table reports 60 single checks (60/60); the witness step 100 cycles = 300/300.
 
