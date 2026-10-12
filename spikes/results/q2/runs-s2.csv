@@ -1,0 +1,11 @@
+guard,trigger,rep,gap_start_ms,gap_end_ms,gap_total_ms,returned,in_front_samples,in_front_ms,desktop_host_class,guard_transitions,notes
+S2,win-d,1,42,175,150,true,0,0,Progman,desktop-shown@185|zpos-above-host@185|desktop-hidden@3138|zpos-bottom@3139,"181 Abtastwerte, größter Abstand 23 ms; WinEvents 0x0003x2 0x8004x4"
+S2,win-d,2,44,227,200,true,0,0,Progman,desktop-shown@243|zpos-above-host@244|desktop-hidden@3091|zpos-bottom@3092,"181 Abtastwerte, größter Abstand 22 ms; WinEvents 0x0003x2 0x8004x4"
+S2,win-d,3,48,198,167,true,0,0,Progman,desktop-shown@215|zpos-above-host@216|desktop-hidden@3056|zpos-bottom@3056,"181 Abtastwerte, größter Abstand 22 ms; WinEvents 0x0003x2 0x8004x4"
+S2,win-d,4,49,182,150,true,0,0,Progman,desktop-shown@196|zpos-above-host@197|desktop-hidden@3149|zpos-bottom@3149,"180 Abtastwerte, größter Abstand 22 ms; WinEvents 0x0003x2 0x8004x6"
+S2,win-d,5,63,226,180,true,1,5,Progman,desktop-shown@239|zpos-above-host@240|desktop-hidden@3107|zpos-bottom@3107,"vor Zeuge 1 Abtastwerte, davon 0 durch die Fensterreihenfolge bestätigt; 181 Abtastwerte, größter Abstand 22 ms; WinEvents 0x0003x2 0x8004x7"
+S2,peek-key,1,132,2998,2883,false,0,0,Progman,-,"cover-invalid (the witness colour was never seen at probe 3); 181 Abtastwerte, größter Abstand 18 ms; WinEvents 0x0003x1 0x0021x1"
+S2,peek-key,2,-1,-1,0,true,0,0,Progman,-,"181 Abtastwerte, größter Abstand 19 ms"
+S2,peek-key,3,131,2998,2884,false,0,0,Progman,-,"cover-invalid (the witness colour was never seen at probe 3); 181 Abtastwerte, größter Abstand 20 ms; WinEvents 0x0003x1 0x0021x1"
+S2,peek-key,4,-1,-1,0,true,0,0,Progman,-,"181 Abtastwerte, größter Abstand 20 ms"
+S2,peek-key,5,147,2997,2867,false,0,0,Progman,-,"cover-invalid (the witness colour was never seen at probe 3); 181 Abtastwerte, größter Abstand 19 ms; WinEvents 0x0003x1 0x0021x1"
