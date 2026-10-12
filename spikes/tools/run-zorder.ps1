@@ -17,6 +17,10 @@
   them into <OutDir>/runs.csv and <OutDir>/events.csv, writes the per-guard tables <OutDir>/<guard>.md and the overall
   table <OutDir>/summary.md. Per run: gap in ms, returned by itself, samples in front of the covering witness (D-11).
 
+  A follow-up run that does not contain both S0 and S1 (for example -Guards S2 -IncludeS2 -S2Triggers win-d) never
+  replaces an existing S0/S1 result set: its merged files get the guard suffix (runs-s2.csv, events-s2.csv,
+  summary-s2.md), and only the per-guard tables of the guards it actually ran are rewritten or removed.
+
   A real run (no -DryRun) SENDS REAL INPUT: Win+D, Win+M, Alt+Tab, clicks on the taskbar corner, mouse hovers. With
   -AllowExplorer it kills and restarts explorer.exe, with -AllowDisplay it switches the resolution and back. It must
   only be started after Stephan confirmed the hands-off window (plan 01-14, checkpoint). The script asks for "GO"
@@ -252,8 +256,12 @@ foreach ($step in $steps) {
 }
 
 # 3. Merge the per-call files.
-$runsPath = Join-Path $outDirFull 'runs.csv'
-$eventsPath = Join-Path $outDirFull 'events.csv'
+$suffix = ''
+if ((-not $DryRun) -and (($guardList -notcontains 'S0') -or ($guardList -notcontains 'S1'))) {
+    $suffix = '-' + (($guardList -join '-').ToLowerInvariant())
+}
+$runsPath = Join-Path $outDirFull ('runs' + $suffix + '.csv')
+$eventsPath = Join-Path $outDirFull ('events' + $suffix + '.csv')
 $runs = New-Object System.Text.StringBuilder
 $first = $true
 foreach ($f in $csvParts) {
@@ -293,23 +301,23 @@ foreach ($g in @('S0', 'S1', 'S2')) {
         [void]$t.Append($tableHeader[0] + "`n" + $tableHeader[1] + "`n")
         foreach ($r in $tableRows[$g]) { [void]$t.Append($r + "`n") }
         [System.IO.File]::WriteAllText($path, $t.ToString(), $utf8)
-    } elseif (Test-Path -LiteralPath $path) {
+    } elseif ((Test-Path -LiteralPath $path) -and ($guardList -contains $g)) {
         Remove-Item -LiteralPath $path -Force
     }
 }
 
 $summary = New-Object System.Text.StringBuilder
 [void]$summary.Append('# Q2 Gesamtauswertung ' + $dash + ' ' + $kind + "`n`n")
-[void]$summary.Append('W' + $ae + 'chter ' + ($guardList -join ', ') + ', erzeugt von spikes/tools/run-zorder.ps1 am ' + (Get-Date -Format 'yyyy-MM-dd HH:mm') + ". Einzell" + $ae + "ufe: runs.csv, Ereignisse: events.csv.`n`n")
+[void]$summary.Append('W' + $ae + 'chter ' + ($guardList -join ', ') + ', erzeugt von spikes/tools/run-zorder.ps1 am ' + (Get-Date -Format 'yyyy-MM-dd HH:mm') + ". Einzell" + $ae + "ufe: runs" + $suffix + ".csv, Ereignisse: events" + $suffix + ".csv.`n`n")
 [void]$summary.Append("Sitzung vorher: $stateBefore`n`n")
 [void]$summary.Append($tableHeader[0] + "`n" + $tableHeader[1] + "`n")
 foreach ($g in @('S0', 'S1', 'S2')) {
     if ($tableRows.ContainsKey($g)) { foreach ($r in $tableRows[$g]) { [void]$summary.Append($r + "`n") } }
 }
-$summaryPath = Join-Path $outDirFull 'summary.md'
+$summaryPath = Join-Path $outDirFull ('summary' + $suffix + '.md')
 [System.IO.File]::WriteAllText($summaryPath, $summary.ToString(), $utf8)
 
-if (-not (Test-Path -LiteralPath $runsPath)) { Write-Host 'MISSING output: runs.csv'; $problems++ }
+if (-not (Test-Path -LiteralPath $runsPath)) { Write-Host ('MISSING output: ' + (Split-Path -Leaf $runsPath)); $problems++ }
 
 # 5. Overview and restoration check.
 Write-Host ''
