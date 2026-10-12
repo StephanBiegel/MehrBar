@@ -1,0 +1,164 @@
+ts_ms,case,variant,guard,event,detail
+8682,zorder,win-d,S2,run,rep=1 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@60|zpos-above-host@60|desktop-hidden@3046|zpos-bottom@3046
+16587,zorder,win-d,S2,run,rep=2 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@58|zpos-above-host@58|desktop-hidden@3033|zpos-bottom@3034
+24506,zorder,win-d,S2,run,rep=3 gap-ms=67 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@105|zpos-above-host@106|desktop-hidden@3043|zpos-bottom@3043
+32472,zorder,win-d,S2,run,rep=4 gap-ms=236 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@275|zpos-above-host@276|desktop-hidden@3040|zpos-bottom@3040
+40384,zorder,win-d,S2,run,rep=5 gap-ms=51 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@99|zpos-above-host@99|desktop-hidden@3035|zpos-bottom@3036
+48289,zorder,win-d,S2,run,rep=6 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@42|zpos-above-host@43|desktop-hidden@3047|zpos-bottom@3048
+56227,zorder,win-d,S2,run,rep=7 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@41|zpos-above-host@41|desktop-hidden@3042|zpos-bottom@3043
+64162,zorder,win-d,S2,run,rep=8 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@39|zpos-above-host@42|desktop-hidden@3057|zpos-bottom@3057
+72036,zorder,win-d,S2,run,rep=9 gap-ms=17 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@85|zpos-above-host@86|desktop-hidden@3050|zpos-bottom@3050
+79943,zorder,win-d,S2,run,rep=10 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@39|zpos-above-host@40|desktop-hidden@3043|zpos-bottom@3044
+87853,zorder,win-d,S2,run,rep=11 gap-ms=17 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@68|zpos-above-host@69|desktop-hidden@3042|zpos-bottom@3042
+95745,zorder,win-d,S2,run,rep=12 gap-ms=17 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@61|zpos-above-host@61|desktop-hidden@3029|zpos-bottom@3030
+103671,zorder,win-d,S2,run,rep=13 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@63|zpos-above-host@63|desktop-hidden@3033|zpos-bottom@3036
+111568,zorder,win-d,S2,run,rep=14 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@43|zpos-above-host@43|desktop-hidden@3045|zpos-bottom@3046
+119469,zorder,win-d,S2,run,rep=15 gap-ms=17 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@59|zpos-above-host@59|desktop-hidden@3043|zpos-bottom@3043
+127432,zorder,win-d,S2,run,rep=16 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@42|zpos-above-host@43|desktop-hidden@3042|zpos-bottom@3043
+135336,zorder,win-d,S2,run,rep=17 gap-ms=17 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@65|zpos-above-host@65|desktop-hidden@3046|zpos-bottom@3047
+143241,zorder,win-d,S2,run,rep=18 gap-ms=219 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@284|zpos-above-host@285|desktop-hidden@3036|zpos-bottom@3037
+151148,zorder,win-d,S2,run,rep=19 gap-ms=68 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@103|zpos-above-host@104|desktop-hidden@3045|zpos-bottom@3045
+159049,zorder,win-d,S2,run,rep=20 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@63|zpos-above-host@64|desktop-hidden@3046|zpos-bottom@3047
+160492,zorder,corner,S2,taskbar-corner,TaskbarSd set to 1 for the test (original: absent)
+161975,zorder,corner,S2,corner-inactive,the corner click did not show the desktop
+161975,zorder,corner,S2,corner-retry,skipped: restarting Explorer needs --allow-explorer
+167075,zorder,corner,S2,run,rep=1 gap-ms=100 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@337|zpos-above-host@337|desktop-hidden@3186|zpos-bottom@3187
+169851,zorder,corner,S2,corner-retry,skipped: restarting Explorer needs --allow-explorer
+175093,zorder,corner,S2,run,rep=2 gap-ms=270 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@345|zpos-above-host@346|desktop-hidden@3078|zpos-bottom@3078
+177847,zorder,corner,S2,corner-retry,skipped: restarting Explorer needs --allow-explorer
+183096,zorder,corner,S2,run,rep=3 gap-ms=236 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@333|zpos-above-host@333|desktop-hidden@3074|zpos-bottom@3074
+185910,zorder,corner,S2,corner-retry,skipped: restarting Explorer needs --allow-explorer
+191150,zorder,corner,S2,run,rep=4 gap-ms=219 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@306|zpos-above-host@306|desktop-hidden@3163|zpos-bottom@3164
+193923,zorder,corner,S2,corner-retry,skipped: restarting Explorer needs --allow-explorer
+199185,zorder,corner,S2,run,rep=5 gap-ms=269 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@362|zpos-above-host@362|desktop-hidden@3094|zpos-bottom@3094
+201986,zorder,corner,S2,corner-retry,skipped: restarting Explorer needs --allow-explorer
+207244,zorder,corner,S2,run,rep=6 gap-ms=237 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@314|zpos-above-host@315|desktop-hidden@3094|zpos-bottom@3094
+210050,zorder,corner,S2,corner-retry,skipped: restarting Explorer needs --allow-explorer
+215321,zorder,corner,S2,run,rep=7 gap-ms=235 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@306|zpos-above-host@307|desktop-hidden@3171|zpos-bottom@3171
+218113,zorder,corner,S2,corner-retry,skipped: restarting Explorer needs --allow-explorer
+223348,zorder,corner,S2,run,rep=8 gap-ms=218 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@315|zpos-above-host@315|desktop-hidden@3076|zpos-bottom@3076
+226120,zorder,corner,S2,corner-retry,skipped: restarting Explorer needs --allow-explorer
+231411,zorder,corner,S2,run,rep=9 gap-ms=219 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@287|zpos-above-host@288|desktop-hidden@3122|zpos-bottom@3122
+234168,zorder,corner,S2,corner-retry,skipped: restarting Explorer needs --allow-explorer
+239456,zorder,corner,S2,run,rep=10 gap-ms=237 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@321|zpos-above-host@322|desktop-hidden@3182|zpos-bottom@3183
+242245,zorder,corner,S2,corner-retry,skipped: restarting Explorer needs --allow-explorer
+247525,zorder,corner,S2,run,rep=11 gap-ms=236 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@308|zpos-above-host@309|desktop-hidden@3148|zpos-bottom@3149
+250345,zorder,corner,S2,corner-retry,skipped: restarting Explorer needs --allow-explorer
+255612,zorder,corner,S2,run,rep=12 gap-ms=252 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@337|zpos-above-host@337|desktop-hidden@3189|zpos-bottom@3189
+258401,zorder,corner,S2,corner-retry,skipped: restarting Explorer needs --allow-explorer
+263630,zorder,corner,S2,run,rep=13 gap-ms=252 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@324|zpos-above-host@324|desktop-hidden@3076|zpos-bottom@3076
+266391,zorder,corner,S2,corner-retry,skipped: restarting Explorer needs --allow-explorer
+271640,zorder,corner,S2,run,rep=14 gap-ms=271 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@346|zpos-above-host@347|desktop-hidden@3096|zpos-bottom@3097
+274411,zorder,corner,S2,corner-retry,skipped: restarting Explorer needs --allow-explorer
+279671,zorder,corner,S2,run,rep=15 gap-ms=252 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@321|zpos-above-host@322|desktop-hidden@3172|zpos-bottom@3173
+282447,zorder,corner,S2,corner-retry,skipped: restarting Explorer needs --allow-explorer
+287720,zorder,corner,S2,run,rep=16 gap-ms=17 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@87|zpos-above-host@88|desktop-hidden@3151|zpos-bottom@3152
+290479,zorder,corner,S2,corner-retry,skipped: restarting Explorer needs --allow-explorer
+295735,zorder,corner,S2,run,rep=17 gap-ms=17 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@90|zpos-above-host@91|desktop-hidden@3159|zpos-bottom@3159
+298504,zorder,corner,S2,corner-retry,skipped: restarting Explorer needs --allow-explorer
+303776,zorder,corner,S2,run,rep=18 gap-ms=217 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@314|zpos-above-host@315|desktop-hidden@3151|zpos-bottom@3151
+306531,zorder,corner,S2,corner-retry,skipped: restarting Explorer needs --allow-explorer
+311810,zorder,corner,S2,run,rep=19 gap-ms=253 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@321|zpos-above-host@321|desktop-hidden@3168|zpos-bottom@3169
+314602,zorder,corner,S2,corner-retry,skipped: restarting Explorer needs --allow-explorer
+319851,zorder,corner,S2,run,rep=20 gap-ms=253 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@347|zpos-above-host@348|desktop-hidden@3184|zpos-bottom@3184
+327833,zorder,win-m,S2,run,rep=1 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+335793,zorder,win-m,S2,run,rep=2 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+343764,zorder,win-m,S2,run,rep=3 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+351742,zorder,win-m,S2,run,rep=4 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+359704,zorder,win-m,S2,run,rep=5 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+367662,zorder,win-m,S2,run,rep=6 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+375616,zorder,win-m,S2,run,rep=7 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+383572,zorder,win-m,S2,run,rep=8 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+391561,zorder,win-m,S2,run,rep=9 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+399521,zorder,win-m,S2,run,rep=10 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+407512,zorder,win-m,S2,run,rep=11 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+415464,zorder,win-m,S2,run,rep=12 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+423414,zorder,win-m,S2,run,rep=13 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+431372,zorder,win-m,S2,run,rep=14 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+439333,zorder,win-m,S2,run,rep=15 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+447300,zorder,win-m,S2,run,rep=16 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+455205,zorder,win-m,S2,run,rep=17 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+463224,zorder,win-m,S2,run,rep=18 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+471169,zorder,win-m,S2,run,rep=19 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+479126,zorder,win-m,S2,run,rep=20 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+486960,zorder,peek,S2,run,rep=1 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+494774,zorder,peek,S2,run,rep=2 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+502578,zorder,peek,S2,run,rep=3 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+510413,zorder,peek,S2,run,rep=4 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+518236,zorder,peek,S2,run,rep=5 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+526089,zorder,peek,S2,run,rep=6 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+533912,zorder,peek,S2,run,rep=7 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+541705,zorder,peek,S2,run,rep=8 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+549528,zorder,peek,S2,run,rep=9 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+557428,zorder,peek,S2,run,rep=10 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+565274,zorder,peek,S2,run,rep=11 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+573059,zorder,peek,S2,run,rep=12 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+580919,zorder,peek,S2,run,rep=13 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+588720,zorder,peek,S2,run,rep=14 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+596546,zorder,peek,S2,run,rep=15 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+604373,zorder,peek,S2,run,rep=16 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+612198,zorder,peek,S2,run,rep=17 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+620036,zorder,peek,S2,run,rep=18 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+627839,zorder,peek,S2,run,rep=19 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+635646,zorder,peek,S2,run,rep=20 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+637650,zorder,alt-tab,S2,alt-tab-check,toolwindow=True foreground-is-bar=False
+643442,zorder,alt-tab,S2,run,rep=1 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+645492,zorder,alt-tab,S2,alt-tab-check,toolwindow=True foreground-is-bar=False
+651287,zorder,alt-tab,S2,run,rep=2 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+653302,zorder,alt-tab,S2,alt-tab-check,toolwindow=True foreground-is-bar=False
+659093,zorder,alt-tab,S2,run,rep=3 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+661152,zorder,alt-tab,S2,alt-tab-check,toolwindow=True foreground-is-bar=False
+666934,zorder,alt-tab,S2,run,rep=4 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+668963,zorder,alt-tab,S2,alt-tab-check,toolwindow=True foreground-is-bar=False
+674752,zorder,alt-tab,S2,run,rep=5 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+676791,zorder,alt-tab,S2,alt-tab-check,toolwindow=True foreground-is-bar=False
+682571,zorder,alt-tab,S2,run,rep=6 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+684587,zorder,alt-tab,S2,alt-tab-check,toolwindow=True foreground-is-bar=False
+690357,zorder,alt-tab,S2,run,rep=7 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+692376,zorder,alt-tab,S2,alt-tab-check,toolwindow=True foreground-is-bar=False
+698179,zorder,alt-tab,S2,run,rep=8 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+700188,zorder,alt-tab,S2,alt-tab-check,toolwindow=True foreground-is-bar=False
+705977,zorder,alt-tab,S2,run,rep=9 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+708005,zorder,alt-tab,S2,alt-tab-check,toolwindow=True foreground-is-bar=False
+713796,zorder,alt-tab,S2,run,rep=10 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+715855,zorder,alt-tab,S2,alt-tab-check,toolwindow=True foreground-is-bar=False
+721643,zorder,alt-tab,S2,run,rep=11 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+723670,zorder,alt-tab,S2,alt-tab-check,toolwindow=True foreground-is-bar=False
+729467,zorder,alt-tab,S2,run,rep=12 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+731526,zorder,alt-tab,S2,alt-tab-check,toolwindow=True foreground-is-bar=False
+737321,zorder,alt-tab,S2,run,rep=13 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+739334,zorder,alt-tab,S2,alt-tab-check,toolwindow=True foreground-is-bar=False
+745118,zorder,alt-tab,S2,run,rep=14 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+747176,zorder,alt-tab,S2,alt-tab-check,toolwindow=True foreground-is-bar=False
+752989,zorder,alt-tab,S2,run,rep=15 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+755030,zorder,alt-tab,S2,alt-tab-check,toolwindow=True foreground-is-bar=False
+760818,zorder,alt-tab,S2,run,rep=16 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+762883,zorder,alt-tab,S2,alt-tab-check,toolwindow=True foreground-is-bar=False
+768669,zorder,alt-tab,S2,run,rep=17 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+770684,zorder,alt-tab,S2,alt-tab-check,toolwindow=True foreground-is-bar=False
+776470,zorder,alt-tab,S2,run,rep=18 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+778502,zorder,alt-tab,S2,alt-tab-check,toolwindow=True foreground-is-bar=False
+784295,zorder,alt-tab,S2,run,rep=19 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+786322,zorder,alt-tab,S2,alt-tab-check,toolwindow=True foreground-is-bar=False
+792109,zorder,alt-tab,S2,run,rep=20 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+2188,zorder,explorer,S2,explorer-killed,taskkill /f /im explorer.exe
+7197,zorder,explorer,S2,explorer-start,"no automatic restart within 5 s, starting explorer.exe"
+7462,zorder,explorer,S2,explorer-back,shell present=True after 5274 ms
+25628,zorder,explorer,S2,run,rep=1 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=desktop-host@311|desktop-host@5329|taskbar-created@6230|desktop-host@6235|zpos-bottom@6236
+27021,zorder,explorer,S2,explorer-killed,taskkill /f /im explorer.exe
+32044,zorder,explorer,S2,explorer-start,"no automatic restart within 5 s, starting explorer.exe"
+32280,zorder,explorer,S2,explorer-back,shell present=True after 5258 ms
+50482,zorder,explorer,S2,run,rep=2 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=desktop-host@302|desktop-host@5250|taskbar-created@6019|desktop-host@6023|zpos-bottom@6026
+51906,zorder,explorer,S2,explorer-killed,taskkill /f /im explorer.exe
+56939,zorder,explorer,S2,explorer-start,"no automatic restart within 5 s, starting explorer.exe"
+57175,zorder,explorer,S2,explorer-back,shell present=True after 5268 ms
+75341,zorder,explorer,S2,run,rep=3 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=desktop-host@90|desktop-host@5267|taskbar-created@6037|desktop-host@6041|zpos-bottom@6041
+2102,zorder,display,S2,backup,reg export of the desktop icon layout -> private/desktop-bags-20261012-172356.reg
+2104,zorder,display,S2,display-mode,"1920x1080@60 -> 1600x900@60 (dynamic, not persisted)"
+10128,zorder,display,S2,run,rep=1 gap-ms=17 returned=True in-front=0 in-front-ms=0 transitions=display-change@95|desktop-host@107|zpos-bottom@109|display-change@3051|desktop-host@3065|zpos-bottom@3066
+11434,zorder,display,S2,backup,reg export of the desktop icon layout -> private/desktop-bags-20261012-172405.reg
+11435,zorder,display,S2,display-mode,"1920x1080@60 -> 1600x900@60 (dynamic, not persisted)"
+19474,zorder,display,S2,run,rep=2 gap-ms=17 returned=True in-front=0 in-front-ms=0 transitions=display-change@61|desktop-host@71|zpos-bottom@73|display-change@3048|desktop-host@3059|zpos-bottom@3059
+20802,zorder,display,S2,backup,reg export of the desktop icon layout -> private/desktop-bags-20261012-172414.reg
+20803,zorder,display,S2,display-mode,"1920x1080@60 -> 1600x900@60 (dynamic, not persisted)"
+28840,zorder,display,S2,run,rep=3 gap-ms=17 returned=True in-front=0 in-front-ms=0 transitions=display-change@61|desktop-host@75|zpos-bottom@76|display-change@3055|desktop-host@3072|zpos-bottom@3072

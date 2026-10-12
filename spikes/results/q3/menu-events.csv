@@ -1,0 +1,74 @@
+ts_ms,case,variant,guard,event,detail
+2551,menu,M-A,,pass,"open: 188 ms; menu-open 960,36 variant=M-A; near click point: True; screenshot q3-menu-M-A.bmp"
+3662,menu,M-A,,restart-bar,the menu would not close; the bar is restarted
+5618,menu,M-A,,fail,close-desktop: 1001 ms; menu still open 1 s after a click on the desktop
+6734,menu,M-A,,restart-bar,the menu would not close; the bar is restarted
+8702,menu,M-A,,fail,close-window: 1001 ms; menu still open 1 s after a click on the witness window
+9815,menu,M-A,,restart-bar,the menu would not close; the bar is restarted
+10817,menu,M-A,,pass,close-bar: 65 ms; closed by a click on the another spot on the bar: reason=dismissed
+12057,menu,M-A,,fail,close-escape: 1001 ms; menu still open 1 s after Escape
+13169,menu,M-A,,restart-bar,the menu would not close; the bar is restarted
+15122,menu,M-A,,fail,"keys-enter: 1000 ms; no menu-item row after Down, Down, Return (the keys did not reach the menu)"
+16253,menu,M-A,,restart-bar,the menu would not close; the bar is restarted
+17287,menu,M-A,,pass,mouse-select: 91 ms; menu-item id=1 (expected id=1; rectangle: host menu-items row)
+18249,menu,M-A,,pass,launch-front: 378 ms; launched pid 30068 is the foreground window after 378 ms (rectangle: host menu-items row)
+19622,menu,M-A,,restart-bar,the menu would not close; the bar is restarted
+21883,menu,M-A,,restart-bar,the menu would not close; the bar is restarted
+23045,menu,M-A,,pass,reopen: 157 ms; opens #2 and #3 stayed open for at least 500 ms
+24154,menu,M-A,,restart-bar,the menu would not close; the bar is restarted
+26225,menu,M-A,,restart-bar,the menu would not close; the bar is restarted
+26866,menu,M-A,,pass,z-during: 0 ms; windows-above-bar before=264 during=265 after=264; bar lifted above a visible window: before=False during=False after=False; host z-positions: index=167 phase=open
+28598,menu,M-A,,pass,focus-after: 0 ms; closed by click on item 1; foreground afterwards is HwndWrapper[WindowHost;;fc26f41e-f37d-4937-a796-834558763bbe] (expected: the witness window)
+30472,menu,M-B,,pass,"open: 172 ms; menu-open 960,36 variant=M-B; near click point: True; screenshot q3-menu-M-B.bmp"
+30541,menu,M-B,,repin,the bar was lifted by the previous check; put back to HWND_BOTTOM
+31194,menu,M-B,,pass,close-desktop: 66 ms; closed by a click on the desktop: reason=dismissed
+31209,menu,M-B,,repin,the bar was lifted by the previous check; put back to HWND_BOTTOM
+31844,menu,M-B,,pass,close-window: 77 ms; closed by a click on the witness window: reason=dismissed
+31850,menu,M-B,,repin,the bar was lifted by the previous check; put back to HWND_BOTTOM
+32500,menu,M-B,,pass,close-bar: 77 ms; closed by a click on the another spot on the bar: reason=dismissed
+32504,menu,M-B,,repin,the bar was lifted by the previous check; put back to HWND_BOTTOM
+32811,menu,M-B,,pass,close-escape: 62 ms; reason=escape
+32818,menu,M-B,,repin,the bar was lifted by the previous check; put back to HWND_BOTTOM
+33639,menu,M-B,,pass,keys-enter: 279 ms; menu-item id=2 (expected id=2)
+33647,menu,M-B,,repin,the bar was lifted by the previous check; put back to HWND_BOTTOM
+34308,menu,M-B,,pass,mouse-select: 93 ms; menu-item id=1 (expected id=1; rectangle: host menu-items row)
+34344,menu,M-B,,repin,the bar was lifted by the previous check; put back to HWND_BOTTOM
+35299,menu,M-B,,pass,launch-front: 389 ms; launched pid 21412 is the foreground window after 389 ms (rectangle: host menu-items row)
+35304,menu,M-B,,repin,the bar was lifted by the previous check; put back to HWND_BOTTOM
+37117,menu,M-B,,pass,reopen: 77 ms; opens #2 and #3 stayed open for at least 500 ms
+37152,menu,M-B,,repin,the bar was lifted by the previous check; put back to HWND_BOTTOM
+38062,menu,M-B,,fail,z-during: 0 ms; windows-above-bar before=267 during=27 after=30; bar lifted above a visible window: before=False during=True after=True; host z-positions: index=13 phase=open
+38067,menu,M-B,,repin,the bar was lifted by the previous check; put back to HWND_BOTTOM
+39075,menu,M-B,,pass,focus-after: 0 ms; closed by escape; foreground afterwards is HwndWrapper[WindowHost;;0e6ba504-b915-4d9d-9aee-b7e772cc061f] (expected: the witness window)
+40834,menu,M-C,,pass,"open: 94 ms; menu-open 960,36 variant=M-C; near click point: True; screenshot q3-menu-M-C.bmp"
+40873,menu,M-C,,repin,the bar was lifted by the previous check; put back to HWND_BOTTOM
+41561,menu,M-C,,pass,close-desktop: 79 ms; closed by a click on the desktop: reason=dismissed
+41567,menu,M-C,,repin,the bar was lifted by the previous check; put back to HWND_BOTTOM
+42226,menu,M-C,,pass,close-window: 62 ms; closed by a click on the witness window: reason=dismissed
+42233,menu,M-C,,repin,the bar was lifted by the previous check; put back to HWND_BOTTOM
+42848,menu,M-C,,pass,close-bar: 61 ms; closed by a click on the another spot on the bar: reason=dismissed
+42852,menu,M-C,,repin,the bar was lifted by the previous check; put back to HWND_BOTTOM
+43179,menu,M-C,,pass,close-escape: 32 ms; reason=dismissed
+43183,menu,M-C,,repin,the bar was lifted by the previous check; put back to HWND_BOTTOM
+44066,menu,M-C,,pass,keys-enter: 281 ms; menu-item id=2 (expected id=2)
+44071,menu,M-C,,repin,the bar was lifted by the previous check; put back to HWND_BOTTOM
+44703,menu,M-C,,pass,mouse-select: 77 ms; menu-item id=1 (expected id=1; rectangle: host menu-items row)
+44708,menu,M-C,,repin,the bar was lifted by the previous check; put back to HWND_BOTTOM
+45741,menu,M-C,,pass,launch-front: 390 ms; launched pid 9072 is the foreground window after 390 ms (rectangle: host menu-items row)
+45746,menu,M-C,,repin,the bar was lifted by the previous check; put back to HWND_BOTTOM
+47575,menu,M-C,,pass,reopen: 64 ms; opens #2 and #3 stayed open for at least 500 ms
+47611,menu,M-C,,repin,the bar was lifted by the previous check; put back to HWND_BOTTOM
+48560,menu,M-C,,fail,z-during: 0 ms; windows-above-bar before=267 during=27 after=26; bar lifted above a visible window: before=False during=True after=True; host z-positions: index=13 phase=open
+48567,menu,M-C,,repin,the bar was lifted by the previous check; put back to HWND_BOTTOM
+49632,menu,M-C,,fail,focus-after: 0 ms; closed by escape; foreground afterwards is HwndWrapper[WindowHost;;09b7af47-1d6d-4c56-b9ac-c4afcb50d6ba] (expected: the witness window)
+51361,menu,M-D,,pass,"open: 78 ms; menu-open 960,36 variant=M-D; near click point: True; screenshot q3-menu-M-D.bmp"
+51993,menu,M-D,,pass,close-desktop: 74 ms; closed by a click on the desktop: reason=dismissed
+52621,menu,M-D,,pass,close-window: 77 ms; closed by a click on the witness window: reason=dismissed
+53212,menu,M-D,,pass,close-bar: 60 ms; closed by a click on the another spot on the bar: reason=dismissed
+53477,menu,M-D,,pass,close-escape: 31 ms; reason=dismissed
+54381,menu,M-D,,pass,keys-enter: 282 ms; menu-item id=2 (expected id=2)
+55083,menu,M-D,,pass,mouse-select: 93 ms; menu-item id=1 (expected id=1; rectangle: host menu-items row)
+56056,menu,M-D,,pass,launch-front: 390 ms; launched pid 27980 is the foreground window after 390 ms (rectangle: host menu-items row)
+57852,menu,M-D,,pass,reopen: 78 ms; opens #2 and #3 stayed open for at least 500 ms
+58834,menu,M-D,,pass,z-during: 0 ms; windows-above-bar before=264 during=265 after=264; bar lifted above a visible window: before=False during=False after=False; host z-positions: index=168 phase=open
+59879,menu,M-D,,fail,focus-after: 0 ms; closed by escape; foreground afterwards is HwndWrapper[WindowHost;;c4dc8252-ec00-4507-a9f9-a7371db39e86] (expected: the witness window)
