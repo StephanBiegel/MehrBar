@@ -1,0 +1,13 @@
+ts_ms,case,variant,guard,event,detail
+1752,selftest,uncovered,,probe,"probe=1 at=720,36 color=#FF00FF sentinel=True cover=False windowfrompoint=HwndWrapper[WindowHost;;a4c17c7a-4b5f-4f40-8f3b-5e4693112045]"
+1753,selftest,uncovered,,probe,"probe=2 at=840,36 color=#FF00FF sentinel=True cover=False windowfrompoint=HwndWrapper[WindowHost;;a4c17c7a-4b5f-4f40-8f3b-5e4693112045]"
+1753,selftest,uncovered,,probe,"probe=3 at=960,36 color=#FF00FF sentinel=True cover=False windowfrompoint=HwndWrapper[WindowHost;;a4c17c7a-4b5f-4f40-8f3b-5e4693112045]"
+1753,selftest,uncovered,,probe,"probe=4 at=1080,36 color=#FF00FF sentinel=True cover=False windowfrompoint=HwndWrapper[WindowHost;;a4c17c7a-4b5f-4f40-8f3b-5e4693112045]"
+1753,selftest,uncovered,,probe,"probe=5 at=1200,36 color=#FF00FF sentinel=True cover=False windowfrompoint=HwndWrapper[WindowHost;;a4c17c7a-4b5f-4f40-8f3b-5e4693112045]"
+2252,selftest,real,,witness-foreground,true
+2835,selftest,covered,,probe,"probe=1 at=720,36 color=#00FFFF sentinel=False cover=True windowfrompoint=HwndWrapper[WindowHost;;8b7d53fa-eae4-4191-b3d4-44ce1f6bc4d6]"
+2835,selftest,covered,,probe,"probe=2 at=840,36 color=#00FFFF sentinel=False cover=True windowfrompoint=HwndWrapper[WindowHost;;8b7d53fa-eae4-4191-b3d4-44ce1f6bc4d6]"
+2835,selftest,covered,,probe,"probe=3 at=960,36 color=#00FFFF sentinel=False cover=True windowfrompoint=HwndWrapper[WindowHost;;8b7d53fa-eae4-4191-b3d4-44ce1f6bc4d6]"
+2835,selftest,covered,,probe,"probe=4 at=1080,36 color=#00FFFF sentinel=False cover=True windowfrompoint=HwndWrapper[WindowHost;;8b7d53fa-eae4-4191-b3d4-44ce1f6bc4d6]"
+2836,selftest,covered,,probe,"probe=5 at=1200,36 color=#00FFFF sentinel=False cover=True windowfrompoint=HwndWrapper[WindowHost;;8b7d53fa-eae4-4191-b3d4-44ce1f6bc4d6]"
+2851,selftest,real,,result,visible=5/5 covered=5/5 foreground=True
