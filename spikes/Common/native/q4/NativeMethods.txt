@@ -1,0 +1,3 @@
+OpenProcess
+PROCESS_ACCESS_RIGHTS
+CloseHandle
