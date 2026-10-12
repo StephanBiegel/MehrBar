@@ -65,7 +65,7 @@ coverage:
     description: "01-SPIKE-zorder-wind.md carries exactly one decision line (GO, S2), Folgen for Phase 2/3, and the Grenzfaelle for Stephan including H2 and H3"
     verification:
       - kind: other
-        ref: "check-notes.ps1 could not run in the sandbox; checked manually against the script: six headings present, one line starting '**Entscheidung:**' matching 'GO' + text, Messwerte references spikes/results/q2/. The orchestrator runs the script after merge"
+        ref: "check-notes.ps1 could not run in the sandbox; checked manually against the script: six headings present, one line starting '**Entscheidung:**' matching 'GO' + text, Messwerte references spikes/results/q2/. Orchestrator ran it after merge: 'OK 01-SPIKE-zorder-wind.md', exit 0"
         status: unrun
     human_judgment: false
   - id: D3
@@ -79,7 +79,7 @@ coverage:
     description: "run-zorder.ps1 fix so that a follow-up run does not clobber an S0/S1 result set"
     verification:
       - kind: other
-        ref: "Reviewed by reading only; the sandbox refuses powershell, so the script was not executed after the edit. The orchestrator should run -DryRun (and ideally check that a '-Guards S2 -IncludeS2' dry-equivalent leaves runs.csv untouched)"
+        ref: "Reviewed by reading only; the sandbox refuses powershell, so the script was not executed after the edit. Orchestrator ran -DryRun after merge: exit 0, S0/S1 dry OK; the S2-only follow-up path itself is still unexercised"
         status: unrun
     human_judgment: false
 
@@ -148,4 +148,4 @@ None. The plan's mitigations held: consent recorded, restoration verified (Taskb
 ## Self-Check: PASSED
 
 - Result files, note, script present in the worktree; commits 1cd20c9 and df8150f are on the branch.
-- check-notes.ps1 and the edited run-zorder.ps1 were not executed (sandbox); stated above.
+- check-notes.ps1 and the edited run-zorder.ps1 were not executed (sandbox); stated above. After merge the orchestrator ran both: check-notes OK, -DryRun exit 0 (the S2-only follow-up path is still unexercised).
