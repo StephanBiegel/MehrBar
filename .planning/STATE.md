@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 01
 current_phase_name: Risiko-Spikes
 status: executing
-stopped_at: Completed 01-10-PLAN.md
-last_updated: "2026-10-10T11:21:22.873Z"
+stopped_at: Completed 01-11-PLAN.md
+last_updated: "2026-10-12T07:19:16.004Z"
 last_activity: 2026-10-10
 last_activity_desc: Phase 01 execution started
-state_head: c63b0f5871f1fb2f58adcf009590192c3d429f21
+state_head: 5c9d4537b472a50e817ad3d6d41f93812be85653
 progress:
   total_phases: 7
   completed_phases: 0
   total_plans: 18
-  completed_plans: 10
+  completed_plans: 11
   percent: 0
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-10-09)
 ## Current Position
 
 Phase: 01 (Risiko-Spikes) — EXECUTING
-Plan: 11 of 18
+Plan: 12 of 18
 Status: Ready to execute
 Last activity: 2026-10-10 — Phase 01 execution started
 
@@ -65,6 +65,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01 P08 | 3 min | 2 tasks | 2 files |
 | Phase 01 P09 | 12 min | 2 tasks | 3 files |
 | Phase 01 P10 | 11 min | 2 tasks | 5 files |
+| Phase 01 P11 | 55 min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -91,6 +92,7 @@ Recent decisions affecting current work:
 - [Phase 01]: Q7 GO for CLI: CsWin32 0.3.360 multi-list builds warning-free, xunit.v3.mtp-v2 19/19 green; filter syntax is --filter-method/--filter-class, list with --list-tests; VS Code Test Explorer open as H6
 - [Phase 01]: 01-10: Q2 sampling cadence is one display refresh (16.7 ms at 60 Hz) because GetPixel/BitBlt wait for the next frame; ProbeStrip reads all five probes with one BitBlt, so D-11 '1-2 samples' means 1-2 frames
 - [Phase 01]: 01-10: while the S1/S2 watcher holds the bar lifted, 'desktop shown' = no ordinary window above the desktop host (heuristic, to be confirmed with WinEvent log in 01-14)
+- [Phase 01]: Q3: WPF popup item rectangles come from the popup's Win32 rectangle plus in-popup offsets (PointToScreen was wrong 130 ms after open); Driver uses the newest menu-items row >= 150 ms after menu-open
 
 ### Pending Todos
 
@@ -112,6 +114,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-10T11:21:22.844Z
-Stopped at: Completed 01-10-PLAN.md
+Last session: 2026-10-12T07:19:15.969Z
+Stopped at: Completed 01-11-PLAN.md
 Resume file: None
