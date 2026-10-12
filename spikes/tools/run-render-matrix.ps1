@@ -28,7 +28,8 @@
   yet (no download in plan 01-12). If a flag is rejected, PresentMon exits at once and pm_rows is 0; check the
   console output of the first cell before trusting a whole run.
 
-  Exit codes: 0 = all cells ran, 1 = a cell or a build failed, 2 = -PresentMon without elevation or bad arguments.
+  Exit codes: 0 = all cells ran, 1 = a cell or a build failed, 2 = -PresentMon without elevation or bad arguments,
+  3 = abort key or real input (the matrix stops at once).
 
 .PARAMETER DryRun
   One synthetic R1 / 20 / hw cell of about 5 s. No real input, no PresentMon, nothing committed.
@@ -229,6 +230,11 @@ foreach ($cell in $cells) {
         if ($pmRows -eq 0) { Write-Host 'WARNING: PresentMon wrote no rows (rejected flag, no presents, or started too late); check its flags.' }
     }
 
+    if ($code -eq 3) {
+        # Abort hotkey or real input: never start the next cell without a new confirmation.
+        Write-Host 'STOPPED: Driver exit code 3 (abort key or real input). Remaining cells skipped; ask for a new confirmation first.'
+        exit 3
+    }
     if ($code -ne 0) {
         Write-Host ('cell failed: Driver exit code ' + $code)
         $failed++
