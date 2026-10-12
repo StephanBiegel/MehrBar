@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using MehrBar.Spikes.Common;
 using Windows.Win32;
 using Windows.Win32.Foundation;
+using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace MehrBar.Spikes.Driver.Cases;
@@ -136,6 +137,18 @@ public sealed class MenuCase : IDriverCase
             Path.GetDirectoryName(Path.GetFullPath(resultPath))!,
             Path.GetFileNameWithoutExtension(resultPath) + "-events.csv");
 
+        if (ctx.Manual)
+        {
+            if (variants.Length != 1)
+            {
+                Console.Error.WriteLine("--manual needs exactly one variant");
+                return ExitCodes.Usage;
+            }
+
+            using var manualEvents = new RunLog(eventsPath);
+            return RunManual(ctx, variants[0], ctx.GetInt("seconds", 60), manualEvents);
+        }
+
         var results = new List<MenuCheckResult>();
         int exit;
         using (var events = new RunLog(eventsPath))
@@ -261,6 +274,50 @@ public sealed class MenuCase : IDriverCase
         return result;
     }
 
+    // ---- manual observation ------------------------------------------------------------------------------
+
+    /// <summary>
+    /// Hand part (D-07): nothing is injected. The host runs with the variant while Stephan uses the real mouse and
+    /// keyboard; every menu event of the host and every foreground change is printed and logged.
+    /// </summary>
+    private static int RunManual(CaseContext ctx, string variant, int seconds, RunLog events)
+    {
+        bool restoreFocus = ctx.Get("restore-focus") is { } value && value.Equals("true", StringComparison.OrdinalIgnoreCase);
+        Console.WriteLine($"manual observation of {variant} for {seconds} s: right-click the bar and use the menu yourself");
+        using HostProcess bar = ctx.StartHost($"--variant H1,{variant}" + (restoreFocus ? " --menu-restore-focus true" : string.Empty));
+        var tail = new MenuTail(bar);
+        var clock = Stopwatch.StartNew();
+        ForegroundInfo last = Foreground.Take();
+        int seen = 0;
+        while (clock.Elapsed.TotalSeconds < seconds)
+        {
+            IReadOnlyList<HostRow> rows = tail.Rows;
+            for (; seen < rows.Count; seen++)
+            {
+                HostRow row = rows[seen];
+                if (row.Event.StartsWith("menu-", StringComparison.Ordinal) || row.Event.StartsWith("fg-", StringComparison.Ordinal))
+                {
+                    Console.WriteLine($"{row.TsMs} ms {row.Event} {row.Detail}");
+                    events.Write("menu", variant, "manual", row.Event, row.Detail);
+                }
+            }
+
+            ForegroundInfo now = Foreground.Take();
+            if (now.Hwnd != last.Hwnd)
+            {
+                string detail = $"foreground now {MenuRun.FgClass(now)} pid={now.Pid}";
+                Console.WriteLine(detail);
+                events.Write("menu", variant, "manual", "foreground-change", detail);
+                last = now;
+            }
+
+            Thread.Sleep(40);
+        }
+
+        Console.WriteLine($"MENU MANUAL DONE {variant}");
+        return ExitCodes.Ok;
+    }
+
     // ---- real run ----------------------------------------------------------------------------------------
 
     private static int RunReal(CaseContext ctx, string[] variants, RunLog events, List<MenuCheckResult> results)
@@ -311,6 +368,10 @@ internal sealed class MenuRun : IDisposable
     private const int OpenTimeoutMs = 1000;
     private const int CloseTimeoutMs = 1000;
     private const int NearPx = 8;
+    private const int LaunchForegroundMs = 2000;
+    private const int ReopenStayOpenMs = 500;
+    private const int MenuItemCount = 4;
+    private const ushort VkDown = 0x28;
 
     private static readonly Regex s_position = new(@"^(?<x>-?\d+),(?<y>-?\d+)", RegexOptions.CultureInvariant);
 
@@ -318,8 +379,11 @@ internal sealed class MenuRun : IDisposable
     private readonly RunLog _events;
     private readonly string _variant;
     private readonly string _barArgs;
+    private readonly List<int> _launched = [];
     private HostProcess _bar;
     private MenuTail _tail;
+    private int _lastOpenSince;
+    private (int X, int Y) _lastOpenPoint;
 
     private MenuRun(CaseContext ctx, RunLog events, string variant, string barArgs, HostProcess witness, HostProcess bar)
     {
@@ -344,6 +408,10 @@ internal sealed class MenuRun : IDisposable
     /// <summary>Another spot on the plate (left quarter).</summary>
     public (int X, int Y) PlateOther => (Origin.X + SpikeGeometry.Plate.X + (SpikeGeometry.Plate.Width / 6), PlateCenter.Y);
 
+    /// <summary>A desktop spot well away from the bar and the witness (right of the centre, below the middle).</summary>
+    public static (int X, int Y) DesktopPoint =>
+        (PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXSCREEN) - 300, (PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYSCREEN) / 2) + 150);
+
     public static MenuRun Start(CaseContext ctx, RunLog events, string variant, bool restoreFocus)
     {
         HostProcess witness = ctx.StartWitness("none");
@@ -364,19 +432,59 @@ internal sealed class MenuRun : IDisposable
                 Input.Chord(Vk.Escape);
             }
         });
+        Safety.Current?.OnRestore("kill witnesses launched by menu item 3", run.KillLaunched);
         return run;
     }
 
     public IReadOnlyList<MenuCheckResult> RunChecks() =>
     [
         Check("open", CheckOpen),
+        Check("close-desktop", () => CheckCloseByClick(DesktopPoint, "desktop")),
+        Check("close-window", () => CheckCloseByClick(WitnessCenter(), "witness window")),
+        Check("close-bar", () => CheckCloseByClick(PlateOther, "another spot on the bar")),
         Check("close-escape", CheckCloseEscape),
+        Check("keys-enter", CheckKeysEnter),
+        Check("mouse-select", CheckMouseSelect),
+        Check("launch-front", CheckLaunchFront),
+        Check("reopen", CheckReopen),
+        Check("z-during", CheckZDuring),
+        Check("focus-after", CheckFocusAfter),
     ];
 
     public void Dispose()
     {
+        KillLaunched();
         _bar.Dispose();
         Witness.Dispose();
+    }
+
+    /// <summary>Ends every witness the menu launched (registered as a restore step, also run on Dispose).</summary>
+    public void KillLaunched()
+    {
+        int[] pids;
+        lock (_launched)
+        {
+            pids = _launched.ToArray();
+            _launched.Clear();
+        }
+
+        foreach (int pid in pids)
+        {
+            try
+            {
+                using Process process = Process.GetProcessById(pid);
+                // Only ever our own host: the menu starts nothing else.
+                if (process.ProcessName.Equals("WindowHost", StringComparison.OrdinalIgnoreCase))
+                {
+                    process.Kill(entireProcessTree: true);
+                    process.WaitForExit(2000);
+                }
+            }
+            catch (Exception ex) when (ex is ArgumentException or InvalidOperationException or System.ComponentModel.Win32Exception)
+            {
+                // already gone
+            }
+        }
     }
 
     /// <summary>Foreground class that may be written to a committed file (own and shell classes only).</summary>
@@ -456,6 +564,8 @@ internal sealed class MenuRun : IDisposable
     private (bool Opened, bool Near, long Ms, int Since, string Detail) OpenMenu((int X, int Y) point)
     {
         int since = _tail.Count;
+        _lastOpenSince = since;
+        _lastOpenPoint = point;
         var clock = Stopwatch.StartNew();
         Input.RightClick(point.X, point.Y);
         HostRow? row = _tail.WaitFor("menu-open", since, clock, OpenTimeoutMs);
@@ -521,7 +631,17 @@ internal sealed class MenuRun : IDisposable
     private (bool Pass, long Ms, string Notes) CheckOpen()
     {
         (bool opened, bool near, long ms, int _, string detail) = OpenMenu(PlateCenter);
-        return (opened && near, ms, opened ? $"menu-open {detail}; near click point: {near}" : detail);
+        if (!opened)
+        {
+            return (false, ms, detail);
+        }
+
+        // One picture of every open menu for Stephan's look at the optics (H4); private folder only.
+        Safety.Wait(350);
+        (int X, int Y) at = _lastOpenPoint;
+        string file = $"q3-menu-{_variant}.bmp";
+        bool saved = ScreenGrab.SaveBmp(Path.Combine(RepoPaths.PrivateResults, file), at.X - 220, at.Y - 20, 440, 260);
+        return (near, ms, $"menu-open {detail}; near click point: {near}; screenshot {(saved ? file : "failed")}");
     }
 
     private (bool Pass, long Ms, string Notes) CheckCloseEscape()
@@ -537,6 +657,363 @@ internal sealed class MenuRun : IDisposable
         Input.Chord(Vk.Escape);
         HostRow? close = _tail.WaitFor("menu-close", since, clock, CloseTimeoutMs);
         return (close != null, clock.ElapsedMilliseconds, close != null ? close.Detail : "menu still open 1 s after Escape");
+    }
+
+    private (bool Pass, long Ms, string Notes) CheckCloseByClick((int X, int Y) target, string what)
+    {
+        (bool opened, _, _, int _, string detail) = OpenMenu(PlateCenter);
+        if (!opened)
+        {
+            return (false, 0, "menu did not open: " + detail);
+        }
+
+        // Let the popup settle (fade-in) so that the click is a click on the desktop, not on a half-drawn menu.
+        Safety.Wait(300);
+        int since = _tail.Count;
+        var clock = Stopwatch.StartNew();
+        Input.Click(target.X, target.Y);
+        HostRow? close = _tail.WaitFor("menu-close", since, clock, CloseTimeoutMs);
+        long ms = clock.ElapsedMilliseconds;
+        return (close != null, ms, close != null ? $"closed by a click on the {what}: {close.Detail}" : $"menu still open 1 s after a click on the {what}");
+    }
+
+    private (bool Pass, long Ms, string Notes) CheckKeysEnter()
+    {
+        (bool opened, _, _, int _, string detail) = OpenMenu(PlateCenter);
+        if (!opened)
+        {
+            return (false, 0, "menu did not open: " + detail);
+        }
+
+        Safety.Wait(300);
+        int since = _tail.Count;
+        var clock = Stopwatch.StartNew();
+        Input.Chord(VkDown);
+        Safety.Wait(80);
+        Input.Chord(VkDown);
+        Safety.Wait(80);
+        Input.Chord(Vk.Return);
+        HostRow? item = _tail.WaitFor("menu-item", since, clock, CloseTimeoutMs);
+        long ms = clock.ElapsedMilliseconds;
+        if (item == null)
+        {
+            return (false, ms, "no menu-item row after Down, Down, Return (the keys did not reach the menu)");
+        }
+
+        return (item.Detail == "id=2", ms, $"menu-item {item.Detail} (expected id=2)");
+    }
+
+    private (bool Pass, long Ms, string Notes) CheckMouseSelect()
+    {
+        (bool opened, _, _, int _, string detail) = OpenMenu(PlateCenter);
+        if (!opened)
+        {
+            return (false, 0, "menu did not open: " + detail);
+        }
+
+        Safety.Wait(300);
+        ((int X, int Y) point, string source) = ItemCenter(0);
+        int since = _tail.Count;
+        var clock = Stopwatch.StartNew();
+        Input.Click(point.X, point.Y);
+        HostRow? item = _tail.WaitFor("menu-item", since, clock, CloseTimeoutMs);
+        long ms = clock.ElapsedMilliseconds;
+        if (item == null)
+        {
+            return (false, ms, $"no menu-item row after a click on item 1 at {point.X},{point.Y} (rectangle: {source})");
+        }
+
+        return (item.Detail == "id=1", ms, $"menu-item {item.Detail} (expected id=1; rectangle: {source})");
+    }
+
+    private (bool Pass, long Ms, string Notes) CheckLaunchFront()
+    {
+        (bool opened, _, _, int _, string detail) = OpenMenu(PlateCenter);
+        if (!opened)
+        {
+            return (false, 0, "menu did not open: " + detail);
+        }
+
+        Safety.Wait(300);
+        ((int X, int Y) point, string source) = ItemCenter(2);
+        int since = _tail.Count;
+        var clock = Stopwatch.StartNew();
+        Input.Click(point.X, point.Y);
+
+        HostRow? launch = _tail.WaitFor("menu-launch", since, clock, CloseTimeoutMs);
+        if (launch == null)
+        {
+            return (false, clock.ElapsedMilliseconds, $"item 3 did not launch anything (rectangle: {source})");
+        }
+
+        Match pidMatch = Regex.Match(launch.Detail, @"pid=(?<pid>\d+)", RegexOptions.CultureInvariant);
+        if (!pidMatch.Success)
+        {
+            return (false, clock.ElapsedMilliseconds, "launch failed: " + launch.Detail);
+        }
+
+        int pid = int.Parse(pidMatch.Groups["pid"].Value, CultureInfo.InvariantCulture);
+        lock (_launched)
+        {
+            _launched.Add(pid);
+        }
+
+        // The launched program has to come to the front within 2 s of the click.
+        while (clock.ElapsedMilliseconds < LaunchForegroundMs)
+        {
+            if (Foreground.Take().Pid == (uint)pid)
+            {
+                long ms = clock.ElapsedMilliseconds;
+                KillLaunched();
+                return (true, ms, $"launched pid {pid} is the foreground window after {ms} ms (rectangle: {source})");
+            }
+
+            Safety.Wait(25);
+        }
+
+        ForegroundInfo now = Foreground.Take();
+        KillLaunched();
+        return (false, clock.ElapsedMilliseconds, $"launched pid {pid} did not reach the foreground within 2 s; foreground is {FgClass(now)} (rectangle: {source})");
+    }
+
+    private (bool Pass, long Ms, string Notes) CheckReopen()
+    {
+        (bool opened, _, _, int _, string detail) = OpenMenu(PlateCenter);
+        if (!opened)
+        {
+            return (false, 0, "first open failed: " + detail);
+        }
+
+        long lastMs = 0;
+        for (int attempt = 2; attempt <= 3; attempt++)
+        {
+            ForceClose();
+            Safety.Wait(150);
+            (bool again, _, long ms, int since, string againDetail) = OpenMenu(PlateCenter);
+            lastMs = ms;
+            if (!again)
+            {
+                return (false, ms, $"open #{attempt} failed: {againDetail}");
+            }
+
+            Safety.Wait(ReopenStayOpenMs);
+            if (_tail.Find("menu-close", since) != null)
+            {
+                return (false, ms, $"open #{attempt} closed again within {ReopenStayOpenMs} ms (appears and disappears)");
+            }
+        }
+
+        return (true, lastMs, $"opens #2 and #3 stayed open for at least {ReopenStayOpenMs} ms");
+    }
+
+    private (bool Pass, long Ms, string Notes) CheckZDuring()
+    {
+        int aboveBefore = WindowsAbove(_bar.Hwnd);
+        bool liftedBefore = BarLifted();
+        (bool opened, _, _, int _, string detail) = OpenMenu(PlateCenter);
+        if (!opened)
+        {
+            return (false, 0, "menu did not open: " + detail);
+        }
+
+        Safety.Wait(300);
+        int aboveDuring = WindowsAbove(_bar.Hwnd);
+        bool liftedDuring = BarLifted();
+        string hostZ = string.Join(" > ", _tail.Rows.Skip(_lastOpenSince).Where(r => r.Event == "menu-zpos").Select(r => r.Detail));
+
+        ForceClose();
+        Safety.Wait(300);
+        bool liftedAfter = BarLifted();
+        int aboveAfter = WindowsAbove(_bar.Hwnd);
+        bool pass = !liftedBefore && !liftedDuring && !liftedAfter;
+        string notes = string.Create(
+            CultureInfo.InvariantCulture,
+            $"windows-above-bar before={aboveBefore} during={aboveDuring} after={aboveAfter}; bar lifted above a visible window: before={liftedBefore} during={liftedDuring} after={liftedAfter}; host z-positions: {hostZ}");
+        return (pass, 0, notes);
+    }
+
+    private (bool Pass, long Ms, string Notes) CheckFocusAfter()
+    {
+        (bool opened, _, _, int _, string detail) = OpenMenu(PlateCenter);
+        if (!opened)
+        {
+            return (false, 0, "menu did not open: " + detail);
+        }
+
+        Safety.Wait(300);
+        string closer = "escape";
+        int since = _tail.Count;
+        Input.Chord(Vk.Escape);
+        if (_tail.WaitFor("menu-close", since, Stopwatch.StartNew(), 600) == null)
+        {
+            // Escape did not reach the menu; select item 1 with the mouse. A click elsewhere would move the focus by itself.
+            closer = "click on item 1";
+            ((int X, int Y) point, string _) = ItemCenter(0);
+            Input.Click(point.X, point.Y);
+            _tail.WaitFor("menu-close", since, Stopwatch.StartNew(), CloseTimeoutMs);
+        }
+
+        Safety.Wait(400);
+        ForegroundInfo after = Foreground.Take();
+        bool restored = after.Hwnd == Witness.Hwnd;
+        return (restored, 0, $"closed by {closer}; foreground afterwards is {FgClass(after)} (expected: the witness window)");
+    }
+
+    /// <summary>
+    /// Screen centre of menu item <paramref name="index"/>. Preferred source is the newest menu-items row the host logged
+    /// at least 150 ms after the menu opened; if it is missing or implausible (off screen, far from the click) the
+    /// native menu window (#32768) is split into equal rows, and as the last resort the position is estimated.
+    /// </summary>
+    private ((int X, int Y) Point, string Source) ItemCenter(int index)
+    {
+        var clock = Stopwatch.StartNew();
+        HostRow? open = _tail.Rows.Skip(_lastOpenSince).FirstOrDefault(r => r.Event == "menu-open");
+        long minTs = open == null ? 0 : open.TsMs + 150;
+        HostRow? items = null;
+        while (items == null && clock.ElapsedMilliseconds < 800)
+        {
+            items = _tail.Rows.Skip(_lastOpenSince).LastOrDefault(r => r.Event == "menu-items" && r.TsMs >= minTs);
+            if (items == null)
+            {
+                Safety.Wait(25);
+            }
+        }
+
+        items ??= _tail.Rows.Skip(_lastOpenSince).LastOrDefault(r => r.Event == "menu-items");
+        if (items != null)
+        {
+            string[] rects = items.Detail.Split(';');
+            if (index < rects.Length && TryParseRect(rects[index], out (int L, int T, int R, int B) rect))
+            {
+                (int x, int y) = ((rect.L + rect.R) / 2, (rect.T + rect.B) / 2);
+                bool onScreen = rect.T >= 0 && rect.L >= 0 && x < PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXSCREEN) && y < PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYSCREEN);
+                bool near = Math.Abs(x - _lastOpenPoint.X) < 400 && Math.Abs(y - _lastOpenPoint.Y) < 400;
+                if (onScreen && near)
+                {
+                    return ((x, y), "host menu-items row");
+                }
+            }
+        }
+
+        HWND menuWindow = PInvoke.FindWindow("#32768", null);
+        if (menuWindow != HWND.Null && PInvoke.GetWindowRect(menuWindow, out RECT window) && window.bottom > window.top)
+        {
+            int height = window.bottom - window.top;
+            return (((window.left + window.right) / 2, window.top + (height * ((2 * index) + 1) / (2 * MenuItemCount))), "estimate from the native menu window");
+        }
+
+        return ((_lastOpenPoint.X + 60, _lastOpenPoint.Y + 14 + (index * 24)), "estimate from the click point");
+    }
+
+    private static bool TryParseRect(string text, out (int L, int T, int R, int B) rect)
+    {
+        string[] parts = text.Split(',');
+        rect = default;
+        if (parts.Length != 4)
+        {
+            return false;
+        }
+
+        var values = new int[4];
+        for (int i = 0; i < 4; i++)
+        {
+            if (!int.TryParse(parts[i], NumberStyles.Integer, CultureInfo.InvariantCulture, out values[i]))
+            {
+                return false;
+            }
+        }
+
+        rect = (values[0], values[1], values[2], values[3]);
+        return true;
+    }
+}
+
+/// <summary>
+/// Screenshot of a screen rectangle as a 32 bit BMP (BitBlt + GetDIBits, hand-written header, no imaging package).
+/// Used for Stephan's look at the menu (H4); the files go to the ignored private results folder only.
+/// </summary>
+internal static unsafe class ScreenGrab
+{
+    private const int FileHeaderSize = 14;
+    private const int InfoHeaderSize = 40;
+
+    /// <summary>Saves the rectangle (clamped to the primary screen); returns false when nothing could be captured.</summary>
+    public static bool SaveBmp(string path, int x, int y, int width, int height)
+    {
+        int screenWidth = PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXSCREEN);
+        int screenHeight = PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYSCREEN);
+        x = Math.Clamp(x, 0, Math.Max(0, screenWidth - 1));
+        y = Math.Clamp(y, 0, Math.Max(0, screenHeight - 1));
+        width = Math.Min(width, screenWidth - x);
+        height = Math.Min(height, screenHeight - y);
+        if (width <= 0 || height <= 0)
+        {
+            return false;
+        }
+
+        HDC screen = PInvoke.GetDC(HWND.Null);
+        HDC memory = PInvoke.CreateCompatibleDC(screen);
+        HBITMAP bitmap = PInvoke.CreateCompatibleBitmap(screen, width, height);
+        HGDIOBJ previous = PInvoke.SelectObject(memory, bitmap);
+        try
+        {
+            if (!PInvoke.BitBlt(memory, 0, 0, width, height, screen, x, y, ROP_CODE.SRCCOPY | ROP_CODE.CAPTUREBLT))
+            {
+                return false;
+            }
+
+            var info = new BITMAPINFO();
+            info.bmiHeader.biSize = (uint)sizeof(BITMAPINFOHEADER);
+            info.bmiHeader.biWidth = width;
+            info.bmiHeader.biHeight = -height; // top-down
+            info.bmiHeader.biPlanes = 1;
+            info.bmiHeader.biBitCount = 32;
+            var pixels = new byte[width * height * 4];
+            int lines;
+            fixed (byte* bits = pixels)
+            {
+                lines = PInvoke.GetDIBits(memory, bitmap, 0, (uint)height, bits, &info, DIB_USAGE.DIB_RGB_COLORS);
+            }
+
+            if (lines != height)
+            {
+                return false;
+            }
+
+            for (int i = 3; i < pixels.Length; i += 4)
+            {
+                pixels[i] = 0xFF; // GDI leaves alpha at 0; viewers that honour it would show nothing
+            }
+
+            Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(path))!);
+            using var stream = new FileStream(path, FileMode.Create, FileAccess.Write);
+            using var writer = new BinaryWriter(stream);
+            writer.Write((byte)'B');
+            writer.Write((byte)'M');
+            writer.Write(FileHeaderSize + InfoHeaderSize + pixels.Length);
+            writer.Write(0);
+            writer.Write(FileHeaderSize + InfoHeaderSize);
+            writer.Write(InfoHeaderSize);
+            writer.Write(width);
+            writer.Write(-height);
+            writer.Write((short)1);
+            writer.Write((short)32);
+            writer.Write(0); // BI_RGB
+            writer.Write(pixels.Length);
+            writer.Write(2835);
+            writer.Write(2835);
+            writer.Write(0);
+            writer.Write(0);
+            writer.Write(pixels);
+            return true;
+        }
+        finally
+        {
+            PInvoke.SelectObject(memory, previous);
+            PInvoke.DeleteDC(memory);
+            PInvoke.DeleteObject(bitmap);
+            PInvoke.ReleaseDC(HWND.Null, screen);
+        }
     }
 }
 
