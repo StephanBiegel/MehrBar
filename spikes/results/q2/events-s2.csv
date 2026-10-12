@@ -1,0 +1,11 @@
+ts_ms,case,variant,guard,event,detail
+8912,zorder,win-d,S2,run,rep=1 gap-ms=150 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@185|zpos-above-host@185|desktop-hidden@3138|zpos-bottom@3139
+17214,zorder,win-d,S2,run,rep=2 gap-ms=200 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@243|zpos-above-host@244|desktop-hidden@3091|zpos-bottom@3092
+25501,zorder,win-d,S2,run,rep=3 gap-ms=167 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@215|zpos-above-host@216|desktop-hidden@3056|zpos-bottom@3056
+34062,zorder,win-d,S2,run,rep=4 gap-ms=150 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@196|zpos-above-host@197|desktop-hidden@3149|zpos-bottom@3149
+43202,zorder,win-d,S2,run,rep=5 gap-ms=180 returned=True in-front=1 in-front-ms=5 transitions=desktop-shown@239|zpos-above-host@240|desktop-hidden@3107|zpos-bottom@3107
+51253,zorder,peek-key,S2,run,rep=1 gap-ms=2883 returned=False in-front=0 in-front-ms=0 transitions=-
+59250,zorder,peek-key,S2,run,rep=2 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+67231,zorder,peek-key,S2,run,rep=3 gap-ms=2884 returned=False in-front=0 in-front-ms=0 transitions=-
+75236,zorder,peek-key,S2,run,rep=4 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+83346,zorder,peek-key,S2,run,rep=5 gap-ms=2867 returned=False in-front=0 in-front-ms=0 transitions=-

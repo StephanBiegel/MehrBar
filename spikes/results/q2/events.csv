@@ -1,0 +1,127 @@
+ts_ms,case,variant,guard,event,detail
+8931,zorder,win-d,S0,run,rep=1 gap-ms=2952 returned=False in-front=0 in-front-ms=0 transitions=-
+17212,zorder,win-d,S0,run,rep=2 gap-ms=2950 returned=False in-front=0 in-front-ms=0 transitions=-
+25474,zorder,win-d,S0,run,rep=3 gap-ms=2968 returned=False in-front=0 in-front-ms=0 transitions=-
+33621,zorder,win-d,S0,run,rep=4 gap-ms=2968 returned=False in-front=0 in-front-ms=0 transitions=-
+41857,zorder,win-d,S0,run,rep=5 gap-ms=2951 returned=False in-front=0 in-front-ms=0 transitions=-
+44883,zorder,corner,S0,taskbar-corner,TaskbarSd set to 1 for the test (original: absent)
+46380,zorder,corner,S0,corner-inactive,the corner click did not show the desktop
+46380,zorder,corner,S0,corner-retry,skipped: restarting Explorer needs --allow-explorer
+51349,zorder,corner,S0,run,rep=1 gap-ms=2648 returned=False in-front=0 in-front-ms=0 transitions=-
+54385,zorder,corner,S0,corner-retry,skipped: restarting Explorer needs --allow-explorer
+59634,zorder,corner,S0,run,rep=2 gap-ms=2915 returned=False in-front=0 in-front-ms=0 transitions=-
+62648,zorder,corner,S0,corner-retry,skipped: restarting Explorer needs --allow-explorer
+67943,zorder,corner,S0,run,rep=3 gap-ms=2931 returned=False in-front=0 in-front-ms=0 transitions=-
+70958,zorder,corner,S0,corner-retry,skipped: restarting Explorer needs --allow-explorer
+76251,zorder,corner,S0,run,rep=4 gap-ms=2929 returned=False in-front=0 in-front-ms=0 transitions=-
+79352,zorder,corner,S0,corner-retry,skipped: restarting Explorer needs --allow-explorer
+84613,zorder,corner,S0,run,rep=5 gap-ms=2934 returned=False in-front=0 in-front-ms=0 transitions=-
+92929,zorder,win-m,S0,run,rep=1 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+101346,zorder,win-m,S0,run,rep=2 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+109752,zorder,win-m,S0,run,rep=3 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+117977,zorder,win-m,S0,run,rep=4 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+126168,zorder,win-m,S0,run,rep=5 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+134285,zorder,peek,S0,run,rep=1 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+142555,zorder,peek,S0,run,rep=2 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+150812,zorder,peek,S0,run,rep=3 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+159087,zorder,peek,S0,run,rep=4 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+167299,zorder,peek,S0,run,rep=5 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+175396,zorder,peek-key,S0,run,rep=1 gap-ms=2886 returned=False in-front=0 in-front-ms=0 transitions=-
+183614,zorder,peek-key,S0,run,rep=2 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+191764,zorder,peek-key,S0,run,rep=3 gap-ms=2883 returned=False in-front=0 in-front-ms=0 transitions=-
+200745,zorder,peek-key,S0,run,rep=4 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+208947,zorder,peek-key,S0,run,rep=5 gap-ms=2899 returned=False in-front=0 in-front-ms=0 transitions=-
+211468,zorder,alt-tab,S0,alt-tab-check,toolwindow=True foreground-is-bar=False
+217160,zorder,alt-tab,S0,run,rep=1 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+219540,zorder,alt-tab,S0,alt-tab-check,toolwindow=True foreground-is-bar=False
+225239,zorder,alt-tab,S0,run,rep=2 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+227765,zorder,alt-tab,S0,alt-tab-check,toolwindow=True foreground-is-bar=False
+233469,zorder,alt-tab,S0,run,rep=3 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+235938,zorder,alt-tab,S0,alt-tab-check,toolwindow=True foreground-is-bar=False
+241639,zorder,alt-tab,S0,run,rep=4 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+243950,zorder,alt-tab,S0,alt-tab-check,toolwindow=True foreground-is-bar=False
+249634,zorder,alt-tab,S0,run,rep=5 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+2742,zorder,explorer,S0,explorer-killed,taskkill /f /im explorer.exe
+7775,zorder,explorer,S0,explorer-start,"no automatic restart within 5 s, starting explorer.exe"
+8827,zorder,explorer,S0,explorer-back,shell present=True after 6084 ms
+25830,zorder,explorer,S0,run,rep=1 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=taskbar-created@9571|desktop-host@9579|zpos-bottom@9581
+27540,zorder,explorer,S0,explorer-killed,taskkill /f /im explorer.exe
+32594,zorder,explorer,S0,explorer-start,"no automatic restart within 5 s, starting explorer.exe"
+32828,zorder,explorer,S0,explorer-back,shell present=True after 5288 ms
+50882,zorder,explorer,S0,run,rep=2 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=taskbar-created@6496|desktop-host@6505|zpos-bottom@6506
+52503,zorder,explorer,S0,explorer-killed,taskkill /f /im explorer.exe
+57548,zorder,explorer,S0,explorer-start,"no automatic restart within 5 s, starting explorer.exe"
+57771,zorder,explorer,S0,explorer-back,shell present=True after 5267 ms
+75851,zorder,explorer,S0,run,rep=3 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=taskbar-created@6415|desktop-host@6423|zpos-bottom@6424
+2281,zorder,display,S0,backup,reg export of the desktop icon layout -> private/desktop-bags-20261012-144516.reg
+2286,zorder,display,S0,display-mode,"1920x1080@59 -> 1600x900@59 (dynamic, not persisted)"
+10458,zorder,display,S0,run,rep=1 gap-ms=17 returned=True in-front=0 in-front-ms=0 transitions=display-change@373|desktop-host@420|zpos-bottom@428|display-change@3326|desktop-host@3389|zpos-bottom@3411
+11955,zorder,display,S0,backup,reg export of the desktop icon layout -> private/desktop-bags-20261012-144526.reg
+11968,zorder,display,S0,display-mode,"1920x1080@59 -> 1600x900@59 (dynamic, not persisted)"
+20238,zorder,display,S0,run,rep=2 gap-ms=17 returned=True in-front=0 in-front-ms=0 transitions=display-change@367|desktop-host@392|zpos-bottom@396|display-change@3387|desktop-host@3435|zpos-bottom@3436
+21776,zorder,display,S0,backup,reg export of the desktop icon layout -> private/desktop-bags-20261012-144536.reg
+21788,zorder,display,S0,display-mode,"1920x1080@59 -> 1600x900@59 (dynamic, not persisted)"
+29971,zorder,display,S0,run,rep=3 gap-ms=17 returned=True in-front=0 in-front-ms=0 transitions=display-change@294|desktop-host@330|zpos-bottom@349|display-change@3329|desktop-host@3375|zpos-bottom@3377
+8823,zorder,win-d,S1,run,rep=1 gap-ms=201 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@253|zpos-topmost@253|desktop-hidden@3052|zpos-notopmost@3053|zpos-bottom@3053
+17044,zorder,win-d,S1,run,rep=2 gap-ms=185 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@232|zpos-topmost@233|desktop-hidden@3077|zpos-notopmost@3077|zpos-bottom@3078
+25247,zorder,win-d,S1,run,rep=3 gap-ms=200 returned=True in-front=3 in-front-ms=43 transitions=desktop-shown@246|zpos-topmost@248|desktop-hidden@3136|zpos-notopmost@3136|zpos-bottom@3136
+33547,zorder,win-d,S1,run,rep=4 gap-ms=218 returned=True in-front=1 in-front-ms=6 transitions=desktop-shown@257|zpos-topmost@258|desktop-hidden@3107|zpos-notopmost@3107|zpos-bottom@3107
+41871,zorder,win-d,S1,run,rep=5 gap-ms=201 returned=True in-front=1 in-front-ms=15 transitions=desktop-shown@255|zpos-topmost@256|desktop-hidden@3100|zpos-notopmost@3101|zpos-bottom@3101
+43703,zorder,corner,S1,taskbar-corner,TaskbarSd set to 1 for the test (original: absent)
+45201,zorder,corner,S1,corner-inactive,the corner click did not show the desktop
+45201,zorder,corner,S1,corner-retry,skipped: restarting Explorer needs --allow-explorer
+50279,zorder,corner,S1,run,rep=1 gap-ms=218 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@502|zpos-topmost@504|desktop-hidden@3127|zpos-notopmost@3128|zpos-bottom@3128
+53420,zorder,corner,S1,corner-retry,skipped: restarting Explorer needs --allow-explorer
+58721,zorder,corner,S1,run,rep=2 gap-ms=166 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@233|zpos-topmost@234|desktop-hidden@3194|zpos-notopmost@3194|zpos-bottom@3195
+61855,zorder,corner,S1,corner-retry,skipped: restarting Explorer needs --allow-explorer
+67118,zorder,corner,S1,run,rep=3 gap-ms=153 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@251|zpos-topmost@252|desktop-hidden@3109|zpos-notopmost@3110|zpos-bottom@3110
+70226,zorder,corner,S1,corner-retry,skipped: restarting Explorer needs --allow-explorer
+75509,zorder,corner,S1,run,rep=4 gap-ms=198 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@276|zpos-topmost@277|desktop-hidden@3126|zpos-notopmost@3128|zpos-bottom@3128
+79277,zorder,corner,S1,corner-retry,skipped: restarting Explorer needs --allow-explorer
+84531,zorder,corner,S1,run,rep=5 gap-ms=167 returned=True in-front=0 in-front-ms=0 transitions=desktop-shown@247|zpos-topmost@250|desktop-hidden@3187|zpos-notopmost@3188|zpos-bottom@3189
+93021,zorder,win-m,S1,run,rep=1 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+101285,zorder,win-m,S1,run,rep=2 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+109549,zorder,win-m,S1,run,rep=3 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+117980,zorder,win-m,S1,run,rep=4 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+126303,zorder,win-m,S1,run,rep=5 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+134303,zorder,peek,S1,run,rep=1 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+142385,zorder,peek,S1,run,rep=2 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+150421,zorder,peek,S1,run,rep=3 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+158472,zorder,peek,S1,run,rep=4 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+166581,zorder,peek,S1,run,rep=5 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+174715,zorder,peek-key,S1,run,rep=1 gap-ms=2868 returned=False in-front=0 in-front-ms=0 transitions=-
+182680,zorder,peek-key,S1,run,rep=2 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+191001,zorder,peek-key,S1,run,rep=3 gap-ms=2853 returned=False in-front=0 in-front-ms=0 transitions=-
+199205,zorder,peek-key,S1,run,rep=4 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+207356,zorder,peek-key,S1,run,rep=5 gap-ms=2866 returned=False in-front=0 in-front-ms=0 transitions=-
+209735,zorder,alt-tab,S1,alt-tab-check,toolwindow=True foreground-is-bar=False
+215419,zorder,alt-tab,S1,run,rep=1 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+217806,zorder,alt-tab,S1,alt-tab-check,toolwindow=True foreground-is-bar=False
+223519,zorder,alt-tab,S1,run,rep=2 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+225859,zorder,alt-tab,S1,alt-tab-check,toolwindow=True foreground-is-bar=False
+231592,zorder,alt-tab,S1,run,rep=3 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+233995,zorder,alt-tab,S1,alt-tab-check,toolwindow=True foreground-is-bar=False
+239702,zorder,alt-tab,S1,run,rep=4 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+242182,zorder,alt-tab,S1,alt-tab-check,toolwindow=True foreground-is-bar=False
+247885,zorder,alt-tab,S1,run,rep=5 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=-
+2417,zorder,explorer,S1,explorer-killed,taskkill /f /im explorer.exe
+7458,zorder,explorer,S1,explorer-start,"no automatic restart within 5 s, starting explorer.exe"
+7757,zorder,explorer,S1,explorer-back,shell present=True after 5339 ms
+25801,zorder,explorer,S1,run,rep=1 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=desktop-host@277|desktop-host@5462|taskbar-created@6577|desktop-host@6586|zpos-bottom@6587
+27553,zorder,explorer,S1,explorer-killed,taskkill /f /im explorer.exe
+32590,zorder,explorer,S1,explorer-start,"no automatic restart within 5 s, starting explorer.exe"
+32831,zorder,explorer,S1,explorer-back,shell present=True after 5278 ms
+50879,zorder,explorer,S1,run,rep=2 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=desktop-host@249|desktop-host@5441|taskbar-created@6696|desktop-host@6703|zpos-bottom@6705
+52692,zorder,explorer,S1,explorer-killed,taskkill /f /im explorer.exe
+57745,zorder,explorer,S1,explorer-start,"no automatic restart within 5 s, starting explorer.exe"
+57982,zorder,explorer,S1,explorer-back,shell present=True after 5289 ms
+76028,zorder,explorer,S1,run,rep=3 gap-ms=0 returned=True in-front=0 in-front-ms=0 transitions=desktop-host@214|desktop-host@5432|taskbar-created@6513|desktop-host@6522|zpos-bottom@6523
+2398,zorder,display,S1,backup,reg export of the desktop icon layout -> private/desktop-bags-20261012-145112.reg
+2404,zorder,display,S1,display-mode,"1920x1080@59 -> 1600x900@59 (dynamic, not persisted)"
+10594,zorder,display,S1,run,rep=1 gap-ms=17 returned=True in-front=0 in-front-ms=0 transitions=display-change@438|desktop-host@455|zpos-bottom@457|display-change@3462|desktop-host@3481|zpos-bottom@3483
+12166,zorder,display,S1,backup,reg export of the desktop icon layout -> private/desktop-bags-20261012-145121.reg
+12180,zorder,display,S1,display-mode,"1920x1080@59 -> 1600x900@59 (dynamic, not persisted)"
+20437,zorder,display,S1,run,rep=2 gap-ms=17 returned=True in-front=0 in-front-ms=0 transitions=display-change@312|desktop-host@347|zpos-bottom@368|display-change@3397|desktop-host@3429|zpos-bottom@3431
+22000,zorder,display,S1,backup,reg export of the desktop icon layout -> private/desktop-bags-20261012-145131.reg
+22013,zorder,display,S1,display-mode,"1920x1080@59 -> 1600x900@59 (dynamic, not persisted)"
+30223,zorder,display,S1,run,rep=3 gap-ms=17 returned=True in-front=0 in-front-ms=0 transitions=display-change@328|desktop-host@364|zpos-bottom@384|display-change@3406|desktop-host@3421|zpos-bottom@3423
