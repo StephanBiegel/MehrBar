@@ -410,7 +410,86 @@ internal sealed class RenderSurface : FrameworkElement, IRenderSurface
     }
 }
 
-[HostVariant("R1")]
+/// <summary>
+/// R2: one retained <see cref="DrawingVisual"/> per icon, drawn once at the base size from the 256 px source. Per frame
+/// only each visual's transform (a reused ScaleTransform + TranslateTransform pair) changes, and only for icons whose
+/// rectangle changed, so the per-frame work follows the number of icons inside the zoom radius, not the icon count.
+/// </summary>
+internal sealed class IconVisualHost : FrameworkElement, IRenderSurface
+{
+    private readonly VisualCollection _visuals;
+    private readonly ScaleTransform[] _scales;
+    private readonly TranslateTransform[] _translations;
+    private readonly double[] _lastSize;
+    private readonly double[] _lastLeft;
+    private readonly double _baseSize;
+
+    public IconVisualHost(
+        IReadOnlyList<BitmapSource> icons, double baseSize, BitmapScalingMode scaling, double width, double height)
+    {
+        // Created first: setting IsHitTestVisible walks VisualChildrenCount, which reads this collection.
+        _visuals = new VisualCollection(this);
+        _baseSize = baseSize;
+        Width = width;
+        Height = height;
+        IsHitTestVisible = false;
+        RenderOptions.SetBitmapScalingMode(this, scaling);
+
+        _scales = new ScaleTransform[icons.Count];
+        _translations = new TranslateTransform[icons.Count];
+        _lastSize = new double[icons.Count];
+        _lastLeft = new double[icons.Count];
+        Array.Fill(_lastSize, double.NaN);
+        for (int i = 0; i < icons.Count; i++)
+        {
+            var visual = new DrawingVisual();
+            RenderOptions.SetBitmapScalingMode(visual, scaling);
+            using (DrawingContext dc = visual.RenderOpen())
+            {
+                dc.DrawImage(icons[i], new Rect(0, 0, baseSize, baseSize));
+            }
+
+            var scale = new ScaleTransform(1.0, 1.0);
+            var translation = new TranslateTransform(0.0, 0.0);
+            var group = new TransformGroup();
+            group.Children.Add(scale);
+            group.Children.Add(translation);
+            visual.Transform = group;
+            _scales[i] = scale;
+            _translations[i] = translation;
+            _visuals.Add(visual);
+        }
+    }
+
+    public bool CompletesInOnRender => false;
+
+    protected override int VisualChildrenCount => _visuals.Count;
+
+    public void Apply(ZoomLayout layout)
+    {
+        for (int i = 0; i < _scales.Length; i++)
+        {
+            double size = layout.Size[i];
+            double left = layout.Left[i];
+            if (size == _lastSize[i] && left == _lastLeft[i])
+            {
+                continue;
+            }
+
+            _lastSize[i] = size;
+            _lastLeft[i] = left;
+            double scale = size / _baseSize;
+            _scales[i].ScaleX = scale;
+            _scales[i].ScaleY = scale;
+            _translations[i].X = left;
+            _translations[i].Y = layout.Top[i];
+        }
+    }
+
+    protected override Visual GetVisualChild(int index) => _visuals[index];
+}
+
+[HostVariant("R1", "R2")]
 internal sealed class RenderCostVariant : IHostVariant
 {
     private HostContext? _ctx;
@@ -435,14 +514,30 @@ internal sealed class RenderCostVariant : IHostVariant
         double height = ctx.Root.Height;
         var layout = new ZoomLayout(options, width, ctx.Plate.Y);
 
-        var surface = new RenderSurface(icons, layout, options.Scaling, width, height);
-        _element = surface;
+        FrameworkElement element;
+        IRenderSurface surface;
+        RenderSurface? redrawSurface = null;
+        if (string.Equals(name, "R2", StringComparison.OrdinalIgnoreCase))
+        {
+            var host = new IconVisualHost(icons, options.Base, options.Scaling, width, height);
+            host.Apply(layout);
+            element = host;
+            surface = host;
+        }
+        else
+        {
+            redrawSurface = new RenderSurface(icons, layout, options.Scaling, width, height);
+            element = redrawSurface;
+            surface = redrawSurface;
+        }
+
+        _element = element;
         var loop = new RenderLoop(options, layout, surface, ctx.Hwnd);
-        surface.Bind(loop);
+        redrawSurface?.Bind(loop);
         _loop = loop;
-        Canvas.SetLeft(surface, 0);
-        Canvas.SetTop(surface, 0);
-        ctx.Root.Children.Add(surface);
+        Canvas.SetLeft(element, 0);
+        Canvas.SetTop(element, 0);
+        ctx.Root.Children.Add(element);
 
         ctx.Log.Write(
             "host",
@@ -451,7 +546,7 @@ internal sealed class RenderCostVariant : IHostVariant
             "render-config",
             string.Create(
                 CultureInfo.InvariantCulture,
-                $"count={options.Count} base={options.Base} pitch={options.Pitch} zoom={options.Zoom} radius={options.Radius} scaling={options.ScalingName} synthetic={options.Synthetic} transparent={ctx.Window.AllowsTransparency} frames={(options.FramesPath != null)}"));
+                $"surface={name} count={options.Count} base={options.Base} pitch={options.Pitch} zoom={options.Zoom} radius={options.Radius} scaling={options.ScalingName} synthetic={options.Synthetic} transparent={ctx.Window.AllowsTransparency} frames={(options.FramesPath != null)}"));
 
         double origin = loop.Start();
         if (options.Synthetic)

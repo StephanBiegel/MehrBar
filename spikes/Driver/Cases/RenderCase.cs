@@ -52,6 +52,49 @@ public sealed unsafe class RenderCase : IDriverCase
 
         RenderRun run = parsed!;
 
+        // Only the real sweep sends input, so the safety session and the desktop preparation (Win+M, restore
+        // registered first) exist on that path only. Synthetic and manual runs never touch input.
+        // --record-input (self-test of the real path) swaps the sink for a RecordingSink: the whole real path
+        // runs, but nothing reaches the desktop and the real-input watcher stays off.
+        bool sweeping = !run.Synthetic && !run.Manual;
+        bool record = sweeping && ctx.GetBool("record-input");
+        var sink = record ? new RecordingSink() : null;
+        SafetySession? safety = null;
+        if (sweeping)
+        {
+            safety = ctx.BeginSafety(
+                TimeSpan.FromSeconds(run.WarmupSeconds + run.Seconds + run.IdleSeconds + 90), watchRealInput: !record);
+        }
+
+        using (safety)
+        using (sink != null ? Input.UseSink(sink) : null)
+        {
+            if (safety != null)
+            {
+                // The bar is only realistic for DWM work when nothing covers the top area.
+                DesktopPrep.ClearTopArea(safety);
+            }
+
+            int code = RunCell(ctx, run);
+            if (sink == null)
+            {
+                return code;
+            }
+
+            IReadOnlyList<string> events = sink.Events;
+            int moves = events.Count(e => e.StartsWith("move:", StringComparison.Ordinal));
+            Console.WriteLine(
+                string.Create(
+                    CultureInfo.InvariantCulture,
+                    $"INPUT RECORDED events={events.Count} moves={moves} first={events.FirstOrDefault(e => e.StartsWith("move:", StringComparison.Ordinal))} last={events.LastOrDefault(e => e.StartsWith("move:", StringComparison.Ordinal))} win_m={events.Contains("key:5B:down")}; nothing was sent"));
+            return moves > 0 ? ExitCodes.Ok : ExitCodes.CriteriaFailed;
+        }
+    }
+
+    internal static double QpcMs() => Stopwatch.GetTimestamp() * 1000.0 / Stopwatch.Frequency;
+
+    private int RunCell(CaseContext ctx, RenderRun run)
+    {
         Directory.CreateDirectory(run.FramesDir);
         string framesPath = Path.Combine(run.FramesDir, run.FramesFileName);
 
@@ -67,6 +110,7 @@ public sealed unsafe class RenderCase : IDriverCase
             return ExitCodes.CriteriaFailed;
         }
 
+        sweep.Attach(host);
         (string effective, string tier) = ReadRenderMode(host);
 
         // Phase boundaries on the QPC clock.
@@ -124,8 +168,6 @@ public sealed unsafe class RenderCase : IDriverCase
 
         return frames.Frames > 0 ? ExitCodes.Ok : ExitCodes.CriteriaFailed;
     }
-
-    internal static double QpcMs() => Stopwatch.GetTimestamp() * 1000.0 / Stopwatch.Frequency;
 
     private static bool TryReadQpc(string detail, out double value)
     {
@@ -601,7 +643,13 @@ internal class Sweep : IDisposable
 
     public RenderCase.Snap IdleEnd { get; protected set; }
 
-    public static Sweep For(RenderRun run) => new();
+    public static Sweep For(RenderRun run) =>
+        run.Manual ? new ManualSweep(run) : run.Synthetic ? new Sweep() : new RealSweep(run);
+
+    /// <summary>Called once the host is up (its window exists); the real sweep reads the window geometry here.</summary>
+    public virtual void Attach(HostProcess host)
+    {
+    }
 
     public void Run(
         double warmupStart,
@@ -646,5 +694,172 @@ internal class Sweep : IDisposable
     /// <summary>Called once the measured window ended (the real sweep parks the mouse here).</summary>
     protected virtual void AfterMeasure()
     {
+    }
+}
+
+/// <summary>
+/// The real sweep (D-17): moves the mouse with SendInput on a fixed sine path (centre of the window plus
+/// A = 3.5 pitches times sin(2 pi t / 2 s), at the vertical centre of the plate) every ~8 ms through warm-up and the
+/// measured window, then parks the mouse below the window for the idle phase. Only constructed inside a
+/// <see cref="SafetySession"/> (every <see cref="Input"/> call refuses to run without one). Waits use a high-resolution
+/// waitable timer plus a short spin: <c>timeBeginPeriod(1)</c> was measured to have no effect on this machine
+/// (Windows 11 ignores timer-resolution requests of windowless processes; steps came out at a 13 ms median instead of
+/// 8 ms). The interval of the steps is recorded and reported (<see cref="PrintReport"/>).
+/// </summary>
+internal sealed unsafe class RealSweep : Sweep
+{
+    private const double StepMs = 8.0;
+    private const double PeriodMs = 2000.0;
+    private const double AmplitudePitches = 3.5;
+    private const int ParkDistance = 80;
+
+    private readonly double _amplitude;
+    private readonly List<double> _intervals = [];
+    private HANDLE _timer;
+    private bool _sweeping;
+    private double _centreX;
+    private int _sweepY;
+    private int _parkY;
+    private double _t0;
+    private double _nextStep;
+    private double _lastStep;
+
+    public RealSweep(RenderRun run)
+    {
+        _amplitude = AmplitudePitches * run.Pitch;
+    }
+
+    public override void Attach(HostProcess host)
+    {
+        PInvoke.GetWindowRect(host.Hwnd, out RECT rect);
+        _centreX = (rect.left + rect.right) / 2.0;
+        _sweepY = rect.top + SpikeGeometry.Plate.Y + (SpikeGeometry.Plate.Height / 2);
+        int screenHeight = PInvoke.GetSystemMetrics(Windows.Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CYSCREEN);
+        _parkY = Math.Min(rect.bottom + ParkDistance, screenHeight - 2);
+
+        _timer = PInvoke.CreateWaitableTimerEx(
+            null, null, PInvoke.CREATE_WAITABLE_TIMER_HIGH_RESOLUTION, (uint)SYNCHRONIZATION_ACCESS_RIGHTS.TIMER_ALL_ACCESS);
+        _t0 = RenderCase.QpcMs();
+        _nextStep = _t0;
+        _sweeping = true;
+    }
+
+    public override void PrintReport(Action<string> write)
+    {
+        if (_intervals.Count == 0)
+        {
+            return;
+        }
+
+        double[] deviation = _intervals.Select(i => Math.Abs(i - StepMs)).ToArray();
+        StatsSummary interval = Stats.Summarize(_intervals);
+        write(
+            string.Create(
+                CultureInfo.InvariantCulture,
+                $"sweep steps={_intervals.Count} interval_p50={interval.Median:F2} ms p95={interval.P95:F2} ms p99={interval.P99:F2} ms max={interval.Max:F2} ms; |interval-{StepMs:F0}| p95={Stats.Percentile(deviation, 95):F2} ms"));
+    }
+
+    public override void Dispose()
+    {
+        if (!_timer.IsNull)
+        {
+            PInvoke.CloseHandle(_timer);
+            _timer = default;
+        }
+    }
+
+    protected override void Tick(double targetQpcMs, double remainingMs)
+    {
+        if (!_sweeping)
+        {
+            base.Tick(targetQpcMs, remainingMs);
+            return;
+        }
+
+        double now = RenderCase.QpcMs();
+        if (now >= _nextStep)
+        {
+            double t = now - _t0;
+            int x = (int)Math.Round(_centreX + (_amplitude * Math.Sin(2.0 * Math.PI * t / PeriodMs)));
+            Input.MoveAbs(x, _sweepY);
+            if (_lastStep > 0)
+            {
+                _intervals.Add(now - _lastStep);
+            }
+
+            _lastStep = now;
+            _nextStep += StepMs;
+            if (_nextStep < now)
+            {
+                _nextStep = now + StepMs; // do not replay missed steps
+            }
+
+            return;
+        }
+
+        double wait = Math.Min(_nextStep, targetQpcMs) - now;
+        if (wait > 1.0)
+        {
+            SleepHighResolution(wait - 0.6);
+        }
+        else
+        {
+            Thread.SpinWait(100);
+        }
+
+        Safety.ThrowIfAborted();
+    }
+
+    /// <summary>Sleeps on the high-resolution timer (about 0.5 ms granularity); falls back to a spin when it is unavailable.</summary>
+    private void SleepHighResolution(double milliseconds)
+    {
+        if (_timer.IsNull)
+        {
+            Thread.SpinWait(200);
+            return;
+        }
+
+        long due = -(long)(milliseconds * 10000.0); // negative = relative, in 100 ns units
+        if (PInvoke.SetWaitableTimer(_timer, &due, 0, null, null, false))
+        {
+            PInvoke.WaitForSingleObject(_timer, 50);
+        }
+    }
+
+    protected override void AfterMeasure()
+    {
+        _sweeping = false;
+        Input.MoveAbs((int)Math.Round(_centreX), _parkY);
+    }
+}
+
+/// <summary>Manual mode (hand part H5): no input from the Driver; the developer moves the real mouse.</summary>
+internal sealed class ManualSweep : Sweep
+{
+    private readonly RenderRun _run;
+
+    public ManualSweep(RenderRun run)
+    {
+        _run = run;
+    }
+
+    public override void Attach(HostProcess host)
+    {
+        Console.WriteLine(
+            string.Create(
+                CultureInfo.InvariantCulture,
+                $"MANUAL: move the mouse over the bar now - warm-up {_run.WarmupSeconds} s (discarded), then {_run.Seconds} s measured."));
+    }
+
+    protected override void AfterMeasure()
+    {
+        if (_run.IdleSeconds > 0)
+        {
+            Console.WriteLine($"MANUAL: measured window over - keep the mouse OUT of the bar for {_run.IdleSeconds} s (idle phase).");
+        }
+        else
+        {
+            Console.WriteLine("MANUAL: measured window over.");
+        }
     }
 }

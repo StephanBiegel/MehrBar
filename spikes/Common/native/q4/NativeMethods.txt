@@ -1,3 +1,8 @@
 OpenProcess
 PROCESS_ACCESS_RIGHTS
 CloseHandle
+CreateWaitableTimerEx
+SetWaitableTimer
+WaitForSingleObject
+CREATE_WAITABLE_TIMER_HIGH_RESOLUTION
+SYNCHRONIZATION_ACCESS_RIGHTS
