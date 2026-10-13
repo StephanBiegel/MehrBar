@@ -1,0 +1,2 @@
+label,variant,count,mode,transparent,size,seconds,frames,cost_p50,cost_p95,cost_p99,cadence_p50,cadence_p95,cadence_p99,drop_pct,cpu_total_pct,core_eq,dwm_cpu_total_pct,dwm_frames_dropped,dwm_frames_missed,gc0,gc1,gc2,alloc_per_frame,idle_frames,idle_cpu_pct,effective_mode,tier,pm_rows
+pretest,R1,20,hw,true,1900x250,10,583,0.007,0.019,0.039,16.667,16.949,33.053,2.92,0.34,0.069,0.34,0,0,0,0,0,10198,0,0.000,hardware,2,0

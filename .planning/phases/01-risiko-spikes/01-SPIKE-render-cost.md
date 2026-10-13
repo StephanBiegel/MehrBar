@@ -1,6 +1,6 @@
 # Spike Q4 — Zeichenkosten des transparenten Leistenfensters
 
-**Stand:** 2026-10-12 · Plan 01-16 (Auswertungskette steht, Messung nach Haltepunkt ausstehend) · Code: `spikes/WindowHost/Variants/RenderCost.cs`, `spikes/Driver/Cases/RenderCase.cs` · Läufe: `spikes/tools/run-render-matrix.ps1` · Auswertung: `spikes/tools/render-report.ps1`
+**Stand:** 2026-10-13 · Plan 01-16 (gemessen) · Code: `spikes/WindowHost/Variants/RenderCost.cs`, `spikes/Driver/Cases/RenderCase.cs` · Läufe: `spikes/tools/run-render-matrix.ps1` · Auswertung: `spikes/tools/render-report.ps1`
 
 ## Frage
 
@@ -56,18 +56,46 @@ Der echte Lauf sendet Eingaben und fragt vorher nach „GO“ (`-Yes` übersprin
 
 ## Messwerte
 
-Noch nicht gemessen. Die Läufe folgen nach dem Haltepunkt (ruhiger Rechner, eine UAC-Bestätigung). Die Tabelle mit den D-18-/D-19-Urteilen je Zelle steht dann in `spikes/results/q4-report.md`; die Rohzusammenfassungen liegen als `spikes/results/q4-elevated-summary.csv`, `spikes/results/q4-normal-summary.csv` und gegebenenfalls `spikes/results/q4-fallback-summary.csv`, das Ergebnis des PresentMon-Vorversuchs in `spikes/results/q4-pretest.md`.
+Gemessen am 2026-10-13 auf Build 26200 (100 % Skalierung, 60 Hz), Messlast mit der Produktmathematik (siehe Aufbau). Zwei vollständige Läufe: **erhöht mit PresentMon** (8 Zellen, `spikes/results/q4-elevated-summary.csv`) und **normal** mit Kontrolle K (10 Zellen, `spikes/results/q4-normal-summary.csv`). Gesamtauswertung mit Urteilsspalten: `spikes/results/q4-report.md`. Rohdaten (Frames je Zelle) unter `spikes/results/private/q4-raw/` (ignoriert).
 
-Der Trockenlauf (`-DryRun`, synthetisch, ohne Eingabe und ohne PresentMon) belegt nur, dass die Kette Lauf → Zusammenfassung → Auswertung → Urteilsspalten funktioniert; seine Werte sind keine Messwerte und stehen nicht im Repo (`spikes/results/dry/`).
+**Vorversuch A3** (`spikes/results/q4-pretest.md`): PresentMon sieht das Layered-Fenster **nicht**: 0 Zeilen im Vorversuch und in allen 8 erhöhten Zellen, auch ohne Prozessfilter. Dasselbe Fenster undurchsichtig sieht PresentMon sofort (370 Präsentationen in 14 s). Die Flags sind gegen `--help` geprüft. Damit ist die D-18-Ausfallquote für das transparente Fenster mit PresentMon **nicht messbar**.
+
+| Zelle (erhöht / normal) | Kosten p95 ms | CPU % gesamt | Kernäquiv. | dwm.exe % | Ersatz: Host-Kadenz > 25 ms (nicht D-18) | DWM verworfen/verpasst |
+|---|---|---|---|---|---|---|
+| R1 / 20 / hw | 0,014 / 0,017 | 0,40 / 0,43 | 0,08 | 0,36 | 5,8 % / 5,2 % | 0 / 0 |
+| R2 / 20 / hw | 0,033 / 0,036 | 0,37 / 0,38 | 0,07 | 0,29 | 14,2 % / 11,3 % | 0 / 0 |
+| R1 / 20 / sw | 0,018 / 0,022 | 0,31 / 0,41 | 0,06 | 0,25 | 16,3 % / 10,6 % | 0 / 0 |
+| R2 / 20 / sw | 0,044 / 0,050 | 0,29 / 0,23 | 0,06 | 0,28 | 21,1 % / 18,8 % | 0 / 0 |
+| R1 / 64 / hw | 0,031 / 0,038 | 0,53 / 0,60 | 0,11 | 0,42 | 3,6 % / 1,6 % | 0 / 0 |
+| R2 / 64 / hw | 0,099 / 0,091 | 0,71 / 0,70 | 0,14 | 0,49 | 6,3 % / 4,2 % | 0 / 0 |
+| R1 / 64 / sw | 0,077 / 0,085 | 0,86 / 0,91 | 0,17 | 0,51 | 1,5 % / 0,1 % | 0 / 0 |
+| R2 / 64 / sw | 0,168 / 0,172 | 0,61 / 0,53 | 0,12 | 0,47 | 6,6 % / 8,9 % | 0 / 0 |
+| K: R1 / 64 / hw, undurchsichtig | – / 0,047 | – / 0,39 | 0,08 | n/a | – / 11,8 % | 0 / 0 |
+| K: R2 / 64 / hw, undurchsichtig | – / 0,080 | – / 0,35 | 0,07 | n/a | – / 16,8 % | 0 / 0 |
+
+- **D-18 p95 (Aufbaukosten):** überall bestanden, höchstens 0,17 ms gegen 16,7 ms (rund 1 %).
+- **D-19 CPU:** überall bestanden, höchstens 0,91 % gegen 15 %; `dwm.exe` zusätzlich höchstens 0,51 %.
+- **Wirksamer Modus:** in jeder Zelle wie verlangt (`hardware` bzw. `software`, Tier 2).
+- **Ruhe:** 0 Frames und praktisch 0 % CPU in allen 18 Zellen (Grundlage für ZOOM-06).
+- **GC:** 1–3 Gen-0-Sammlungen je 30-s-Zelle, keine Gen 1/2; 10–26 KB Allokation je Frame (nur als Mittel aussagekräftig), ein Teil davon aus `ZoomEngine.Compute` (neue Arrays je Aufruf).
+- **R1 gegen R2:** Mit der Produktmathematik ist R1 in jeder Zelle billiger (etwa die Hälfte der p95-Kosten); R2 muss jetzt fast jedes Symbol je Frame anfassen.
+- **Ausgelassene Frames (Ersatzwert):** Die Host-Kadenz zeigt in allen Zellen Abstände von etwa 33 ms (ein ausgelassener Frame), 0,1 bis 21 %, ohne Bezug zu Symbolzahl oder Zeichenkosten, **auch im undurchsichtigen Kontrollfenster K**. Die DWM-Zähler melden überall 0 verworfene und 0 verpasste Frames; sie zählen aber nur, was der DWM selbst nicht schafft, nicht Frames, die die Anwendung gar nicht liefert. Gegenprobe im undurchsichtigen Fenster mit PresentMon (`q4-pretest.md`): PresentMon sieht dort 8,9 % Abstände über 25 ms, die Host-Kadenz desselben Laufs ~10 %. Beide Quellen sehen dieselben Lücken, gleichmäßig über die Mausbahn verteilt. Die Lücken sind also **echt** (WPF liefert in diesen Frames kein neues Bild) und **nicht durch die Transparenz verursacht**. Ursache ungeklärt.
+
+Die Fallback-Stufe (64 Symbole, 1000×160) entfällt: 64 Symbole bestehen D-18 p95 und D-19 in jeder Variante.
 
 ## Entscheidung
 
-**Entscheidung:** UNKLAR — Messung nach Haltepunkt ausstehend
+**Entscheidung:** UNKLAR — D-18-Ausfallquote nicht per PresentMon messbar (PresentMon sieht das Layered-Fenster nicht, A3 bestätigt); Ersatzwert Host-Kadenz 5,2–5,8 % bei R1/20/hw (ebenso im undurchsichtigen Fenster) — Entscheidung durch Stephan. Alle übrigen Urteile: R1, Hardware ist die billigste Kombination und besteht D-18 p95 (0,017 ms) und D-19 (0,43 % CPU) bei 20 und 64 Symbolen.
 
 ## Folgen für Phase 2/3
 
-Nach der Messung auszufüllen: Zeichentechnik für `IBarSurface` (R1 oder R2), Render-Modus (Hardware oder `SoftwareOnly`), Fenstergrößen-Politik, und was Phase 3 für 60+ Symbole noch beweisen muss.
+- **Zeichentechnik für `IBarSurface`:** R1 (ein `OnRender` je Frame, alles neu zeichnen). Unter der echten Layoutmathematik ist R1 billiger als R2 und einfacher; R2 bringt keinen Vorteil, weil sich mit der Verankerung `cursor` jedes Symbol bewegt.
+- **Render-Modus:** Hardware (Standard). `SoftwareOnly` besteht ebenfalls und bleibt Ausweichweg für Rechner ohne brauchbare GPU.
+- **Fenstergröße:** Die Kosten sind bei 1900×250 so klein, dass die Fenstergröße für die Zeichenkosten keine Rolle spielt. Für 64 Symbole muss das Fenster die gezoomte Breite fassen (~2050 px bei 24 px Grundgröße, Raster 28); das ist eine Layoutfrage für Phase 2/3, keine Kostenfrage.
+- **Allokation:** `ZoomEngine.Compute` erzeugt je Aufruf neue Arrays; bei 60 fps unbedenklich (keine Gen-1/2-Sammlungen), in Phase 3 bei Bedarf auf wiederverwendete Puffer umstellen.
+- **Phase 3 muss noch beweisen,** dass die ausgelassenen Frames (siehe Messwerte) mit echter Maus nicht sichtbar sind oder sich beheben lassen; sonst ist „flüssig“ (Core Value) nicht erfüllt. Kandidaten zum Prüfen: Taktung von `CompositionTarget.Rendering` gegen die DWM-Periode, Hintergrundlast (VS Code, parallele Sitzungen), Energiesparzustand der GPU.
 
 ## Grenzfälle für Stephan
 
-Nach der Messung auszufüllen. Fest eingeplant ist H5 (Handprüfung, D-07): echtes Mausgefühl über 20 und 64 Symbole mit `Driver.exe render --variant <beste> --count 64 --render <Modus> --manual --seconds 30`.
+1. **D-18-Ersatz annehmen oder anderen Messweg verlangen.** PresentMon sieht das transparente Fenster nicht. Ersatz: Host-Kadenz (5,2–5,8 % ausgelassene Frames bei R1/20/hw) plus DWM-Zähler (0). Wahl: (a) Ersatz annehmen und die Ausfallquote ab hier mit der Host-Kadenz messen, oder (b) anderen Messweg verlangen (WPR/xperf-Aufzeichnung des DWM). Der Ersatzwert liegt über 1 %; dieselben Lücken treten aber auch im undurchsichtigen Fenster auf und sind laut PresentMon dort echt. Sie sind keine Folge der Transparenz und damit keine Frage der Fenstertechnik, sondern des Zeichentakts.
+2. **H5 (Handprüfung, D-07):** echtes Mausgefühl über 20 und 64 Symbole mit `Driver.exe render --variant R1 --count 64 --render hw --manual --seconds 30` (und `--count 20`). Hier zeigt sich, ob die ausgelassenen Frames sichtbar ruckeln.
