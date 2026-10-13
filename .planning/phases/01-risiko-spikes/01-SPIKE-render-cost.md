@@ -10,7 +10,7 @@ Maßgeblich für das Go ist die **reale Leiste mit etwa 20 Symbolen** (D-13). Ve
 
 ## Aufbau
 
-**Arbeitslast (D-17):** 20 und 64 Symbole aus synthetischen 256-px-`Pbgra32`-Bitmaps (eingefroren). Die Größe je Frame folgt einer eigenen Kosinusfunktion (Basis 32 px bei 20 Symbolen, 24 px bei 64; Zoom 121 px; Radius 2,5 Symbolabstände) um die per `GetCursorPos` gelesene Mausposition. Das ist eine Last, nicht die Produktmathematik aus `MehrBar.Core`.
+**Arbeitslast (D-17):** 20 und 64 Symbole aus synthetischen 256-px-`Pbgra32`-Bitmaps (eingefroren). Größe und Lage je Frame kommen aus der Produktmathematik `MehrBar.Core` `ZoomEngine` mit Verankerung `cursor` (Basis 32 px bei 20 Symbolen, 24 px bei 64; Zoom 121 px; Radius 2,5 Symbolabstände) um die per `GetCursorPos` gelesene Mausposition: Das Symbol unter der Maus bleibt stehen, die Nachbarn weichen aus, die Leiste wächst in der Breite, und damit bewegt sich in jedem Frame jedes Symbol. Eine erste Fassung ließ die Symbole nur um ihre feste Ruhemitte wachsen (Nachbarn überlappten); das bevorzugte R2, weil sich dort nur die ~5 Symbole im Zoombereich änderten. Die 7 Zellen eines abgebrochenen Laufs mit dieser Fassung (2026-10-13) zählen nicht. Bei 64 Symbolen (Ruhebreite 1792 px, gezoomt bis gut 2050 px) ragen die äußersten Symbole über das 1900 px breite Fenster hinaus und werden abgeschnitten.
 
 **Zeichenvarianten:**
 
