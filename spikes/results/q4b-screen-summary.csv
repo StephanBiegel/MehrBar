@@ -1,0 +1,6 @@
+label,frames,bar_frames,interval_p50,interval_p95,skipped_pct,missed_periods_pct,far_windows,far_shift_abs_p95,far_path_px_s,far_net_px_s,far_reversals_s,neighbour_diff_p95
+host-sampled,922,868,16.68,50.18,26.30,27.93,24,0.964,8.01,0.15,7.68,0.061
+host-sampled-snap,857,807,16.68,56.17,28.16,32.83,24,1.001,6.51,0.15,6.29,0.003
+host-smooth,940,894,16.68,50.06,22.51,25.58,24,0.003,0.02,0.02,0.00,0.003
+host-smooth-snap,911,867,16.68,50.20,24.36,27.65,24,0.003,0.01,0.01,0.00,0.003
+rocketdock,1115,1094,16.66,33.43,7.23,8.84,26,0.067,0.39,0.39,0.00,0.107

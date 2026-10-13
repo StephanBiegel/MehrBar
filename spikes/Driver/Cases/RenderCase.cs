@@ -145,7 +145,27 @@ public sealed unsafe class RenderCase : IDriverCase
         using ProcessCpu? hostCpu = ProcessCpu.Open(host.Pid);
         using ProcessCpu? dwmCpu = ProcessCpu.OpenDwm();
 
+        ScreenCapture? capture = null;
+        PInvoke.GetWindowRect(host.Hwnd, out RECT hostRect);
+        int iconRow = hostRect.top + SpikeGeometry.Plate.Y + (int)(run.Base / 2);
+        int[] captureRows = [iconRow - 4, iconRow, iconRow + 4];
+        if (run.Capture && sweep is RealSweep && OperatingSystem.IsWindowsVersionAtLeast(8))
+        {
+            capture = new ScreenCapture(hostRect.left, hostRect.right - hostRect.left, captureRows);
+            capture.Start();
+        }
+
         sweep.Run(warmupStart, measureStart, measureEnd, idleStart, idleEnd, () => Snap.Take(hostCpu, dwmCpu));
+        if (capture != null && sweep is RealSweep realSweep && OperatingSystem.IsWindowsVersionAtLeast(8))
+        {
+            capture.Stop();
+            string screenDir = Path.Combine(run.FramesDir, Path.GetFileNameWithoutExtension(run.FramesFileName) + "-screen");
+            ScreenSweepCase.Save(
+                capture, screenDir, hostRect.left, captureRows, captureRows[1], (hostRect.left + hostRect.right) / 2.0,
+                3.5 * run.Pitch, realSweep.OriginMs, measureStart, measureEnd, manual: false);
+            Console.WriteLine($"screen capture: {capture.Frames.Count} frames{(capture.Error != null ? " ERROR " + capture.Error : string.Empty)} -> {screenDir}");
+            capture.Dispose();
+        }
         Snap start = sweep.Start;
         Snap end = sweep.End;
         Snap idleBegin = sweep.IdleBegin;
@@ -412,6 +432,14 @@ internal sealed class RenderRun
 
     public double Pitch { get; private init; }
 
+    /// <summary>Plan 01-19: zoom layout (sampled | smooth) and whole-pixel snapping, passed to the host.</summary>
+    public string Layout { get; private init; } = "sampled";
+
+    public bool Snap { get; private init; }
+
+    /// <summary>Plan 01-19: capture the bar on screen (Desktop Duplication) during the cell; implies the black backdrop.</summary>
+    public bool Capture { get; private init; }
+
     public string FramesFileName =>
         $"{Label}-{Variant}-{Count}-{Mode}{(Transparent ? string.Empty : "-opaque")}-{Size}.csv";
 
@@ -499,6 +527,9 @@ internal sealed class RenderRun
             FramesDir = ctx.Get("frames-dir") ?? Path.Combine(RepoPaths.DryResults, "q4-raw"),
             Base = baseSize,
             Pitch = pitch,
+            Layout = (ctx.Get("layout") ?? "sampled").ToLowerInvariant(),
+            Snap = ctx.GetBool("snap"),
+            Capture = ctx.GetBool("capture"),
         };
         return true;
     }
@@ -512,6 +543,7 @@ internal sealed class RenderRun
         args.Append(CultureInfo.InvariantCulture, $"--variant {Variant} --count {Count} --render {Mode} ");
         args.Append(CultureInfo.InvariantCulture, $"--transparent {(Transparent ? "true" : "false")} --size {Size} ");
         args.Append(CultureInfo.InvariantCulture, $"--base {Base} --pitch {Pitch} --frames \"{framesPath}\" --exit-after-ms {exitAfterMs}");
+        args.Append(CultureInfo.InvariantCulture, $" --layout {Layout} --snap {(Snap ? "true" : "false")} --backdrop {(Capture ? "true" : "false")}");
         if (Synthetic)
         {
             args.Append(CultureInfo.InvariantCulture, $" --synthetic-cursor true --synthetic-stop-ms {syntheticStopMs}");
@@ -725,17 +757,35 @@ internal sealed unsafe class RealSweep : Sweep
     private double _lastStep;
 
     public RealSweep(RenderRun run)
+        : this(AmplitudePitches * run.Pitch)
     {
-        _amplitude = AmplitudePitches * run.Pitch;
     }
+
+    /// <summary>Sweep with a free amplitude in pixels (screen-sweep over another program's bar, plan 01-19).</summary>
+    public RealSweep(double amplitudePx)
+    {
+        _amplitude = amplitudePx;
+    }
+
+    /// <summary>QPC time (ms) at which the sine starts; x(t) = centre + A sin(2 pi (t - origin) / 2 s).</summary>
+    public double OriginMs => _t0;
 
     public override void Attach(HostProcess host)
     {
         PInvoke.GetWindowRect(host.Hwnd, out RECT rect);
-        _centreX = (rect.left + rect.right) / 2.0;
-        _sweepY = rect.top + SpikeGeometry.Plate.Y + (SpikeGeometry.Plate.Height / 2);
         int screenHeight = PInvoke.GetSystemMetrics(Windows.Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CYSCREEN);
-        _parkY = Math.Min(rect.bottom + ParkDistance, screenHeight - 2);
+        Begin(
+            (rect.left + rect.right) / 2.0,
+            rect.top + SpikeGeometry.Plate.Y + (SpikeGeometry.Plate.Height / 2),
+            Math.Min(rect.bottom + ParkDistance, screenHeight - 2));
+    }
+
+    /// <summary>Starts the sine around <paramref name="centreX"/> on row <paramref name="sweepY"/>; parks on <paramref name="parkY"/>.</summary>
+    public void Begin(double centreX, int sweepY, int parkY)
+    {
+        _centreX = centreX;
+        _sweepY = sweepY;
+        _parkY = parkY;
 
         _timer = PInvoke.CreateWaitableTimerEx(
             null, null, PInvoke.CREATE_WAITABLE_TIMER_HIGH_RESOLUTION, (uint)SYNCHRONIZATION_ACCESS_RIGHTS.TIMER_ALL_ACCESS);

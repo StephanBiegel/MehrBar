@@ -45,6 +45,15 @@ internal sealed class RenderCostOptions
 
     public BitmapScalingMode Scaling { get; private init; } = BitmapScalingMode.HighQuality;
 
+    /// <summary>Plan 01-19: <c>sampled</c> = ZoomEngine.Compute (Cursor), <c>smooth</c> = ZoomEngine.ComputeSmooth.</summary>
+    public bool Smooth { get; private init; }
+
+    /// <summary>Plan 01-19: round icon positions and sizes to whole pixels.</summary>
+    public bool Snap { get; private init; }
+
+    /// <summary>Plan 01-19: opaque black band behind the icons (window stays layered) so screen capture reads them over any wallpaper.</summary>
+    public bool Backdrop { get; private init; }
+
     public string ScalingName => Scaling == BitmapScalingMode.HighQuality ? "hq" : "linear";
 
     public static RenderCostOptions Parse(IReadOnlyDictionary<string, string> o)
@@ -75,6 +84,9 @@ internal sealed class RenderCostOptions
             SyntheticStopMs = Int(o, "synthetic-stop-ms", 0),
             FramesPath = o.TryGetValue("frames", out string? frames) ? frames : null,
             Scaling = scaling == "hq" ? BitmapScalingMode.HighQuality : BitmapScalingMode.Linear,
+            Smooth = o.TryGetValue("layout", out string? layout) && layout.Equals("smooth", StringComparison.OrdinalIgnoreCase),
+            Snap = o.TryGetValue("snap", out string? snap) && snap.Equals("true", StringComparison.OrdinalIgnoreCase),
+            Backdrop = o.TryGetValue("backdrop", out string? backdrop) && backdrop.Equals("true", StringComparison.OrdinalIgnoreCase),
         };
     }
 
@@ -131,14 +143,17 @@ internal sealed class ZoomLayout
     {
         // Far outside the bar ZoomEngine yields the rest layout; a finite value keeps its arithmetic finite.
         double pointer = double.IsFinite(cursorX) ? cursorX : -1e6;
-        ZoomResult result = ZoomEngine.Compute(_rest, _options.Pitch, _params, pointer, ZoomAnchorMode.Cursor);
+        ZoomResult result = _options.Smooth
+            ? ZoomEngine.ComputeSmooth(_rest, _options.Pitch, _params, pointer)
+            : ZoomEngine.Compute(_rest, _options.Pitch, _params, pointer, ZoomAnchorMode.Cursor);
         double fill = _options.Base / _options.Pitch;
         for (int i = 0; i < Size.Length; i++)
         {
             double slot = result.DisplayedLengths[i];
             double size = slot * fill;
-            Size[i] = size;
-            Left[i] = result.DisplayedStarts[i] + ((slot - size) / 2.0);
+            double left = result.DisplayedStarts[i] + ((slot - size) / 2.0);
+            Size[i] = _options.Snap ? Math.Round(size) : size;
+            Left[i] = _options.Snap ? Math.Round(left) : left;
         }
     }
 }
@@ -539,6 +554,20 @@ internal sealed class RenderCostVariant : IHostVariant
             surface = redrawSurface;
         }
 
+        if (options.Backdrop)
+        {
+            var band = new System.Windows.Shapes.Rectangle
+            {
+                Width = width,
+                Height = ctx.Plate.Y + options.Base + 16,
+                Fill = Brushes.Black,
+                IsHitTestVisible = false,
+            };
+            Canvas.SetLeft(band, 0);
+            Canvas.SetTop(band, 0);
+            ctx.Root.Children.Add(band);
+        }
+
         _element = element;
         var loop = new RenderLoop(options, layout, surface, ctx.Hwnd);
         redrawSurface?.Bind(loop);
@@ -554,7 +583,7 @@ internal sealed class RenderCostVariant : IHostVariant
             "render-config",
             string.Create(
                 CultureInfo.InvariantCulture,
-                $"surface={name} count={options.Count} base={options.Base} pitch={options.Pitch} zoom={options.Zoom} radius={options.Radius} scaling={options.ScalingName} synthetic={options.Synthetic} transparent={ctx.Window.AllowsTransparency} frames={(options.FramesPath != null)}"));
+                $"surface={name} count={options.Count} base={options.Base} pitch={options.Pitch} zoom={options.Zoom} radius={options.Radius} scaling={options.ScalingName} layout={(options.Smooth ? "smooth" : "sampled")} snap={options.Snap} synthetic={options.Synthetic} transparent={ctx.Window.AllowsTransparency} frames={(options.FramesPath != null)}"));
 
         double origin = loop.Start();
         if (options.Synthetic)
