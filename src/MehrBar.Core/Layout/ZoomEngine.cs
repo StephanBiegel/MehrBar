@@ -132,6 +132,68 @@ public static class ZoomEngine
         return new ZoomResult(before, total - before, starts, lengths);
     }
 
+    /// <summary>
+    /// Smooth variant of <see cref="ZoomAnchorMode.Cursor"/> (plan 01-19). Slot sizes are exactly those of
+    /// <see cref="Compute"/> (sampled kernel, the measured falloff), only the split of the total extra room between the
+    /// two sides is continuous: the share that goes before is the share of the kernel's mass that lies before the
+    /// pointer, integrated along the rest axis over the zooming slots. Away from the bar ends that share is exactly one
+    /// half, so the items outside the zoom radius stand still while the pointer travels (the sampled Cursor split lets
+    /// them swing by about +-0.6 px once per slot crossed); near an end the kernel is cut off and the bar grows towards
+    /// the open side, as with Cursor. The price: the rest point under the pointer is no longer held exactly, it may
+    /// drift by the former swing (well under a pixel at the default parameters).
+    /// <para>
+    /// With a whole-number radius the sum of the sampled extras is the same for every pointer position, so both bar ends
+    /// stand still; with a fractional radius the total varies slightly (1.2 px at r = 2.58) and each end moves by half.
+    /// </para>
+    /// </summary>
+    public static ZoomResult ComputeSmooth(
+        IReadOnlyList<RestItem> items,
+        double pitch,
+        ZoomParams p,
+        double pointerU)
+    {
+        ArgumentNullException.ThrowIfNull(items);
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(pitch, 0);
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(p.IconSize, 0);
+
+        int n = items.Count;
+        double growth = p.ZoomSize / p.IconSize - 1;
+        var starts = new double[n];
+        var lengths = new double[n];
+        double total = 0;
+        double massBefore = 0;
+        double mass = 0;
+        for (int i = 0; i < n; i++)
+        {
+            double extra = 0;
+            if (items[i].Zooms)
+            {
+                double centre = items[i].Start + items[i].Length / 2;
+                extra = items[i].Length * growth * ZoomKernel.Factor(Math.Abs(pointerU - centre) / pitch, p.Radius);
+                double a = (items[i].Start - pointerU) / pitch;
+                double b = (items[i].Start + items[i].Length - pointerU) / pitch;
+                mass += ZoomKernel.Integral(a, b, p.Radius);
+                if (a < 0)
+                {
+                    massBefore += ZoomKernel.Integral(a, Math.Min(b, 0), p.Radius);
+                }
+            }
+
+            lengths[i] = items[i].Length + extra;
+            total += extra;
+        }
+
+        double before = mass > 0 ? total * massBefore / mass : 0;
+        double shifted = 0;
+        for (int i = 0; i < n; i++)
+        {
+            starts[i] = items[i].Start - before + shifted;
+            shifted += lengths[i] - items[i].Length;
+        }
+
+        return new ZoomResult(before, total - before, starts, lengths);
+    }
+
     /// <summary>The last slot that starts at or before the pointer (the first slot when the pointer is before the bar).</summary>
     private static int CursorItem(IReadOnlyList<RestItem> items, double pointerU)
     {

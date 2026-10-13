@@ -24,4 +24,26 @@ public static class ZoomKernel
 
         return (Math.Cos(Math.PI * d / radius) + 1) / 2;
     }
+
+    /// <summary>
+    /// Integral of <see cref="Factor"/> over the signed distance from <paramref name="from"/> to
+    /// <paramref name="to"/> (both in slot pitches, relative to the pointer; negative = before the pointer).
+    /// </summary>
+    public static double Integral(double from, double to, double radius)
+    {
+        if (radius <= 0)
+        {
+            return 0;
+        }
+
+        return Antiderivative(to, radius) - Antiderivative(from, radius);
+    }
+
+    /// <summary>Odd antiderivative of the kernel: <c>x/2 + r/(2 pi) sin(pi x / r)</c>, constant beyond the radius.</summary>
+    private static double Antiderivative(double x, double radius)
+    {
+        double a = Math.Min(Math.Abs(x), radius);
+        double value = (a / 2) + (radius / (2 * Math.PI) * Math.Sin(Math.PI * a / radius));
+        return Math.Sign(x) * value;
+    }
 }
