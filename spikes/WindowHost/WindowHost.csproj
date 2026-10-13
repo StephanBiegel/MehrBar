@@ -16,6 +16,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\MehrBar.Core\MehrBar.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <AdditionalFiles Include="..\Common\native\**\NativeMethods.txt" />
     <AdditionalFiles Include="..\Common\NativeMethods.json" />
     <Compile Include="..\Common\*.cs" Link="Common\%(Filename)%(Extension)" />

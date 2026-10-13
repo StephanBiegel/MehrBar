@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using MehrBar.Core.Layout;
 using MehrBar.Spikes.Common;
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -14,9 +15,9 @@ using Windows.Win32.Foundation;
 namespace MehrBar.Spikes.WindowHost.Variants;
 
 /// <summary>
-/// Q4 render-cost workload (D-16/D-17): <c>count</c> icons from frozen 256 px Pbgra32 bitmaps whose sizes follow an
-/// own cosine around the cursor. The cosine is deliberately NOT MehrBar.Core: this is a workload, not the product
-/// maths (RESEARCH anti-pattern "rebuild the zoom maths in the spike host").
+/// Q4 render-cost workload (D-16/D-17): <c>count</c> icons from frozen 256 px Pbgra32 bitmaps laid out per frame by the
+/// product zoom maths (MehrBar.Core ZoomEngine, anchor cursor): neighbours give way and the bar grows, so the per-frame
+/// work matches the real bar (RESEARCH anti-pattern "rebuild the zoom maths in the spike host").
 /// Options (all optional): count, base, pitch, zoom, radius, synthetic-cursor, synthetic-stop-ms, frames, scaling.
 /// </summary>
 internal sealed class RenderCostOptions
@@ -89,26 +90,34 @@ internal sealed class RenderCostOptions
 }
 
 /// <summary>Icon rectangles per frame. All arrays are allocated once; <see cref="Update"/> never allocates.</summary>
+/// <summary>
+/// Product layout from <see cref="ZoomEngine"/> (anchor <see cref="ZoomAnchorMode.Cursor"/>): the icon under the cursor
+/// stays put, the neighbours give way and the bar grows in width, so every icon outside the zoom radius moves each
+/// frame as well. Slots are one pitch long; an icon fills <c>Base / Pitch</c> of its displayed slot, centred.
+/// </summary>
 internal sealed class ZoomLayout
 {
     private readonly RenderCostOptions _options;
-    private readonly double[] _restCentreX;
+    private readonly RestItem[] _rest;
+    private readonly ZoomParams _params;
 
     public ZoomLayout(RenderCostOptions options, double windowWidth, double topPadding)
     {
         _options = options;
         int n = options.Count;
-        _restCentreX = new double[n];
+        _rest = new RestItem[n];
         Left = new double[n];
         Top = new double[n];
         Size = new double[n];
-        double centre = windowWidth / 2.0;
+        double start = (windowWidth - (n * options.Pitch)) / 2.0;
         for (int i = 0; i < n; i++)
         {
-            _restCentreX[i] = centre + ((i - ((n - 1) / 2.0)) * options.Pitch);
+            _rest[i] = new RestItem(start + (i * options.Pitch), options.Pitch, Zooms: true);
             Top[i] = topPadding;
         }
 
+        // IconSize = Base, so a slot grows by Pitch * (Zoom / Base - 1) * f and the icon under the cursor is Zoom px.
+        _params = new ZoomParams(options.Base, options.Zoom, options.Radius);
         Update(double.NegativeInfinity);
     }
 
@@ -118,19 +127,18 @@ internal sealed class ZoomLayout
 
     public double[] Size { get; }
 
-    /// <summary>size = base + (zoom - base) * (cos(pi * d / r) + 1) / 2 for d &lt; r (d in pitches), else base.</summary>
     public void Update(double cursorX)
     {
-        double rest = _options.Base;
-        double extra = _options.Zoom - rest;
+        // Far outside the bar ZoomEngine yields the rest layout; a finite value keeps its arithmetic finite.
+        double pointer = double.IsFinite(cursorX) ? cursorX : -1e6;
+        ZoomResult result = ZoomEngine.Compute(_rest, _options.Pitch, _params, pointer, ZoomAnchorMode.Cursor);
+        double fill = _options.Base / _options.Pitch;
         for (int i = 0; i < Size.Length; i++)
         {
-            double d = Math.Abs(cursorX - _restCentreX[i]) / _options.Pitch;
-            double size = d < _options.Radius
-                ? rest + (extra * ((Math.Cos(Math.PI * d / _options.Radius) + 1.0) / 2.0))
-                : rest;
+            double slot = result.DisplayedLengths[i];
+            double size = slot * fill;
             Size[i] = size;
-            Left[i] = _restCentreX[i] - (size / 2.0);
+            Left[i] = result.DisplayedStarts[i] + ((slot - size) / 2.0);
         }
     }
 }
@@ -413,7 +421,7 @@ internal sealed class RenderSurface : FrameworkElement, IRenderSurface
 /// <summary>
 /// R2: one retained <see cref="DrawingVisual"/> per icon, drawn once at the base size from the 256 px source. Per frame
 /// only each visual's transform (a reused ScaleTransform + TranslateTransform pair) changes, and only for icons whose
-/// rectangle changed, so the per-frame work follows the number of icons inside the zoom radius, not the icon count.
+/// rectangle changed. With the cursor anchor the icons outside the zoom radius shift too, so this is nearly every icon.
 /// </summary>
 internal sealed class IconVisualHost : FrameworkElement, IRenderSurface
 {
