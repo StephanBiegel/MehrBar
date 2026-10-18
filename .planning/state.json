@@ -1,0 +1,48 @@
+{
+  "contract": "1.0.0",
+  "flavor": "core",
+  "milestone": null,
+  "phases": [
+    {
+      "number": "1",
+      "name": "Risiko-Spikes",
+      "status": "in_progress"
+    },
+    {
+      "number": "2",
+      "name": "Grundgerüst",
+      "status": "pending"
+    },
+    {
+      "number": "3",
+      "name": "Zoom und Beschriftung",
+      "status": "pending"
+    },
+    {
+      "number": "4",
+      "name": "Skin CrystalXP.net",
+      "status": "pending"
+    },
+    {
+      "number": "5",
+      "name": "Einfügen, Umsortieren und Menüs",
+      "status": "pending"
+    },
+    {
+      "number": "6",
+      "name": "Konfigurationsfenster und Autostart",
+      "status": "pending"
+    },
+    {
+      "number": "7",
+      "name": "Robustheit und Release",
+      "status": "pending"
+    }
+  ],
+  "next": {
+    "command": "/gsd:progress --next",
+    "label": "Advance to the next step",
+    "reason": "Phase 01 of 7 · 0% · executing"
+  },
+  "updated_at": "2026-10-12T15:33:15.211Z"
+}
