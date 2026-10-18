@@ -28,8 +28,11 @@ public sealed partial class CaseContext : IDisposable
         }
     }
 
-    /// <summary>Starts a bar (default role) with the given WindowHost arguments and waits for READY.</summary>
-    internal HostProcess StartHost(string args) => Track(HostProcess.Start(args));
+    /// <summary>
+    /// Starts a bar (default role) with the given WindowHost arguments and waits for READY; <paramref name="exe"/> selects
+    /// another host with the same protocol (the DirectComposition host of plan 01-19).
+    /// </summary>
+    internal HostProcess StartHost(string args, string? exe = null) => Track(HostProcess.Start(args, exe));
 
     /// <summary>
     /// Starts a witness window (<c>--role witness --cover &lt;cover&gt;</c>). <paramref name="activate"/> false

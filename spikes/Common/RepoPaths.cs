@@ -40,6 +40,10 @@ public static class RepoPaths
     public static string HostExe =>
         Path.Combine(RepoRoot, "spikes", "WindowHost", "bin", "Release", "net10.0-windows", "WindowHost.exe");
 
+    /// <summary>Release build of the DirectComposition comparison host (plan 01-19).</summary>
+    public static string CompositionHostExe =>
+        Path.Combine(RepoRoot, "spikes", "CompositionHost", "bin", "Release", "net10.0-windows", "CompositionHost.exe");
+
     /// <summary>Phase 1 planning folder holding the go/no-go notes.</summary>
     public static string PhaseDir => Path.Combine(RepoRoot, ".planning", "phases", "01-risiko-spikes");
 

@@ -77,19 +77,20 @@ internal sealed partial class HostProcess : IDisposable
     }
 
     /// <summary>
-    /// Starts WindowHost.exe with <paramref name="arguments"/> and waits at most 10 s for READY.
+    /// Starts WindowHost.exe (or <paramref name="exe"/>, a host speaking the same protocol) with <paramref name="arguments"/>
+    /// and waits at most 10 s for READY.
     /// A <c>--log</c> argument is appended under <see cref="RepoPaths.DryResults"/> unless the caller passed one.
     /// </summary>
     /// <exception cref="FileNotFoundException">The host has not been built.</exception>
     /// <exception cref="InvalidOperationException">The process exited before READY.</exception>
     /// <exception cref="TimeoutException">No READY line within 10 s (the process is killed).</exception>
-    public static HostProcess Start(string arguments)
+    public static HostProcess Start(string arguments, string? exe = null)
     {
-        string exe = RepoPaths.HostExe;
+        exe ??= RepoPaths.HostExe;
         if (!File.Exists(exe))
         {
             throw new FileNotFoundException(
-                "WindowHost.exe not found; build it first: dotnet build spikes/WindowHost -c Release", exe);
+                $"{Path.GetFileName(exe)} not found; build it first (dotnet build spikes/<project> -c Release)", exe);
         }
 
         string logPath;

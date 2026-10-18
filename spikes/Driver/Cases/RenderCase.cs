@@ -102,7 +102,7 @@ public sealed unsafe class RenderCase : IDriverCase
         HostProcess host;
         try
         {
-            host = ctx.StartHost(run.HostArguments(framesPath));
+            host = ctx.StartHost(run.HostArguments(framesPath), run.Variant == "DC" ? RepoPaths.CompositionHostExe : null);
         }
         catch (Exception ex) when (ex is InvalidOperationException or TimeoutException or FileNotFoundException)
         {
@@ -393,7 +393,7 @@ public sealed unsafe class RenderCase : IDriverCase
 internal sealed class RenderRun
 {
     public const string Usage =
-        "Driver render --variant R1|R2 --count N --render hw|sw [--transparent true|false] [--size WxH] [--seconds 30] " +
+        "Driver render --variant R1|R2|DC --count N --render hw|sw [--transparent true|false] [--size WxH] [--seconds 30] " +
         "[--warmup 5] [--idle 5] [--synthetic] [--manual --seconds N] [--label L] [--out csv] [--frames-dir dir] [--base px] [--pitch px]";
 
     private RenderRun()
@@ -453,9 +453,9 @@ internal sealed class RenderRun
         error = null;
 
         string variant = (ctx.Get("variant") ?? "R1").ToUpperInvariant();
-        if (variant is not ("R1" or "R2"))
+        if (variant is not ("R1" or "R2" or "DC"))
         {
-            error = $"--variant must be R1 or R2, not '{variant}'";
+            error = $"--variant must be R1, R2 or DC (DirectComposition host), not '{variant}'";
             return false;
         }
 

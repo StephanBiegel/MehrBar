@@ -2,7 +2,7 @@
 .SYNOPSIS
   Plan 01-19: measures on screen (Desktop Duplication) how the bar moves while the Driver sweeps the mouse over it:
   the spike host with the sampled and the smooth zoom layout (each also snapped to whole pixels), and optionally
-  RocketDock as the reference.
+  RocketDock as the reference; the DirectComposition host (variant DC) runs the same cells.
 .DESCRIPTION
   Windows PowerShell 5.1, ASCII only. Every cell moves the mouse (SendInput, 125 Hz sine, 2 s period) inside a
   SafetySession: hands off; Ctrl+Alt+Q or any real input aborts at once (exit 3, the remaining cells are skipped).
@@ -17,6 +17,7 @@ param(
     [int]$RocketDockRow = -1,
     [int]$RocketDockAmplitude = 150,
     [int]$RocketDockFar = 250,
+    [string[]]$Only,
     [switch]$Yes
 )
 $ErrorActionPreference = 'Stop'
@@ -30,6 +31,8 @@ Push-Location $repoRoot
 try {
     & dotnet build 'spikes/WindowHost' -c Release -warnaserror --nologo -v q
     if ($LASTEXITCODE -ne 0) { Write-Host 'WindowHost build failed.'; exit 1 }
+    & dotnet build 'spikes/CompositionHost' -c Release -warnaserror --nologo -v q
+    if ($LASTEXITCODE -ne 0) { Write-Host 'CompositionHost build failed.'; exit 1 }
     & dotnet build 'spikes/Driver' -c Release -warnaserror --nologo -v q
     if ($LASTEXITCODE -ne 0) { Write-Host 'Driver build failed.'; exit 1 }
 } finally {
@@ -42,20 +45,27 @@ if (-not $Yes) {
 }
 
 $cells = @(
-    @{ Label = 'host-sampled'; Layout = 'sampled'; Snap = $false },
-    @{ Label = 'host-sampled-snap'; Layout = 'sampled'; Snap = $true },
-    @{ Label = 'host-smooth'; Layout = 'smooth'; Snap = $false },
-    @{ Label = 'host-smooth-snap'; Layout = 'smooth'; Snap = $true }
+    @{ Label = 'host-sampled'; Variant = 'R1'; Layout = 'sampled'; Snap = $false },
+    @{ Label = 'host-sampled-snap'; Variant = 'R1'; Layout = 'sampled'; Snap = $true },
+    @{ Label = 'host-smooth'; Variant = 'R1'; Layout = 'smooth'; Snap = $false },
+    @{ Label = 'host-smooth-snap'; Variant = 'R1'; Layout = 'smooth'; Snap = $true },
+    @{ Label = 'host-smooth-2'; Variant = 'R1'; Layout = 'smooth'; Snap = $false },
+    @{ Label = 'dcomp-smooth'; Variant = 'DC'; Layout = 'smooth'; Snap = $false },
+    @{ Label = 'dcomp-sampled'; Variant = 'DC'; Layout = 'sampled'; Snap = $false }
 )
+# Without -Only the four WPF cells of the first run; -Only picks cells by label (e.g. host-smooth-2,dcomp-smooth).
+if ($Only) { $Only = $Only -split ',' }  # powershell -File passes "a,b" as one string
+if ($Only) { $cells = $cells | Where-Object { $Only -contains $_.Label } }
+else { $cells = $cells | Select-Object -First 4 }
 foreach ($cell in $cells) {
     Write-Host ('--- ' + $cell.Label)
-    $cellArgs = @('render', '--variant', 'R1', '--count', '20', '--render', 'hw', '--seconds', [string]$Seconds,
+    $cellArgs = @('render', '--variant', $cell.Variant, '--count', '20', '--render', 'hw', '--seconds', [string]$Seconds,
         '--warmup', '3', '--idle', '0', '--capture', '--layout', $cell.Layout, '--label', $cell.Label,
         '--out', (Join-Path $raw 'render-summary.csv'), '--frames-dir', $raw)
     if ($cell.Snap) { $cellArgs += '--snap' }
     & $driver @cellArgs
     if ($LASTEXITCODE -eq 3) { Write-Host 'STOPPED: abort key or real input.'; exit 3 }
-    $dir = Join-Path $raw ($cell.Label + '-R1-20-hw-1900x250-screen')
+    $dir = Join-Path $raw ($cell.Label + '-' + $cell.Variant + '-20-hw-1900x250-screen')
     & $driver screen-analyze --dir $dir --far 345 --label $cell.Label --out $summary
 }
 
