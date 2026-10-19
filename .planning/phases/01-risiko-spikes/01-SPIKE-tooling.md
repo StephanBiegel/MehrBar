@@ -34,6 +34,10 @@ Alle Zeilen stammen aus `spikes/results/q7-tooling.txt` (Blocknummern in Klammer
 
 Grenze der Messung: Die erzeugten Dateien zeigen, dass Namen aus mehreren Listen ankommen. Ob ein Name aus **jeder** der vier Listen ankam, ist nur für `base`, `input` und `oracles` einzeln belegt; für `host` (Nachrichten-Konstanten) fiel der Stichprobenname `WINDOWPOS` in eine gemeinsame Datei und sagt nichts über die Liste. Die beiden Builds mit `-warnaserror` hätten bei einem nicht aufgelösten Namen einen Fehler (PInvoke001) gemeldet; das ist der eigentliche Beleg.
 
+### Handprüfung (D-07)
+
+Handteil H6 am 2026-10-19: nicht aussagekräftig. Das Skript startete VS Code mit `code`, das Fenster ging nur kurz auf und wieder zu; der Testexplorer wurde nicht erreicht. Die CLI-Belege (Build ohne Warnung, `dotnet test` grün) bleiben gültig.
+
 ## Entscheidung
 
 **Entscheidung:** GO — CsWin32 0.3.360 und xunit.v3.mtp-v2 (MTP) über die CLI belegt; VS-Code-Testexplorer folgt im Handteil H6
@@ -50,4 +54,4 @@ Begründung: Alle CLI-messbaren Teile sind grün (Build ohne Warnung mit mehrere
 
 ## Grenzfälle für Stephan
 
-- **H6 — VS-Code-Testexplorer:** Ordner `C:\Development\MehrBar` mit `code .` öffnen. Erwartet: (1) das C# Dev Kit lädt `MehrBar.sln` ohne Fehlermeldung; (2) der Testexplorer zeigt `ScaffoldTests` und `ZoomAnchorTests` (19 Tests); (3) „Alle Tests ausführen“ endet grün. Zeigt er nichts oder bleibt er hängen, ist das der Auslöser für Rückfall B (siehe Entscheidung), kein Grund, Phase 2 anzuhalten. Der Eintrag wandert in `01-HANDTEIL.md` (Plan 01-17).
+1. **H6 — VS-Code-Testexplorer von Hand:** VS Code selbst mit dem Ordner `C:\Development\MehrBar` öffnen; erwartet: `MehrBar.sln` lädt im C# Dev Kit, der Testexplorer zeigt die Tests und „Alle Tests ausführen“ endet grün. Zeigt er nichts, wendet 01-18 Rückfall B an; kein Grund, Phase 2 anzuhalten.

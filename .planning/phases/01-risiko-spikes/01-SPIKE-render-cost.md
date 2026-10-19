@@ -83,9 +83,18 @@ Gemessen am 2026-10-13 auf Build 26200 (100 % Skalierung, 60 Hz), Messlast mit d
 
 Die Fallback-Stufe (64 Symbole, 1000×160) entfällt: 64 Symbole bestehen D-18 p95 und D-19 in jeder Variante.
 
+### Handprüfung (D-07)
+
+Handteil H5 am 2026-10-19 (Stephan, echte Maus, R1, Hardware, geglättete Zoom-Rechnung, je 30 s):
+
+| Punkt | Messung | Von Hand |
+|---|---|---|
+| 20 Symbole | Bildschirm 10,4 % ausgelassene Takte (01-19), Zittern 0 | flüssig, äußere Symbole ruhig — bestanden |
+| 64 Symbole | Aufbau p95 0,017 ms; am Bildschirm ungemessen | flüssig — bestanden |
+
 ## Entscheidung
 
-**Entscheidung:** UNKLAR — D-18-Ausfallquote nicht per PresentMon messbar (PresentMon sieht das Layered-Fenster nicht, A3 bestätigt); Ersatzwert Host-Kadenz 5,2–5,8 % bei R1/20/hw (ebenso im undurchsichtigen Fenster) — Entscheidung durch Stephan. Alle übrigen Urteile: R1, Hardware ist die billigste Kombination und besteht D-18 p95 (0,017 ms) und D-19 (0,43 % CPU) bei 20 und 64 Symbolen.
+**Entscheidung:** GO — R1, Hardware: billigste Kombination, besteht D-18 p95 (0,017 ms) und D-19 (0,43 % CPU) bei 20 und 64 Symbolen; die Ausfallquote wird am Bildschirm gemessen (01-19: 10,4 % bei R1/20/hw, RocketDock 7–12 %) mit RocketDock als Maßstab (Stephan, D-08, 2026-10-19); H5 von Hand flüssig bei 20 und 64 Symbolen.
 
 ## Folgen für Phase 2/3
 
@@ -97,5 +106,4 @@ Die Fallback-Stufe (64 Symbole, 1000×160) entfällt: 64 Symbole bestehen D-18 p
 
 ## Grenzfälle für Stephan
 
-1. **D-18-Ersatz annehmen oder anderen Messweg verlangen.** PresentMon sieht das transparente Fenster nicht. Ersatz: Host-Kadenz (5,2–5,8 % ausgelassene Frames bei R1/20/hw) plus DWM-Zähler (0). Wahl: (a) Ersatz annehmen und die Ausfallquote ab hier mit der Host-Kadenz messen, oder (b) anderen Messweg verlangen (WPR/xperf-Aufzeichnung des DWM). Der Ersatzwert liegt über 1 %; dieselben Lücken treten aber auch im undurchsichtigen Fenster auf und sind laut PresentMon dort echt. Sie sind keine Folge der Transparenz und damit keine Frage der Fenstertechnik, sondern des Zeichentakts.
-2. **H5 (Handprüfung, D-07):** echtes Mausgefühl über 20 und 64 Symbole mit `Driver.exe render --variant R1 --count 64 --render hw --manual --seconds 30` (und `--count 20`). Hier zeigt sich, ob die ausgelassenen Frames sichtbar ruckeln.
+Keine. Entschieden am 2026-10-19 (Stephan, D-08): Die Ausfallquote wird ab hier am Bildschirm gemessen (Desktop Duplication, Plan 01-19), und der Maßstab ist RocketDock (7–12 % auf diesem Maß) statt der 1-%-Grenze von D-18, die auch RocketDock nicht erreicht.

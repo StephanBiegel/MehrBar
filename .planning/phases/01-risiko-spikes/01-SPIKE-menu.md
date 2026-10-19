@@ -82,6 +82,21 @@ Die Zählung „Fenster über der Leiste“ ist je Variante eine andere Momentau
 - **Fokus:** Nur M-B gibt ihn zurück (Absicht der Variante, `SetForegroundWindow(vorheriges Fenster)`). M-C lässt die Leiste im Vordergrund, M-D das Hilfsfenster. Die Option `--restore-focus true` des Drivers (Fokus nach dem Menü zurückgeben) gibt es für M-C und M-D, sie wurde in diesem Lauf **nicht** gemessen.
 - **Instrument:** Kein Fehler im Instrument erkennbar; Quellcode unverändert. Die Auswertung der Pflichtpunkte aus dem Driver (6 statt 8) wurde von Hand ergänzt (siehe Aufbau). Gelesen aber nicht beurteilt: das Aussehen der Menüs (Bildschirmfotos nur privat, geht in H4).
 
+### Handprüfung (D-07)
+
+Handteil H4 am 2026-10-19 (Stephan, echte Tastatur und Maus, je 120 s):
+
+| Punkt | M-C von Hand | M-A von Hand (Gegenprobe) |
+|---|---|---|
+| Schließt bei Klick daneben und mit Escape | bestanden | nein |
+| Pfeile und Enter wählen | bestanden | nein |
+| Gestartetes Programm kommt sichtbar nach vorn | bestanden | nicht geprüft |
+| Menü öffnet ein zweites Mal | bestanden | ja |
+| Leiste bleibt nach dem Menü unten (oder stört nicht) | bestanden | ja |
+| Fokus kehrt zum vorher aktiven Fenster zurück | bestanden | ja |
+
+Aussehen der Menüs (`q3-menu-*.bmp`): in Ordnung. Die Hand bestätigt die Messung: M-C besteht, M-A scheitert an Schließen und Tastatur. Die gemessenen Nebenwirkungen von M-C (Leiste vor den Fenstern, Fokus nicht zurück) zeigten sich von Hand nicht störend.
+
 ## Entscheidung
 
 Nach der Regel aus dem Plan (D-08/D-15): einfachste Variante in der Reihenfolge M-A < M-C < M-B < M-D, die alle acht Pflichtpunkte besteht.
@@ -91,7 +106,7 @@ Nach der Regel aus dem Plan (D-08/D-15): einfachste Variante in der Reihenfolge 
 - **Nebenwirkungen von M-C (informativ, nicht entscheidend):** Die Leiste steigt während des Menüs vor die Fenster und bleibt danach oben (A5 bestätigt), und der Vordergrund bleibt nach dem Menü bei der Leiste statt beim vorherigen Fenster. Beides ist die Folge der Aktivierung, die `TrackPopupMenu` verlangt (Besitzer muss Vordergrundfenster sein). Beides lässt sich in Phase 2 beheben (siehe Folgen) und ist kein Grund, auf eine kompliziertere Variante zu wechseln.
 - Kein NO-GO, kein D-15-Rückfall nötig: eine der beiden Grundvarianten (M-C) besteht.
 
-**Entscheidung:** GO — Menütechnik M-C (natives `TrackPopupMenuEx` mit der Leiste als Besitzer, `SetForegroundWindow(Leiste)` davor, `WM_NULL` danach); M-A scheitert an 4 von 8 Pflichtpunkten, M-B und M-D bestehen ebenfalls; Nebenwirkungen von M-C: Leiste steigt vor die Fenster (A5 bestätigt), Fokus wird nicht zurückgegeben; offen für Stephan (D-08): Handprüfung H4
+**Entscheidung:** GO — Menütechnik M-C (natives `TrackPopupMenuEx` mit der Leiste als Besitzer, `SetForegroundWindow(Leiste)` davor, `WM_NULL` danach); M-A scheitert an 4 von 8 Pflichtpunkten, M-B und M-D bestehen ebenfalls; Nebenwirkungen von M-C: Leiste steigt vor die Fenster (A5 bestätigt), Fokus wird nicht zurückgegeben; Handprüfung H4 bestanden (M-C in allen Punkten, M-A scheitert auch von Hand), die Nebenwirkungen störten von Hand nicht.
 
 ## Folgen für Phase 2/3
 
@@ -105,10 +120,4 @@ Nach der Regel aus dem Plan (D-08/D-15): einfachste Variante in der Reihenfolge 
 
 ## Grenzfälle für Stephan
 
-Nach der Regel „Wiederholung oder innerhalb von 10 % der Grenze“ (D-08) ist **kein** Messwert von M-C ein Grenzfall: keine Wiederholung nötig, die längste Zeit liegt bei 390 ms gegenüber 2000 ms (19,5 % der Grenze), alle anderen Zeiten bei höchstens 282 ms gegenüber 1000 ms. Zu entscheiden bzw. von Hand zu prüfen:
-
-1. **H4 — Handteil Menü (D-06, D-07).** Je Variante ein Durchgang mit echter Tastatur und Maus: `Driver.exe menu --variant M-C --manual --seconds 120`, danach nach Belieben `--variant M-B` und `M-D` (Rückfälle) und zur Gegenprobe `M-A`. Prüfen: schließt das Menü bei Klick daneben und mit Escape, wählen Pfeile und Enter, kommt das gestartete Programm **sichtbar** nach vorn, öffnet das Menü ein zweites Mal. Dazu die Optik der Menüs nach `spikes/results/private/q3-menu-*.bmp`. Weicht ein Handergebnis ab, gilt das Handergebnis (D-07) und der Fall wandert hierher.
-2. **Leiste bleibt nach dem Menü oben (M-C, A5).** Von Hand in H4 beachten: Bleibt die Leiste nach dem Schließen vor den Fenstern, und stört es? Mit dem Q2-Unterbau soll das nicht mehr auftreten (ungemessen). Ist es nicht hinnehmbar und lässt sich nicht beheben, wäre M-D der Ausweichweg (Leiste unten, Fokus ebenso zu behandeln).
-3. **Fokus nach dem Menü (M-C, M-D).** Beide geben den Vordergrund nicht zurück. Die Empfehlung (Phase 2 gibt ihn zurück wie M-B) ist nicht mit M-C gemessen. In H4 beachten: Ist nach dem Schließen des Menüs wieder das Fenster aktiv, in dem man vorher gearbeitet hat? Wer es vorab messen will: `Driver.exe menu --variant M-C --restore-focus true` in einem neuen freigegebenen Fenster.
-4. **Einmal gemessen.** Jeder Punkt hat in diesem Lauf einen Wert je Variante; die Abstände zu den Grenzen sind groß (siehe oben), aber ein Streuungsbild fehlt. Wenn H4 ein Handergebnis liefert, das von der Messung abweicht, ist das ein Grund, `run-menu.ps1 -Variants M-C` zu wiederholen.
-5. **Messbedingungen:** ein Monitor, Leiste am oberen Rand, Skalierung 100 % (nicht neu geprüft), RocketDock-Zustand nicht belegt; 125/150 % und die zweite Leiste kommen mit Phase 2.
+Keine. Entschieden am 2026-10-19: H4 bestanden; Leiste und Fokus nach dem Menü sind von Hand in Ordnung, eine Wiederholung von `run-menu.ps1` ist nicht nötig, weil kein Handergebnis von der Messung abweicht. Phase 2 gibt den Fokus trotzdem ausdrücklich zurück (wie M-B). Offen für Phase 2: 125/150 %, zweite Leiste.

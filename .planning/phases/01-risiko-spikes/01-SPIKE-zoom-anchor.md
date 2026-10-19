@@ -68,9 +68,13 @@ Empfindlichkeit (`q5-zoom-residuals.csv`, Spalte `variant`), größter Rest bei 
 
 Zwei Nebenbefunde: Die sichtbaren Glyphen der Symbole unter der Maus messen 110 bis 115 px, der Platz im Layout wächst aber auf 121 (Bildmaterial hat Rand; die Leistenbreite verlangt 121). Der Abfall ist steiler als ein reiner Kosinus: direkte Nachbarn ergeben `r` ≈ 2,72, übernächste ≈ 2,43.
 
+### Handprüfung (D-07)
+
+Q5 hat keinen Handteil: Die Verankerung wurde an Referenzbildern des Originals gemessen, nicht mit Eingaben; das Zoomgefühl mit echter Maus ist in H5 (`01-SPIKE-render-cost.md`) geprüft.
+
 ## Entscheidung
 
-**Entscheidung:** GO — Verankerung `cursor` sagt alle unbeschnittenen Ränder auf ±6 px voraus (max. Restfehler 4,8 px an den Rändern, 5,1 px an den Trennlinien; r = 2,58 gemessen); `center` verfehlt 17,6 px (2. Symbol) und 37,9 px (Excel, rechter Rand). Trennlinien-Platz skaliert dabei mit dem Zoom (gemessen).
+**Entscheidung:** GO — Verankerung `cursor` sagt alle unbeschnittenen Ränder auf ±6 px voraus (max. Restfehler 4,8 px an den Rändern, 5,1 px an den Trennlinien; r = 2,58 gemessen); `center` verfehlt 17,6 px (2. Symbol) und 37,9 px (Excel, rechter Rand). Trennlinien-Platz skaliert dabei mit dem Zoom (gemessen). Grenzfälle von Stephan angenommen (2026-10-19): GO bleibt, `r` wird in Phase 3 neu kalibriert, die Trennlinien-Regel gilt.
 
 Die Verankerung ist damit entschieden. Die Genauigkeit auf ±6 px trägt nur innerhalb von r ± 0,1; siehe Grenzfälle.
 
@@ -83,7 +87,4 @@ Die Verankerung ist damit entschieden. Die Genauigkeit auf ±6 px trägt nur inn
 
 ## Grenzfälle für Stephan
 
-- **Dünner Rand der Genauigkeit.** Der Befund ist ein Punktwert: r = 2,58 trifft alle Reihen auf 5,1 px; liegt `r` 0,1 daneben (gemessene Streuung der Nachbarn 2,41 bis 2,72), kippt es über ±6 px (7,0 bzw. 9,5 px), ebenso f + 0,02 (6,6 px) oder Zoomgröße ±4. Die Verankerung selbst bleibt in allen Varianten eindeutig `cursor` (≤ 14,4 px gegen ≥ 38 px). Empfehlung: GO stehen lassen, Zahl in Phase 3 neu kalibrieren.
-- **Werte bei 5–6 px:** Excel, rechter Rand (−4,8 px) und Excel, Trennlinie 3 (−5,1 px).
-- **Trennlinien-Regel nachträglich gefunden.** Anlass war der Fehlschlag des rechten Rands der Publisher-Reihe mit festem Platz; die Regel selbst stammt aus der Glyph-Lücke in Bild 4 (kein freier Wert, nicht aus den Rändern angepasst). Die übrigen Reihen, Ränder und Linienpositionen gingen nicht ein und treffen trotzdem. Wer das nicht gelten lassen will, behandelt Q5 als UNKLAR für die Ränder neben einer Trennlinie.
-- **Zoomgröße:** 121 aus dem Nachtrag (Platz im Layout), sichtbare Glyphen nur 110–115 px.
+Keine. Entschieden am 2026-10-19 (Stephan, D-08): GO bleibt trotz des dünnen Genauigkeitsrands, `r` wird in Phase 3 neu kalibriert; die nachträglich gefundene Trennlinien-Regel gilt. Die Werte bei 5–6 px (Excel) und die Zoomgröße 121 sind damit abgedeckt.

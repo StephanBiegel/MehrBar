@@ -96,6 +96,18 @@ H3 hat fünf Klicks innen verloren (Folge 33, 57, 71, 99, 171): der Klick ging a
 
 (H3 hat im Schritt `hit` bei 95/100 den Fokus nicht gehalten, weil dort die fünf Klicks am Host vorbeigingen; die Fokus-Schritte selbst bestehen in allen drei Varianten.)
 
+### Handprüfung (D-07)
+
+Handteil H1 am 2026-10-19 (Stephan, `spikes/tools/handteil.ps1`, Ergebnis `spikes/results/handteil/summary.csv`):
+
+| Punkt | Messung | Von Hand |
+|---|---|---|
+| Kein Aufblitzen (10 Starts, Fenster über dem oberen Rand) | erstes Bild unten 10/10 | nichts gesehen — bestanden |
+| Echte Maus auf und neben der Platte | innen 100/100, außen 100/100 | bestanden; 93 Linksklicks innen gefangen, Vordergrund blieb jedes Mal beim Desktop |
+| Notabbruch Strg+Alt+Q | nie von Hand ausgelöst | bestanden (Exit 3, Fenster zurück) |
+
+Der erste Versuch des Notabbruchs fand einen Fehler im Messwerkzeug: Im manuellen z-order-Fenster wirkte die Taste erst nach dessen Ende (Lauf endete mit Exit 0). Behoben in `c9352ff`, danach bestanden. Für die Handprüfung zeigt der Host die sonst unsichtbare Platte mit Rahmen und Quadraten (`--plate-outline on`, Trefferfläche unverändert).
+
 ## Entscheidung
 
 Auswertung in der Reihenfolge Orakel → Basislinie → Kriterium:
@@ -121,10 +133,4 @@ Kein Wert liegt auf der falschen Seite einer Schwelle; die Stichprobe ist klein 
 
 ## Grenzfälle für Stephan
 
-Nichts am Ergebnis ist ein Grenzfall im Sinne von D-08; offen bleibt der Handteil (D-06, D-07):
-
-1. **H1 — Aufblitzen:** zehn echte Starts der gewählten Variante (H1) beobachten, ob die Leiste am oberen Rand kurz aufblitzt (`Driver.exe firstframe --variants H1 --launches 10 --manual`). Die Messung sieht das erste Bild unten 10/10, ein Aufblitzen im Bruchteil einer Frame sieht nur das Auge.
-2. **H1 — echte Maus:** einmal von Hand gegenprüfen mit `Driver.exe hit --variants H1 --manual --seconds 60`. Im Beobachtungsfenster Platte, 1 px daneben und Überhang überfahren und anklicken. Weicht das Handergebnis ab, gilt das Handergebnis (D-07).
-3. **H1 — Notabbruch:** den Abbruchschalter Strg+Alt+Q einmal während eines Laufs auslösen und prüfen, dass die Fenster zurückkommen (D-07). Ersatz, falls belegt: Strg+Alt+Umschalt+Q.
-4. **Messbedingungen:** gemessen mit einem Monitor, 100 % Skalierung, Leiste am oberen Rand, RocketDock beendet. Eine Stichprobe bei 125/150 % und mit der zweiten, rechten Leiste kommt mit Phase 2.
-5. **Lauf-Hygiene:** vor jedem weiteren Pixel-Orakel-Lauf (Q2, Q3, D-17) RocketDock beenden, sonst scheitert schon der Selbsttest (Lauf 1).
+Keine. Entschieden am 2026-10-19: Die Handprüfung H1 ist bestanden. Die Messbedingungen (ein Monitor, 100 %, Leiste oben) bleiben als offener Punkt für Phase 2 (125/150 %, rechte Leiste); vor Pixel-Orakel-Läufen RocketDock beenden.

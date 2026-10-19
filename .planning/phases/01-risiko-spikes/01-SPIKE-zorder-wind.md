@@ -104,6 +104,20 @@ In Lauf 1 wurde S2 nur für Win+D und Win+, gemessen (die beiden Auslöser, an d
 - **S2-Folgemessung, Explorer (3):** Leiste die ganze Zeit sichtbar (Lücke 0, über 1180 Abtastwerte je Lauf); Explorer nach `taskkill /f` nicht von selbst zurück, vom Driver nach 5 s gestartet (Shell wieder da nach 5,26–5,27 s); `TaskbarCreated` 6,0–6,2 s nach dem Beenden, Desktop-Host 4–5 ms danach neu gefunden, Leiste 0–3 ms später wieder ganz unten. **Auflösungswechsel (3):** Lücke 17 ms (ein Abtastwert), `display-change` 61–95 ms nach dem Auslöser, Desktop-Host nach 10–14 ms neu gefunden, `zpos-bottom` 1–2 ms später, Rückweg bei etwa 3,05 s ebenso. Beides wie bei S0/S1 in Lauf 1.
 - **Wiederherstellung nach der Folgemessung:** `Session before/after` gleich (`TaskbarSd=absent explorer.exe=1 primary=1920x1080`). Eine eigene Nachprüfung der minimierten Fenster fand nicht statt.
 
+### Handprüfung (D-07)
+
+Handteil H2 und H3 am 2026-10-19 (Stephan, Wächter S2, echte Tasten):
+
+| Punkt | Messung | Von Hand |
+|---|---|---|
+| H2 Sperren/Entsperren | nicht automatisierbar | Leiste nach dem Entsperren sichtbar und unten — bestanden |
+| H3 Win+D | 20/20, größte Lücke 236 ms | bestanden, Aufblitzen stört nicht |
+| H3 Ecke „Desktop anzeigen“ | besteht D-11, Lücke bis 271 ms | bestanden, Aufblitzen stört nicht |
+| H3 Win+M / Win+Umschalt+M | besteht | bestanden |
+| H3 Win+, (Aero Peek per Taste) | Peek hing ≥ 4 s nach gesendetem Loslassen | Leiste kam sofort zurück — die Messung war ein Artefakt des gesendeten Loslassens |
+| H3 Aero Peek per Ecke | Auslöser ohne Wirkung | bestanden |
+| H3 Alt+Tab | besteht | Leiste blieb unten und steht nicht in der Liste — bestanden |
+
 ## Entscheidung
 
 Auslöser für Auslöser nach D-11, dann die einfachste Strategie, die alle besteht (S0 < S1 < S2):
@@ -114,7 +128,7 @@ Auslöser für Auslöser nach D-11, dann die einfachste Strategie, die alle best
 - **Win+, (Aero Peek per Taste) verfehlt D-11 bei allen drei Strategien gleich.** Ob das ein echter Verstoß ist, entscheidet die Messung nicht: Der Auslöser hängt die Peek-Vorschau (`LivePreview` von `dwm`) nach dem gesendeten Loslassen fest, in jeder zweiten Wiederholung wirkt er gar nicht, und der Deckungstest meldet sich selbst als ungültig. Keine Ebenen-Strategie ändert daran etwas. Die Entscheidung dazu fällt am Handteil mit echten Tasten (H3); sie ist unten als Grenzfall 2 benannt. Die Ecken-Peek-Messung ist leer (Grenzfall 3).
 - Die in Lauf 1 offene Annahme „S2 ist bei Ecke, Win+M, Alt+Tab, Explorer und Auflösung nicht schlechter als S1“ ist durch die Folgemessung **belegt** (Grenzfall 4 erledigt). Aero Peek per Ecke bleibt leer: der Auslöser wirkt auch in der Folgemessung nicht (Grenzfall 3).
 
-**Entscheidung:** GO — Strategie S2 (Wächter setzt die Leiste direkt über den Desktop-Host, nie topmost); S0 scheitert an Win+D und Ecke, S1 an Win+D; die S2-Folgemessung (Win+D, Ecke, Win+M, Alt+Tab je 20 Wiederholungen, Explorer und Auflösung je 3) erfüllt D-11 überall, 0 Abtastwerte vor dem Zeugen; offen für Stephan (D-08): Win+, (bei allen Strategien gleich, Messung uneindeutig), Aero Peek per Ecke (Auslöser wirkungslos) und die Handteile H2/H3
+**Entscheidung:** GO — Strategie S2 (Wächter setzt die Leiste direkt über den Desktop-Host, nie topmost); S0 scheitert an Win+D und Ecke, S1 an Win+D; die S2-Folgemessung (Win+D, Ecke, Win+M, Alt+Tab je 20 Wiederholungen, Explorer und Auflösung je 3) erfüllt D-11 überall, 0 Abtastwerte vor dem Zeugen; Handprüfung H2/H3 bestanden (Win+, und Peek per Ecke von Hand ohne Befund; der gemessene Peek-Hänger war ein Artefakt des gesendeten Loslassens).
 
 ## Folgen für Phase 2/3
 
@@ -131,15 +145,4 @@ Auslöser für Auslöser nach D-11, dann die einfachste Strategie, die alle best
 
 ## Grenzfälle für Stephan
 
-**Erledigt durch die S2-Folgemessung (Plan 01-15; die Nummern 1–7 behalten die Zählung aus Plan 01-14):**
-
-- ~~1. S2 bei Win+D, 1 Abtastwert (5 ms) in 1 von 5 Wiederholungen~~ — mit 20 Wiederholungen nicht reproduziert: 0 Abtastwerte vor dem Zeugen in 20/20, größte Lücke 236 ms. Kein Grenzfall mehr; S2 ist angenommen.
-- ~~4. S2 für die übrigen Auslöser nicht gemessen~~ — Ecke, Win+M, Alt+Tab, Explorer, Auflösung sind mit S2 gemessen und bestehen D-11.
-
-**Zu entscheiden bzw. von Hand zu prüfen:**
-
-2. **Aero Peek per Taste (Win+,).** Bei allen drei Strategien gleich: Peek hängt nach dem gesendeten Loslassen (mindestens 4 s) und blendet dabei alles aus. In der Folgemessung nicht wiederholt. Von Hand prüfen (H3): Win+, mit echten Tasten kurz halten und loslassen — kommt die Leiste sofort zurück? Wenn ja, ist es ein Messartefakt und der Fall erledigt. Wenn nein, ist D-11 für alle Strategien verletzt und Stephan entscheidet zwischen „Windows-Verhalten, hinnehmen“ und D-12 (NO-GO mit Folgespike). Alternativ den Auslöser im Driver ändern (anderes Senden der Tasten) und neu messen.
-3. **Aero Peek per Ecke:** Der Auslöser hat in Lauf 1 und in der Folgemessung (20 Wiederholungen) nichts bewirkt (kein `LivePreview`, kein Wächter-Übergang). Von Hand prüfen, ob es das auf diesem System überhaupt gibt, bevor das Kriterium als erfüllt gilt.
-5. **H2 — Sperren/Entsperren:** `Driver.exe zorder --guard S2 --trigger lock --allow-lock` (Stephan sperrt und entsperrt selbst).
-6. **H3 — echte Tasten je Auslöser:** `Driver.exe zorder --guard S2 --trigger manual --seconds 120`, Win+D, Win+M, Alt+Tab, Ecke und Aero Peek von Hand; bei Abweichung gilt das Handergebnis (D-07). Besonders Win+D und die Ecke, weil dort die Lücke (bis 271 ms) sichtbar sein kann: stört das Aufblitzen?
-7. **Messbedingungen:** ein Monitor, 100 % Skalierung, Leiste am oberen Rand, RocketDock beendet; 125/150 % und die zweite Leiste kommen mit Phase 2. Der Auflösungswechsel ist durchgeführt (1600×900 und zurück), in Lauf 1 und in der Folgemessung.
+Keine. Entschieden am 2026-10-19: Win+, und Peek per Ecke sind durch die Handprüfung erledigt (D-07, das Handergebnis gilt). Offen für Phase 2 bleiben nur die Messbedingungen (125/150 %, zweite Leiste).

@@ -54,6 +54,15 @@ Alle Bitmaps haben Straight-Alpha, `all_opaque` ist nie wahr, `fringe` nach der 
 
 Kein Lauf scheiterte, kein STA/MTA-Paar lieferte eine andere Größe; die Pixel waren in allen Paaren gleich außer bei `url-plain` und `url-iconfile` (Hashspalte). Parallel: 8 verschiedene Einträge in 32 ms (MTA 32,1 / STA 32,8) gegen 68 ms bzw. 62 ms nacheinander. Zeitlimit: der nicht erreichbare Pfad endet in 3006 ms (max 3014); die gleichzeitige Anfrage von `exe-notepad` brauchte dabei 5,8 ms (MTA) bzw. 9,0 ms (STA), war also nicht blockiert.
 
+### Handprüfung (D-07)
+
+Handteil H7 am 2026-10-19 (Stephan):
+
+| Punkt | Messung | Von Hand |
+|---|---|---|
+| Kontaktbogen auf hell, dunkel, Schachbrett (32 und 121 px) | 12/13 Fälle 256 px, Straight-Alpha umgerechnet | sauber, ohne dunklen Saum — bestanden |
+| Echte Netzdatei auf einer Firmenfreigabe | nur Laufwerkswurzel geprüft | übersprungen |
+
 ## Entscheidung
 
 **Entscheidung:** GO — zwölf von dreizehn Fällen liefern ein 256-px-Bitmap (der dreizehnte ist der absichtlich nicht erreichbare Pfad) mit gültigem Straight-Alpha, zwei Fälle brauchen eine Ersatzregel (Quelle nur 48 px: bei Rahmen erneut mit 48 px anfordern; `.url`: nur STA), und der Zeitlimit-Fall blockiert nichts.
@@ -69,6 +78,4 @@ Kein Lauf scheiterte, kein STA/MTA-Paar lieferte eine andere Größe; die Pixel 
 
 ## Grenzfälle für Stephan
 
-- **H7 — Blick auf den Kontaktbogen** `spikes/results/private/q6-contact-sheet.png` (enthält deine Symbole, nur lokal): sehen Symbole auf hell, dunkel und Schachbrett bei 32 und 121 px sauber aus, ohne dunklen Saum? Besonders `exe-only48` bei 48 px (weich, aber ohne Rahmen) und die beiden `.url`-Symbole.
-- **H7 — eine echte Netzdatei** deiner Wahl auf einer Firmenfreigabe: `Icons.exe --case net-file --netfile <Pfad> --threads sta`. Der Spike sucht nie selbst auf den Freigaben; bisher wurde nur das Laufwerkssymbol der Wurzel abgefragt.
-- Offen und nicht gemessen: Symbole mit nativen 64- oder 128-px-Rahmen, 125/150 % Skalierung (Anforderung wäre in Pixeln statt DIP), und dein tatsächlicher Bestand an `.url`-Einträgen.
+Keine zur Entscheidung. Offen für Phase 2 vermerkt (2026-10-19): eine echte Netzdatei (H7 übersprungen), Symbole mit nativen 64- oder 128-px-Rahmen, 125/150 % Skalierung und der eigene Bestand an `.url`-Einträgen.
