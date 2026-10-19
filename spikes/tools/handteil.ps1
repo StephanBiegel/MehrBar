@@ -110,6 +110,20 @@ function Pause-Go([string]$text) {
     return ((Read-Host 'Enter = los, s = Schritt ueberspringen').Trim().ToLowerInvariant() -ne 's')
 }
 
+# The bar sits at the very bottom of the z-order (on the desktop), so open windows hide it. Steps that need to see
+# it minimize every window first (this console too) and restore them afterwards.
+$shell = New-Object -ComObject Shell.Application
+function Clear-Desktop {
+    Write-Host 'Alle Fenster werden minimiert (auch dieses); sie kommen nach dem Schritt zurueck.' -ForegroundColor Yellow
+    Start-Sleep -Milliseconds 1500
+    $shell.MinimizeAll()
+    Start-Sleep -Milliseconds 800
+}
+function Restore-Desktop {
+    $shell.UndoMinimizeALL()
+    Start-Sleep -Milliseconds 800
+}
+
 function Run-Driver([string[]]$driverArgs) {
     Write-Host ('> Driver.exe ' + ($driverArgs -join ' ')) -ForegroundColor DarkGray
     & $driver @driverArgs
@@ -119,19 +133,18 @@ function Run-Driver([string[]]$driverArgs) {
 }
 
 function Step-H1 {
-    if (Pause-Go "H1a: Die Leiste ($hit) startet 10x im Abstand von 2 s. Schau auf den oberen Bildschirmrand: blitzt sie kurz VOR den Fenstern auf?") {
-        for ($i = 1; $i -le 10; $i++) {
-            Write-Host ("Start $i/10")
-            $p = Start-Process -FilePath $hostExe -ArgumentList '--variant', $hit, '--exit-after-ms', '1500' -PassThru
-            Start-Sleep -Milliseconds 2000
-            if (-not $p.HasExited) { $p.Kill() }
-        }
-        Ask 'H1' 'no-flash' 'Kein Aufblitzen gesehen (Leiste erschien jedes Mal unten)?' | Out-Null
+    if (Pause-Go ("H1a: Die Leiste ($hit) startet 10x im Abstand von 3 s, jeweils 1,5 s lang. Sie entsteht HINTER allen Fenstern, " +
+            "deshalb lass ein grosses Fenster ueber dem oberen Bildschirmrand offen: Du solltest NICHTS sehen. Jedes kurze Aufleuchten oben ist ein Aufblitzen. Dauer etwa 30 s.")) {
+        Run-Driver @('firstframe', '--variants', $hit, '--launches', '10', '--manual', '--seconds', '30') | Out-Null
+        Ask 'H1' 'no-flash' 'Nichts aufblitzen gesehen?' | Out-Null
     } else { Save-Answer 'H1' 'no-flash' 'skip' '' }
 
-    if (Pause-Go "H1b: 60 s Beobachtung. Klicke links und rechts auf die Leiste, 1 px daneben und in den Ueberhang; fahre darueber.") {
-        Run-Driver @('hit', '--variants', $hit, '--manual', '--seconds', '60') | Out-Null
-        Ask 'H1' 'real-mouse' 'Klicks auf der Leiste gezaehlt, daneben gingen sie durch?' | Out-Null
+    if (Pause-Go ("H1b: 60 s Beobachtung. Die Leiste liegt oben am Bildschirmrand; das tuerkise Fenster in der Mitte ist nur das Zeugenfenster. " +
+            "Klicke links und rechts auf die Leiste, 1 px daneben und in den Ueberhang, fahre darueber. Nach 60 s kommt dieses Fenster zurueck.")) {
+        Clear-Desktop
+        try { Run-Driver @('hit', '--variants', $hit, '--manual', '--seconds', '60') | Out-Null }
+        finally { Restore-Desktop }
+        Ask 'H1' 'real-mouse' 'Klicks auf der Leiste gezaehlt (siehe Ausgabe oben), daneben gingen sie durch?' | Out-Null
     } else { Save-Answer 'H1' 'real-mouse' 'skip' '' }
 
     if (Pause-Go "H1c: Notabbruch. Ein 30-s-Lauf startet; druecke nach ein paar Sekunden Strg+Alt+Q (falls belegt: Strg+Alt+Umschalt+Q).") {
@@ -148,7 +161,9 @@ function Step-H1 {
 function Step-H2 {
     if (Pause-Go "H2: Nach dem Countdown wird der Rechner GESPERRT. Entsperre selbst und schau dann auf die Leiste.") {
         for ($i = 5; $i -ge 1; $i--) { Write-Host "Sperren in $i ..."; Start-Sleep 1 }
-        Run-Driver @('zorder', '--guard', $guard, '--trigger', 'lock', '--allow-lock') | Out-Null
+        Clear-Desktop
+        try { Run-Driver @('zorder', '--guard', $guard, '--trigger', 'lock', '--allow-lock') | Out-Null }
+        finally { Restore-Desktop }
         Ask 'H2' 'unlock-visible' 'Leiste nach dem Entsperren sichtbar und unter den Fenstern?' | Out-Null
     } else { Save-Answer 'H2' 'unlock-visible' 'skip' '' }
 }
@@ -183,14 +198,16 @@ function Step-H3 {
 function Step-H4 {
     foreach ($v in @($menu, 'M-A') | Select-Object -Unique) {
         if (Pause-Go ("H4 ${v}: 120 s. Rechtsklick auf die Leiste, Pfeile/Enter/Escape, Klick daneben, Menue ein zweites Mal oeffnen, " +
-                "'Zeuge starten' waehlen. Vorher in einem anderen Fenster arbeiten (Fokus-Rueckgabe beachten).")) {
-            Run-Driver @('menu', '--variant', $v, '--manual', '--seconds', '120') | Out-Null
+                "'Zeuge starten' waehlen. Zum Fokus-Test vorher ein Fenster wiederherstellen und anklicken, dann erst das Menue.")) {
+            Clear-Desktop
+            try { Run-Driver @('menu', '--variant', $v, '--manual', '--seconds', '120') | Out-Null }
+            finally { Restore-Desktop }
             Ask 'H4' "$v-close" "${v}: Menue schliesst bei Klick daneben und mit Escape?" | Out-Null
             Ask 'H4' "$v-keys" "${v}: Pfeile und Enter waehlen richtig?" | Out-Null
             Ask 'H4' "$v-foreground" "${v}: Gestartetes Programm kam sichtbar nach vorn?" | Out-Null
             Ask 'H4' "$v-reopen" "${v}: Menue oeffnet ein zweites Mal?" | Out-Null
             Ask 'H4' "$v-bar-stays-bottom" "${v}: Leiste blieb nach dem Menue UNTER den Fenstern (oder stoert es nicht)?" | Out-Null
-            Ask 'H4' "$v-focus-back" "${v}: Danach war wieder das vorher aktive Fenster aktiv?" | Out-Null
+            Ask 'H4' "$v-focus-back" "${v}: Danach war wieder das vorher aktive Fenster aktiv (s, wenn nicht getestet)?" | Out-Null
         } else { Save-Answer 'H4' "$v-close" 'skip' '' }
     }
     $bmps = Get-ChildItem $private -Filter 'q3-menu-*.bmp' -ErrorAction SilentlyContinue
@@ -204,8 +221,11 @@ function Step-H5 {
     $out = Join-Path $private 'handteil-render.csv'
     foreach ($count in 20, 64) {
         if (Pause-Go "H5: $count Symbole, 30 s. Fahre mit der echten Maus ueber die Leiste, langsam und schnell, bis an die Enden.") {
-            Run-Driver @('render', '--variant', $render, '--count', [string]$count, '--render', 'hw', '--layout', 'smooth',
+            Clear-Desktop
+            try {
+                Run-Driver @('render', '--variant', $render, '--count', [string]$count, '--render', 'hw', '--layout', 'smooth',
                 '--manual', '--seconds', '30', '--label', "hand-$count", '--out', $out) | Out-Null
+            } finally { Restore-Desktop }
             $row = Import-Csv $out -ErrorAction SilentlyContinue | Where-Object { $_.label -eq "hand-$count" } | Select-Object -Last 1
             if ($row) { Write-Host ("Gemessen: Aufbau p95 {0} ms, Takt p95 {1} ms, Ausfall {2} %" -f $row.cost_p95, $row.cadence_p95, $row.drop_pct) }
             Ask 'H5' "smooth-$count" "$count Symbole: Zoom fluessig, aeussere Symbole ruhig?" | Out-Null
