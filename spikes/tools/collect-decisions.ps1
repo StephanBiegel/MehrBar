@@ -6,9 +6,11 @@
   Windows PowerShell 5.1, ASCII only (German headings are matched with "." in place of umlauts).
   Text output: per note one block with the file name, exactly one "Entscheidung:" line, the chosen variant and
   one short line per open item under "## Grenzfaelle fuer Stephan" (struck-through items are skipped).
-  -AsJson: the same as JSON with the full item texts, for handteil.ps1 and 01-18.
+  -AsJson: the same as JSON with the full item texts, for 01-18.
+  -AsObject: the objects themselves, for in-process callers such as handteil.ps1 (a child process would pass the
+  text through the console code page, which turns German quotes into plain ones and breaks the JSON).
 #>
-param([switch]$AsJson)
+param([switch]$AsJson, [switch]$AsObject)
 $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $phaseDir = Join-Path $repoRoot '.planning/phases/01-risiko-spikes'
@@ -40,6 +42,10 @@ $result = foreach ($name in $notes) {
     [pscustomobject]@{ File = $name; Decision = $decisionText; Variant = $variant; Items = $items.ToArray() }
 }
 
+if ($AsObject) {
+    $result
+    exit 0
+}
 if ($AsJson) {
     $result | ConvertTo-Json -Depth 4
     exit 0

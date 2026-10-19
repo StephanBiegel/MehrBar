@@ -30,7 +30,7 @@ $summaryDir = Join-Path $repoRoot 'spikes/results/handteil'
 $summaryCsv = Join-Path $summaryDir 'summary.csv'
 
 # Chosen variants from the notes.
-$decisions = (& powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'collect-decisions.ps1') -AsJson) -join "`n" | ConvertFrom-Json
+$decisions = @(& (Join-Path $PSScriptRoot 'collect-decisions.ps1') -AsObject)
 function Get-Variant([string]$note, [string]$fallback) {
     $v = ($decisions | Where-Object { $_.File -eq $note }).Variant
     if ($v) { $v } else { $fallback }
