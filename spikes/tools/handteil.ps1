@@ -139,7 +139,7 @@ function Step-H1 {
         Ask 'H1' 'no-flash' 'Nichts aufblitzen gesehen?' | Out-Null
     } else { Save-Answer 'H1' 'no-flash' 'skip' '' }
 
-    if (Pause-Go ("H1b: 60 s Beobachtung. Die Leiste liegt oben am Bildschirmrand; das tuerkise Fenster in der Mitte ist nur das Zeugenfenster. " +
+    if (Pause-Go ("H1b: 60 s Beobachtung. Die Leiste ist oben am Bildschirmrand als magentafarbener Rahmen mit fuenf Quadraten zu sehen (die Flaeche darin ist unsichtbar, faengt aber Klicks); das tuerkise Fenster in der Mitte ist nur das Zeugenfenster. " +
             "Klicke links und rechts auf die Leiste, 1 px daneben und in den Ueberhang, fahre darueber. Nach 60 s kommt dieses Fenster zurueck.")) {
         Clear-Desktop
         try { Run-Driver @('hit', '--variants', $hit, '--manual', '--seconds', '60') | Out-Null }

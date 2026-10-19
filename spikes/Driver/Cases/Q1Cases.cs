@@ -566,7 +566,8 @@ public sealed class HitCase : IDriverCase
     private static int RunManual(CaseContext ctx, string variant, int seconds)
     {
         Console.WriteLine($"manual observation of {variant} for {seconds} s; nothing is injected, use the mouse yourself");
-        using HostProcess bar = ctx.StartHost(HostArgs(variant));
+        // The plate is alpha 1 and invisible; sentinels and the outline show the human where the bar is (hand part H1).
+        using HostProcess bar = ctx.StartHost($"--variant {variant} --sentinel on --plate-outline on");
         using HostProcess witness = ctx.StartWitness("none", activate: false);
 
         int left = 0;

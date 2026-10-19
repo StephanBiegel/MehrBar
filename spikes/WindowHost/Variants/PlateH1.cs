@@ -58,6 +58,15 @@ internal static class PlateDrawing
             Height = ctx.Plate.Height,
             Fill = Frozen(PlateColor),
         };
+
+        // Hand part H1 (--plate-outline on): an opaque 2 px frame inside the plate shows the otherwise invisible hit area;
+        // it lies within the plate, so the hit area stays the same.
+        if (ctx.Options.TryGetValue("plate-outline", out string? outline) &&
+            string.Equals(outline, "on", StringComparison.OrdinalIgnoreCase))
+        {
+            plate.Stroke = Frozen(SentinelColor);
+            plate.StrokeThickness = 2;
+        }
         Canvas.SetLeft(plate, ctx.Plate.X);
         Canvas.SetTop(plate, ctx.Plate.Y);
         ctx.Root.Children.Add(plate);
