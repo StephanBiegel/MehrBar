@@ -1,12 +1,25 @@
 ---
 phase: 01-risiko-spikes
 verified: 2026-10-19T14:30:00Z
-status: human_needed
-score: 4/5 roadmap success criteria verified (1 uncertain, needs a human decision)
+status: passed
+score: 5/5 roadmap success criteria verified (SC2 with an accepted override)
 covered_files: [".planning/phases/01-risiko-spikes/01-01-PLAN.md", ".planning/phases/01-risiko-spikes/01-01-SUMMARY.md", ".planning/phases/01-risiko-spikes/01-02-PLAN.md", ".planning/phases/01-risiko-spikes/01-02-SUMMARY.md", ".planning/phases/01-risiko-spikes/01-03-PLAN.md", ".planning/phases/01-risiko-spikes/01-03-SUMMARY.md", ".planning/phases/01-risiko-spikes/01-04-PLAN.md", ".planning/phases/01-risiko-spikes/01-04-SUMMARY.md", ".planning/phases/01-risiko-spikes/01-05-PLAN.md", ".planning/phases/01-risiko-spikes/01-05-SUMMARY.md", ".planning/phases/01-risiko-spikes/01-06-PLAN.md", ".planning/phases/01-risiko-spikes/01-06-SUMMARY.md", ".planning/phases/01-risiko-spikes/01-07-PLAN.md", ".planning/phases/01-risiko-spikes/01-07-SUMMARY.md", ".planning/phases/01-risiko-spikes/01-08-PLAN.md", ".planning/phases/01-risiko-spikes/01-08-SUMMARY.md", ".planning/phases/01-risiko-spikes/01-09-PLAN.md", ".planning/phases/01-risiko-spikes/01-09-SUMMARY.md", ".planning/phases/01-risiko-spikes/01-10-PLAN.md", ".planning/phases/01-risiko-spikes/01-10-SUMMARY.md", ".planning/phases/01-risiko-spikes/01-11-PLAN.md", ".planning/phases/01-risiko-spikes/01-11-SUMMARY.md", ".planning/phases/01-risiko-spikes/01-12-PLAN.md", ".planning/phases/01-risiko-spikes/01-12-SUMMARY.md", ".planning/phases/01-risiko-spikes/01-13-PLAN.md", ".planning/phases/01-risiko-spikes/01-13-SUMMARY.md", ".planning/phases/01-risiko-spikes/01-14-PLAN.md", ".planning/phases/01-risiko-spikes/01-14-SUMMARY.md", ".planning/phases/01-risiko-spikes/01-15-PLAN.md", ".planning/phases/01-risiko-spikes/01-15-SUMMARY.md", ".planning/phases/01-risiko-spikes/01-16-PLAN.md", ".planning/phases/01-risiko-spikes/01-16-SUMMARY.md", ".planning/phases/01-risiko-spikes/01-17-PLAN.md", ".planning/phases/01-risiko-spikes/01-17-SUMMARY.md", ".planning/phases/01-risiko-spikes/01-18-PLAN.md", ".planning/phases/01-risiko-spikes/01-18-SUMMARY.md", ".planning/phases/01-risiko-spikes/01-19-PLAN.md", ".planning/phases/01-risiko-spikes/01-19-SUMMARY.md", ".planning/phases/01-risiko-spikes/01-HANDTEIL.md", ".planning/phases/01-risiko-spikes/01-SPIKE-ERGEBNISSE.md", ".planning/phases/01-risiko-spikes/01-SPIKE-frame-pacing.md", ".planning/phases/01-risiko-spikes/01-SPIKE-icons.md", ".planning/phases/01-risiko-spikes/01-SPIKE-menu.md", ".planning/phases/01-risiko-spikes/01-SPIKE-render-cost.md", ".planning/phases/01-risiko-spikes/01-SPIKE-tooling.md", ".planning/phases/01-risiko-spikes/01-SPIKE-window-hit.md", ".planning/phases/01-risiko-spikes/01-SPIKE-zoom-anchor.md", ".planning/phases/01-risiko-spikes/01-SPIKE-zorder-wind.md", "Directory.Packages.props", "global.json", "spikes/README.md", "spikes/WindowHost/HostWindow.cs", "spikes/WindowHost/Variants/MenuNative.cs", "spikes/WindowHost/Variants/ZOrderGuard.cs", "spikes/results/handteil/summary.csv", "spikes/results/q1/summary.md", "spikes/results/q2/s2-followup/summary-s2.md", "spikes/results/q3/menu.md", "spikes/results/q4-normal-summary.csv", "spikes/results/q4b-screen-summary.csv", "spikes/results/q6-icons.csv", "spikes/tools/check-notes.ps1", "spikes/tools/collect-decisions.ps1", "spikes/tools/handteil.ps1", "src/MehrBar.Core/Layout/ZoomEngine.cs", "src/MehrBar.Core/Layout/ZoomKernel.cs", "src/MehrBar.Tests/Fixtures/RocketDockReference.cs", "src/MehrBar.Tests/MehrBar.Tests.csproj", "src/MehrBar.Tests/ZoomAnchorTests.cs", "src/MehrBar.Tests/ZoomSmoothnessTests.cs"]
 covered_digest: "v3:sha256:b6d9a02c2995a37b3c9bd2bc8e1f0d69cb8a81c09c5c8c9b3afe8863de764905"
 behavior_unverified: 0
-overrides_applied: 0
+overrides_applied: 3
+overrides:
+  - must_have: "Für Win+D, Desktop anzeigen in der Taskleisten-Ecke, Win+M, Explorer-Neustart und Sperren/Entsperren ist protokolliert, ob das Fenster mit und ohne Wächter sichtbar bleibt; die Strategie für die Fensterebene ist gewählt"
+    reason: "Lock/unlock recorded only with the chosen guard S2 (H2 passed); a guard is mandatory anyway because S0 fails Win+D and the corner, so a lock run without guard cannot change the strategy"
+    accepted_by: "Stephan"
+    accepted_at: "2026-10-19T15:00:00Z"
+  - must_have: "Plan 01-19: WPF and DirectComposition compared by numbers and by eye"
+    reason: "Decided on numbers (10.4 % vs 9.1 % skipped periods on screen, within day-to-day scatter); WPF chosen and judged smooth by eye in H5; CompositionHost stays the documented fallback"
+    accepted_by: "Stephan"
+    accepted_at: "2026-10-19T15:00:00Z"
+  - must_have: "Plan 01-17 / SC5: icon extraction checked on a real network file"
+    reason: "Drive roots and an unreachable path are covered; a real network file is carried into phase 2 (listed in 01-SPIKE-icons.md and 01-SPIKE-ERGEBNISSE.md)"
+    accepted_by: "Stephan"
+    accepted_at: "2026-10-19T15:00:00Z"
 deferred:
   - truth: "SC4 (partial): on-screen frame pacing with 64 icons (build cost and CPU at 64 icons are measured; the displayed frame rate at 64 is not)"
     addressed_in: "Phase 3"
@@ -27,7 +40,7 @@ human_verification:
 
 **Phase Goal:** Die architekturbestimmenden Unbekannten sind auf diesem Rechner (Windows 11, Build 26200) mit Wegwerf-Prototypen gemessen und je mit einer Go/No-go-Notiz entschieden, bevor das Grundgerüst gebaut wird
 **Verified:** 2026-10-19T14:30:00Z
-**Status:** human_needed
+**Status:** passed (three human items accepted by Stephan on 2026-10-19, see Resolution)
 **Re-verification:** No, initial verification
 
 **Mode note:** ROADMAP marks phase 1 `mode: mvp`, but the goal is not a user story (`user-story.validate` returns `valid=false`). A spike phase has no user flow; the orchestrator requested the standard format, so standard goal-backward verification was applied and the User Flow Coverage table is omitted. Consider removing `mode: mvp` from phase 1 in ROADMAP.md.
@@ -168,3 +181,7 @@ No blocking gaps. Every architecture-relevant unknown (hit area, layer/Win+D, me
 
 _Verified: 2026-10-19T14:30:00Z_
 _Verifier: Claude (gsd-verifier)_
+
+## Resolution
+
+On 2026-10-19 Stephan accepted all three human items: lock/unlock with guard S2 only (override above), the numbers-only WPF/DirectComposition comparison, and the real network file deferred to phase 2. After the report the menu note, the z-order note header, the roadmap plan count and the H6 row in `summary.csv` were corrected (`0cd50f9`). Phase 1 is complete.

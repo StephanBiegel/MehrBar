@@ -12,7 +12,7 @@ Der Weg beginnt mit zeitlich begrenzten Spikes, die die riskantesten Fragen des 
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Risiko-Spikes** - Wegwerf-Prototypen klären Fenster, Win+D, Menüs, Zeichenkosten, Symbole und Zoom-Verankerung mit Go/No-go-Notizen
+- [x] **Phase 1: Risiko-Spikes** - Wegwerf-Prototypen klären Fenster, Win+D, Menüs, Zeichenkosten, Symbole und Zoom-Verankerung mit Go/No-go-Notizen
 - [ ] **Phase 2: Grundgerüst** - Leere Leiste oben mittig, ganz unten und Win+D-fest, per Drag & Drop befüllbar, Klick startet, Konfiguration sicher gespeichert, Tray
 - [ ] **Phase 3: Zoom und Beschriftung** - Zoom wie RocketDock (Abfall, Verankerung `cursor`, 60 fps, scharf) und Beschriftung des Symbols unter der Maus
 - [ ] **Phase 4: Skin CrystalXP.net** - 9-Slice-Hintergrund mit Outside-Margins, Trennlinienbild, stiller Standard-Hintergrund als Rückfall
@@ -182,7 +182,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Risiko-Spikes | 15/18 | In Progress | - |
+| 1. Risiko-Spikes | 19/19 | Complete | 2026-10-19 |
 | 2. Grundgerüst | 0/TBD | Not started | - |
 | 3. Zoom und Beschriftung | 0/TBD | Not started | - |
 | 4. Skin CrystalXP.net | 0/TBD | Not started | - |
