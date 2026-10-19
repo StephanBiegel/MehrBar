@@ -1,6 +1,6 @@
 # Spike Q4b — Bildtempo und Ruhe der Leiste auf dem Bildschirm
 
-**Stand:** 2026-10-13 · Plan 01-19 (Aufgaben 1 und 2 gemessen, Aufgabe 3 DirectComposition offen) · Code: `spikes/Driver/ScreenCapture.cs`, `spikes/Driver/Cases/ScreenCase.cs`, `spikes/Driver/Cases/RenderCase.cs` (`--capture`, `--layout`, `--snap`), `spikes/WindowHost/Variants/RenderCost.cs` · Zoom-Rechnung: `src/MehrBar.Core/Layout/ZoomEngine.cs` (`ComputeSmooth`) · Läufe: `spikes/tools/run-screen-compare.ps1` · Werte: `spikes/results/q4b-screen-summary.csv`
+**Stand:** 2026-10-19 · Plan 01-19 (Aufgaben 1–3 gemessen) · Code: `spikes/Driver/ScreenCapture.cs`, `spikes/Driver/Cases/ScreenCase.cs`, `spikes/Driver/Cases/RenderCase.cs` (`--capture`, `--layout`, `--snap`), `spikes/WindowHost/Variants/RenderCost.cs` · Zoom-Rechnung: `src/MehrBar.Core/Layout/ZoomEngine.cs` (`ComputeSmooth`) · Läufe: `spikes/tools/run-screen-compare.ps1` · Werte: `spikes/results/q4b-screen-summary.csv`
 
 ## Frage
 
@@ -43,6 +43,16 @@ Gemessen am 2026-10-13, Build 26200, 100 % Skalierung, 60 Hz.
 | **RocketDock, Mitte** | 1094 | 16,7 / 33,4 | **7,2 %** | 8,8 % | 0,39 / 0,39 | **0** |
 | RocketDock, Ende | 1058 | 16,7 / 33,6 | 11,5 % | 11,8 % | 0,29 / 0,29 | 0 |
 
+**Zweiter Lauf am 2026-10-19** (Aufgabe 3, DirectComposition; vom Desktop aus gestartet, gleiche Arbeitslast und dasselbe Werkzeug):
+
+| Lauf | Bilder mit Leistenänderung | Abstand p50 / p95 (ms) | `skipped_pct` | `missed_periods_pct` | Weg äußere Symbole (px/s) | Aufbau p50 / p95 (ms) | Host-Ausfall |
+|---|---|---|---|---|---|---|---|
+| Host (WPF R1), geglättet, Wiederholung | 1055 | 16,7 / 33,4 | 10,4 % | 12,1 % | 0,02 | 0,01 / 0,03 | 0,00 % |
+| **DirectComposition, geglättet** | 1063 | 16,7 / 33,3 | **9,1 %** | 11,4 % | 0,02 | 1,28 / 2,47 | 0,17 % |
+| DirectComposition, abgetastet | 1036 | 16,7 / 33,4 | 12,1 % | 13,7 % | 8,82 | 1,29 / 2,62 | 0,93 % |
+
+Die WPF-Leiste liegt in der Wiederholung bei 10,4 % statt 22,5 % am 13.10., und ihre Eigenmessung meldet keinen einzigen verspäteten Takt (am 13.10.: 11–15 %). Die Lücke vom 13.10. war also zum großen Teil Zustand der Maschine, nicht der Zeichenweg. DirectComposition ist am selben Tag nur um gut einen Prozentpunkt besser, innerhalb der Streuung zweier Läufe. Das Zittern der äußeren Symbole hängt wie erwartet nur an der Zoom-Rechnung, nicht am Zeichenweg.
+
 Zum Vergleich die Eigenmessung des Hosts in denselben Läufen (Host-Kadenz > 25 ms): 11,0–14,8 %. Auf dem Bildschirm fehlt also etwa doppelt so oft ein Bild, wie der Host selbst bemerkt. Die Aufbaukosten blieben bei p95 ≤ 0,02 ms, die CPU des Hosts bei etwa 0,3 %.
 
 **RocketDock am Leistenende** (Lauf „Ende“): Je Bild wurde der äußerste vom Ruhebild abweichende Pixel der Zeile gesucht und neben die Mausposition gelegt. Die Rechnung ist `ComputeSmooth` mit Radius 2,58 auf RocketDocks aktueller Ruhebelegung (Gruppen 5/6/3/1).
@@ -59,13 +69,14 @@ In Ruhe endet RocketDocks Kasten bei etwa 1243. Am letzten Symbol bleibt der Kas
 ## Ergebnis
 
 1. **Zittern: behoben.** Auf dem Bildschirm pendeln die äußeren Symbole mit der abgetasteten Rechnung 6–8 Mal je Sekunde. Mit `ComputeSmooth` stehen sie still, wie bei RocketDock. Am Leistenende verhalten sich Rechnung und RocketDock gleich. Das Runden auf ganze Pixel bringt nichts zusätzlich und kostet eher Bilder. **Empfehlung für Phase 2:** `ComputeSmooth` als Produktrechnung, keine Pixelrundung.
-2. **Bildtempo: Lücke gegenüber RocketDock.** Die WPF-Leiste (transparentes Fenster, R1, Hardware) verliert auf dem Bildschirm 23–28 % der Takte, RocketDock 7–12 %. Die Lücken sind bei uns oft zwei bis drei Takte lang (p95 50 ms gegen 33 ms). Am Aufwand liegt es nicht. Die Bilder gehen zwischen WPF-Renderthread, Layered-Fenster und DWM verloren. Die Ausfallschwelle von D-18 (~1 %) erreicht übrigens auch RocketDock auf diesem Maß nicht. Der Maßstab für MehrBar ist deshalb RocketDock, nicht 1 %.
-3. **Für 01-16:** Die Bildschirmmessung ersetzt den dort genannten Ersatzwert (5,2–5,8 % aus der Host-Kadenz). Gemessen auf dem Bildschirm liegt R1/20/hw bei 22,5–26,3 %.
+2. **Bildtempo: WPF reicht.** Am 13.10. verlor die WPF-Leiste auf dem Bildschirm 23–28 % der Takte gegen 7–12 % bei RocketDock. Die Wiederholung am 19.10. zeigt 10,4 % für WPF und 9,1 % für DirectComposition: Beide liegen im Bereich von RocketDock, der Unterschied ist kleiner als die Streuung zwischen zwei Messtagen. Die Ausfallschwelle von D-18 (~1 %) erreicht auch RocketDock auf diesem Maß nicht; der Maßstab ist RocketDock. **Empfehlung für Phase 2:** beim WPF-Zeichenweg (`OnRender`, transparentes Fenster, Hardware) bleiben. DirectComposition bringt messbar nichts, kostet aber eigenen Direct2D-/Swapchain-Code und Interop. Es bleibt als dokumentierte Ausweichlösung (`spikes/CompositionHost`), falls das Bildtempo im Produkt schlechter ausfällt.
+3. **Für 01-16:** Die Bildschirmmessung ersetzt den dort genannten Ersatzwert (5,2–5,8 % aus der Host-Kadenz). Gemessen auf dem Bildschirm liegt R1/20/hw bei 10,4 % (19.10.) bis 26,3 % (13.10.), je nach Zustand der Maschine.
 
 ## Offen
 
-- **Aufgabe 3:** DirectComposition-Vergleichsleiste (Flip-Swapchain mit vormultipliziertem Alpha, Direct2D, getaktet über das Frame-Latency-Waitable), dieselbe Arbeitslast, gemessen mit demselben Werkzeug. Ziel: RocketDocks Bildtempo (um 7 %). Danach die Empfehlung für den Zeichenweg in Phase 2.
+- RocketDock wurde am 19.10. nicht erneut gemessen. Für einen Vergleich am selben Tag: RocketDock-Zelle nachholen (siehe unten).
+- **Bildschirmläufe nur vom Desktop aus starten.** Eine Sitzung im Hivemo-Server läuft in Windows-Sitzung 0: Dort lässt sich die Notbremse nicht anmelden, und der Driver verweigert den Lauf.
 - 64 Symbole wurden auf dem Bildschirm nicht gemessen.
-- Grenzfall für Stephan: Sichtprüfung der geglätteten Leiste und später der DirectComposition-Leiste.
+- Grenzfall für Stephan: Sichtprüfung der geglätteten Leiste (im Handdurchgang 01-17).
 
 **Nachmessen:** RocketDock schließen, dann `powershell -NoProfile -ExecutionPolicy Bypass -File spikes/tools/run-screen-compare.ps1` (fragt nach „GO“). RocketDock einzeln: Fensterrechteck auslesen, dann `Driver.exe screen-sweep --rect <x,y,w,h> --sweep-y <Symbolmitte> --rows <y-4,y,y+4> --centre <x> --amplitude 150 --clear-top --label rocketdock --out-dir spikes/results/private/q4b-raw/rocketdock` und `Driver.exe screen-analyze --dir <Ordner> --far 250 --label rocketdock --out spikes/results/q4b-screen-summary.csv`. Achtung: Ohne `--clear-top` misst der Lauf das Fenster, das über RocketDock liegt.
