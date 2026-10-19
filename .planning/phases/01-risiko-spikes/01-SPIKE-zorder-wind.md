@@ -1,6 +1,6 @@
 # Spike Q2 — Ebene „ganz unten“ gegen Win+D und Verwandte
 
-**Stand:** 2026-10-12 · Plan 01-14 (Messung abgeschlossen) und Plan 01-15 (S2-Folgemessung, Welle 7) · Grenzfälle teils erledigt, Rest offen · Code: `spikes/WindowHost/Variants/ZOrderGuard.cs` (Wächter S0/S1/S2), `spikes/Driver/Cases/ZOrderCase.cs`, `spikes/Driver/Cases/ZOrderTriggers.cs`, Lauf: `spikes/tools/run-zorder.ps1`
+**Stand:** 2026-10-19 · Plan 01-14 (Messung abgeschlossen), Plan 01-15 (S2-Folgemessung) und Handteil H2/H3 (01-17) · Grenzfälle erledigt · Code: `spikes/WindowHost/Variants/ZOrderGuard.cs` (Wächter S0/S1/S2), `spikes/Driver/Cases/ZOrderCase.cs`, `spikes/Driver/Cases/ZOrderTriggers.cs`, Lauf: `spikes/tools/run-zorder.ps1`
 
 ## Frage
 

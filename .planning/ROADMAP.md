@@ -35,7 +35,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. Mit 64 Symbolen bei 60 fps sind Frame-Zeit und CPU des transparenten Fensters gemessen (Ziel ≤ 16 ms je Frame, ≤ 15 % CPU; Hardware gegen SoftwareOnly), und die Zeichentechnik ist mit Go oder Ausweichweg entschieden
   5. Ein Core-Test bildet die vier Messreihen des Originals mit Verankerung `cursor` auf ±6 px ab; der Symbol-Spike liefert 256-px-Symbole mit sauberem Alpha für .exe (nur 48 px und 256 px), .lnk samt Store-App, Ordner, .url, PDF und Netzpfad; CsWin32-Build und Testerkennung in VS Code sind geklärt
 
-**Plans:** 15/19 plans executed (10 waves)
+**Plans:** 19/19 plans executed (10 waves)
 
 Plans:
 **Wave 1**

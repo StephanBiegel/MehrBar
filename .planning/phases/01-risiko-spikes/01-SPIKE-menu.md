@@ -120,4 +120,4 @@ Nach der Regel aus dem Plan (D-08/D-15): einfachste Variante in der Reihenfolge 
 
 ## Grenzfälle für Stephan
 
-Keine. Entschieden am 2026-10-19: H4 bestanden; Leiste und Fokus nach dem Menü sind von Hand in Ordnung, eine Wiederholung von `run-menu.ps1` ist nicht nötig, weil kein Handergebnis von der Messung abweicht. Phase 2 gibt den Fokus trotzdem ausdrücklich zurück (wie M-B). Offen für Phase 2: 125/150 %, zweite Leiste.
+Keine. Entschieden am 2026-10-19: H4 bestanden; Leiste und Fokus nach dem Menü sind von Hand in Ordnung, eine Wiederholung von `run-menu.ps1` ist nicht nötig. Einziges abweichendes Handergebnis: Der Fokus kehrte von Hand zurück, gemessen nicht; nach D-07 gilt das Handergebnis, und Phase 2 gibt den Fokus ohnehin ausdrücklich zurück. Phase 2 gibt den Fokus trotzdem ausdrücklich zurück (wie M-B). Offen für Phase 2: 125/150 %, zweite Leiste.
