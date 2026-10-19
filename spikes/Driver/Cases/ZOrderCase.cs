@@ -148,10 +148,18 @@ internal sealed class GapSampler
         return sampler;
     }
 
-    /// <summary>Waits for the end of the window and evaluates it.</summary>
-    public GapResult Complete()
+    /// <summary>Waits for the end of the window (cut short when <paramref name="abort"/> fires) and evaluates it.</summary>
+    public GapResult Complete(CancellationToken abort = default)
     {
-        _thread.Join();
+        // A manual window lasts up to minutes; the emergency abort must not wait for its end (hand part H1).
+        while (!_thread.Join(20))
+        {
+            if (abort.IsCancellationRequested)
+            {
+                _stop = true;
+            }
+        }
+
         lock (_samples)
         {
             return Analyse(_samples.ToArray());
@@ -703,7 +711,8 @@ public sealed class ZOrderCase : IDriverCase
             sampler?.Stop();
         }
 
-        GapResult gap = sampler?.Complete() ?? new GapResult(0, -1, -1, 0, false, 0, 0);
+        GapResult gap = sampler?.Complete(safety.Token) ?? new GapResult(0, -1, -1, 0, false, 0, 0);
+        Safety.ThrowIfAborted();
         Task.WaitAll(snapshots.ToArray(), TimeSpan.FromSeconds(10));
 
         if (fired)
