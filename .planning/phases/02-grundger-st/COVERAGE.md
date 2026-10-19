@@ -1,0 +1,1 @@
+No external API integration: phase 2 calls only local Win32/Shell/COM OS APIs (via CsWin32 in App/Interop), the in-box System.Text.Json and the local NuGet library H.NotifyIcon.Wpf; no web API or remote SDK is involved.

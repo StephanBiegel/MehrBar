@@ -92,7 +92,7 @@ Plans:
   4. Ein Klick startet Programm, Datei oder Verknüpfung (gespeichert wird der .lnk-Pfad, Store-App-Verknüpfungen funktionieren) bzw. öffnet einen Ordner im Explorer, auch mit `%USERPROFILE%` im Pfad; die Symbole kommen aus hochauflösenden Shell-Symbolen
   5. Die Konfiguration übersteht Beenden der App und Windows-Neustart; vor jedem Speichern entsteht ein Backup, unbekannte Felder und Eintragstypen bleiben erhalten; das Tray-Symbol bietet Konfiguration (bis Phase 6: öffnet die config.json im Standard-Editor) · Leiste ein-/ausblenden · Leiste nach vorn · Beenden, übersteht einen Explorer-Neustart, und Fehler stehen im Log unter `%APPDATA%\MehrBar\logs\`
 
-**Plans**: TBD
+**Plans:** 15 plans (8 waves), see `.planning/phases/02-grundger-st/`
 **Hinweise**: Konzept-Meilenstein 1, erweitert laut Recherche: Fensterebene samt Win+D-Robustheit, Trefferfläche mit Alpha 1, ConfigStore und Core-Layoutvertrag (Zoom-Fortschritt fest auf 0) gehören hierher, damit Phase 3 rein additiv ist. Nur eine Instanz (Mutex) läuft ab hier; ein erster Publish als Einzeldatei misst die Startzeit früh.
 
 ### Phase 3: Zoom und Beschriftung
