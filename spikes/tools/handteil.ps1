@@ -8,6 +8,7 @@
     handteil.ps1            interactive, all steps H1..H7, then the borderline decisions (G)
     handteil.ps1 -List      prints the steps and their commands, runs nothing
     handteil.ps1 -Step H4   runs one step (H1..H7 or G)
+    handteil.ps1 -From H2   runs H2 and everything after it
 
   Every question takes j (yes), n (no) or s (skip) plus an optional comment.
   Full answers incl. comments and the H7 network path: spikes/results/private/handteil-answers.csv (ignored).
@@ -17,7 +18,9 @@
 param(
     [switch]$List,
     [ValidateSet('H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'H7', 'G')]
-    [string]$Step
+    [string]$Step,
+    [ValidateSet('H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'H7', 'G')]
+    [string]$From
 )
 $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
@@ -278,7 +281,9 @@ function Step-G {
     }
 }
 
-$order = if ($Step) { @($Step) } else { @('H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'H7', 'G') }
+$all = @('H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'H7', 'G')
+# -From H2: continue after finished steps without overwriting their answers with skips.
+$order = if ($Step) { @($Step) } elseif ($From) { $all[[array]::IndexOf($all, $From)..($all.Count - 1)] } else { $all }
 foreach ($s in $order) {
     Write-Host ''
     Write-Host ('===== ' + $s + $(if ($steps.Contains($s)) { ' - ' + $steps[$s][0] } else { ' - Grenzfaelle' })) -ForegroundColor Green
