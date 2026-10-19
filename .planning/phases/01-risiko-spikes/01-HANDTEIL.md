@@ -1,6 +1,6 @@
 # Handteil Phase 1 — Checkliste H1–H7 und Grenzfälle
 
-**Stand:** 2026-10-19 · Plan 01-17 (Handteil durchgeführt, H6 offen) · Ablauf: `spikes/tools/handteil.ps1` (Übersicht: `-List`, einzelner Schritt: `-Step H4`) · Entscheidungen und Grenzfälle: `spikes/tools/collect-decisions.ps1`
+**Stand:** 2026-10-19 · Plan 01-17 (Handteil durchgeführt, H6 mit Rückfall B bestanden) · Ablauf: `spikes/tools/handteil.ps1` (Übersicht: `-List`, einzelner Schritt: `-Step H4`) · Entscheidungen und Grenzfälle: `spikes/tools/collect-decisions.ps1`
 
 **Start:** auf dem Desktop in einem eigenen PowerShell-Fenster im Repo, nicht aus einer Hivemo-Sitzung (die läuft in Windows-Sitzung 0 ohne Bildschirm und Notbremse). RocketDock vorher beenden.
 
@@ -30,8 +30,8 @@ Antworten: j, n oder s (überspringen) plus Bemerkung. Freitext und Netzwerkpfad
 | H4 | Aussehen der Menüs | Bilder `q3-menu-*.bmp` | j |
 | H5 | 20 Symbole flüssig, äußere Symbole ruhig | R1/hw: Bildschirm 10,4 % ausgelassen, Zittern 0 (frame-pacing) | j |
 | H5 | 64 Symbole flüssig | Aufbau p95 0,017 ms (render-cost); am Bildschirm ungemessen | j |
-| H6 | `MehrBar.sln` lädt im C# Dev Kit | CLI: Build ohne Warnung (tooling) | offen (Skriptstart von VS Code fehlgeschlagen) |
-| H6 | Testexplorer zeigt und startet die Tests | CLI: `dotnet test` grün (tooling) | offen |
+| H6 | `MehrBar.sln` lädt im C# Dev Kit | CLI: Build ohne Warnung (tooling) | n mit MTP; j nach Rückfall B (VSTest) |
+| H6 | Testexplorer zeigt und startet die Tests | CLI: `dotnet test` grün (tooling) | n mit MTP; j nach Rückfall B (VSTest) |
 | H7 | Kontaktbogen sauber auf hell/dunkel/Schachbrett | 12/13 Fälle 256 px, Straight-Alpha umgerechnet (icons) | j |
 | H7 | Eine Netzwerkdatei (optional) | nur Laufwerkswurzel geprüft (icons) | übersprungen |
 

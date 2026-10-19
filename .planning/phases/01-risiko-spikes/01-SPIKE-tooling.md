@@ -38,11 +38,11 @@ Grenze der Messung: Die erzeugten Dateien zeigen, dass Namen aus mehreren Listen
 
 Handteil H6 am 2026-10-19: nicht aussagekräftig. Das Skript startete VS Code mit `code`, das Fenster ging nur kurz auf und wieder zu; der Testexplorer wurde nicht erreicht. Die CLI-Belege (Build ohne Warnung, `dotnet test` grün) bleiben gültig.
 
-Von Hand nachgeprüft am 2026-10-19: Der Testexplorer findet die MTP-Tests nicht (Stephan). **Rückfall B angewendet** (Plan 01-18): `xunit.v3.mtp-off` 4.0.1 + `xunit.runner.visualstudio` 4.0.0 + `Microsoft.NET.Test.Sdk` 18.10.1 statt `xunit.v3.mtp-v2`, `test.runner` aus `global.json` entfernt. `dotnet test` danach grün (28/28, VSTest). Ob der Testexplorer die Tests jetzt findet, prüft Stephan noch einmal.
+Von Hand nachgeprüft am 2026-10-19: Der Testexplorer findet die MTP-Tests nicht (Stephan). **Rückfall B angewendet** (Plan 01-18): `xunit.v3.mtp-off` 4.0.1 + `xunit.runner.visualstudio` 4.0.0 + `Microsoft.NET.Test.Sdk` 18.10.1 statt `xunit.v3.mtp-v2`, `test.runner` aus `global.json` entfernt. `dotnet test` danach grün (28/28, VSTest). Danach findet der Testexplorer die Tests und führt sie aus (Stephan, 2026-10-19) — H6 bestanden mit VSTest.
 
 ## Entscheidung
 
-**Entscheidung:** GO — CsWin32 0.3.360 und xunit.v3.mtp-v2 (MTP) über die CLI belegt; VS-Code-Testexplorer folgt im Handteil H6
+**Entscheidung:** GO — CsWin32 0.3.360 belegt; Tests mit xUnit v3 über VSTest (Rückfall B: `xunit.v3.mtp-off`, `xunit.runner.visualstudio`, `Microsoft.NET.Test.Sdk`), weil der VS-Code-Testexplorer MTP nicht fand; CLI und Testexplorer grün (H6, 2026-10-19)
 
 Begründung: Alle CLI-messbaren Teile sind grün (Build ohne Warnung mit mehreren Listen, 19 von 19 Tests, Filter und Auflistung mit funktionierender Syntax). Der Testexplorer des C# Dev Kit hat keinen CLI-Weg und wird deshalb nicht hier entschieden. Fällt H6 durch, gilt der vorbereitete Rückfall B aus `STACK.md` § 12 (`xunit.v3.mtp-off` 4.0.1 + `xunit.runner.visualstudio` 4.0.0 + `Microsoft.NET.Test.Sdk` 18.10.1, `test`-Block aus `global.json` entfernen); die CLI-Ergebnisse sind laut `STACK.md` in beiden Modi gleich. Die Umstellung gehört dann in den Abschlussplan 01-18.
 
@@ -50,12 +50,12 @@ Begründung: Alle CLI-messbaren Teile sind grün (Build ohne Warnung mit mehrere
 
 - **Testläufer seit 2026-10-19: VSTest (Rückfall B)**, weil der VS-Code-Testexplorer die MTP-Tests nicht fand. Filter wieder mit `dotnet test --filter`; `OutputType Exe` bleibt.
 
-- **Filter-Syntax für alle späteren Prüfbefehle:** `dotnet test --filter-method "*Name*"` bzw. `--filter-class "*Klasse*"`; Auflisten mit `dotnet test --list-tests` (**nicht** `-- --list-tests`). Ein Lauf mit Exitcode 8 bedeutet „Filter hat nichts getroffen“ und ist in Verifikationsbefehlen als Fehler zu behandeln.
+- **Filter-Syntax für alle späteren Prüfbefehle (VSTest):** `dotnet test --filter "FullyQualifiedName~Name"`; Auflisten mit `dotnet test --list-tests`. Die MTP-Syntax (`--filter-method`, Exitcode 8 bei leerem Filter) gilt seit dem Rückfall nicht mehr; ein Filter, der nichts trifft, meldet „keine Tests“ — Verifikationsbefehle prüfen die Anzahl.
 - **`MehrBar.sln` bleibt** (klassisches Format). Ein Wechsel auf `.slnx` wäre erst nach einem belegten Dev-Kit-Test sinnvoll; er steht nicht an.
-- **CsWin32 im Produkt:** Der Pin 0.3.360 wandert zusammen mit `MehrBar.App` in Phase 2 in das Wurzel-`Directory.Packages.props` (heute dort nur `xunit.v3.mtp-v2`); `PrivateAssets=all`, `AllowUnsafeBlocks`, `NativeMethods.json` mit `allowMarshaling: false`. Die Spike-Pins bleiben unabhängig und können mit `spikes/` eingefroren oder gelöscht werden.
+- **CsWin32 im Produkt:** Der Pin 0.3.360 wandert zusammen mit `MehrBar.App` in Phase 2 in das Wurzel-`Directory.Packages.props` (heute dort nur die drei Testpakete); `PrivateAssets=all`, `AllowUnsafeBlocks`, `NativeMethods.json` mit `allowMarshaling: false`. Die Spike-Pins bleiben unabhängig und können mit `spikes/` eingefroren oder gelöscht werden.
 - **Listen nach Thema funktionieren:** `App/Interop` darf wie die Spikes mehrere `NativeMethods.txt` nach Thema führen (Fenster, Eingabe, Symbole, Shell), per Platzhalter-Eintrag eingebunden. Mehrdeutige Namen weiter qualifizieren und `EmitCompilerGeneratedFiles` nie in den Projektordner legen.
-- **Lokalisierte Ausgabe:** Die CLI meldet auf diesem Rechner deutsch („erfolgreich“, „Fehler“). Skripte, die Ausgaben auswerten, nehmen den **Exitcode** (0 / 8), nicht den Text.
+- **Lokalisierte Ausgabe:** Die CLI meldet auf diesem Rechner deutsch („erfolgreich“, „Fehler“). Skripte, die Ausgaben auswerten, nehmen den **Exitcode**, nicht den Text.
 
 ## Grenzfälle für Stephan
 
-1. **H6 nach Rückfall B:** VS Code mit `C:\Development\MehrBar` öffnen und prüfen, ob der Testexplorer die 28 Tests jetzt zeigt und grün ausführt. Wenn nicht: Ursache im C# Dev Kit suchen, kein Grund, Phase 2 anzuhalten (die CLI läuft).
+Keine. H6 ist mit Rückfall B bestanden (2026-10-19).

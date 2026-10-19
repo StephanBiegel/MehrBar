@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 01
 current_phase_name: Risiko-Spikes
 status: executing
-stopped_at: Completed 01-12-PLAN.md
-last_updated: "2026-10-12T15:33:15.183Z"
-last_activity: 2026-10-10
-last_activity_desc: Phase 01 execution started
+stopped_at: Completed 01-18-PLAN.md (phase 1 plans done, verification pending)
+last_updated: "2026-10-19T13:30:00.000Z"
+last_activity: 2026-10-19
+last_activity_desc: Phase 01 plans complete, summary GO for phase 2
 state_head: 6dcda4da08dd883970550efb292312eaad9c9d37
 progress:
   total_phases: 7
   completed_phases: 0
-  total_plans: 18
-  completed_plans: 15
+  total_plans: 19
+  completed_plans: 19
   percent: 0
 ---
 
@@ -28,9 +28,9 @@ See: .planning/PROJECT.md (updated 2026-10-09)
 ## Current Position
 
 Phase: 01 (Risiko-Spikes) — EXECUTING
-Plan: 16 of 18
-Status: Ready to execute
-Last activity: 2026-10-10 — Phase 01 execution started
+Plan: 19 of 19
+Status: Plans complete — verify phase 1, then plan phase 2
+Last activity: 2026-10-19 — hand pass done, VSTest fallback, 01-SPIKE-ERGEBNISSE.md: GO
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -95,6 +95,8 @@ Recent decisions affecting current work:
 - [Phase 01]: 01-10: while the S1/S2 watcher holds the bar lifted, 'desktop shown' = no ordinary window above the desktop host (heuristic, to be confirmed with WinEvent log in 01-14)
 - [Phase 01]: Q3: WPF popup item rectangles come from the popup's Win32 rectangle plus in-popup offsets (PointToScreen was wrong 130 ms after open); Driver uses the newest menu-items row >= 150 ms after menu-open
 - [Phase 01]: 01-12: Q4 sweep waits use a high-resolution waitable timer (timeBeginPeriod ineffective for windowless processes on Windows 11: 13.45 ms median step vs 8.00 ms); dwm.exe CPU is n/a at normal integrity
+- [Phase 01]: 01-19: ComputeSmooth fixes outer-icon jitter; WPF frame pacing on screen on par with DirectComposition (10.4 % vs 9.1 %), RocketDock is the benchmark
+- [Phase 01]: 01-18: tests on VSTest (fallback B) because the VS Code Test Explorer did not find MTP tests
 - [Phase 01]: 01-12: Driver render case rehearses the real input path with --record-input (RecordingSink, nothing sent); PresentMon download and flag names stay unverified until 01-16
 
 ### Pending Todos
@@ -103,7 +105,7 @@ Recent decisions affecting current work:
 
 ### Blockers/Concerns
 
-- [Phase 1]: Ergebnisse (Win+D-Wächter, Menütechnik, Zeichenkosten des Layered-Fensters) können den Umfang von Phase 2 ändern — Phase 2 erst nach den Go/No-go-Notizen planen
+- [Phase 2]: Umfang laut 01-SPIKE-ERGEBNISSE.md (S2-Wächter, Alpha-1-Platte, Menü M-C, R1/hw, STA-IconCache, VSTest); Bildschirmläufe nur vom Desktop, nicht aus Hivemo (Sitzung 0)
 - [Phase 4]: Bedeutung von `Outside-*Margin` und Strecken der Trennlinie unbelegt; `docs/skin-format.md` ist Tor vor dem Code
 - [Phase 7]: Startzeit < 1 s mit Single-File ohne Kompression noch ungemessen; ReadyToRun nur nach Messung
 
@@ -117,6 +119,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-12T07:39:50.105Z
-Stopped at: Completed 01-12-PLAN.md
+Last session: 2026-10-19T13:30:00.000Z
+Stopped at: Completed 01-18-PLAN.md (phase 1 plans done, verification pending)
 Resume file: None
