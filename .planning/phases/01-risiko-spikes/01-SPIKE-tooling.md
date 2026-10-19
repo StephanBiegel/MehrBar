@@ -38,6 +38,8 @@ Grenze der Messung: Die erzeugten Dateien zeigen, dass Namen aus mehreren Listen
 
 Handteil H6 am 2026-10-19: nicht aussagekräftig. Das Skript startete VS Code mit `code`, das Fenster ging nur kurz auf und wieder zu; der Testexplorer wurde nicht erreicht. Die CLI-Belege (Build ohne Warnung, `dotnet test` grün) bleiben gültig.
 
+Von Hand nachgeprüft am 2026-10-19: Der Testexplorer findet die MTP-Tests nicht (Stephan). **Rückfall B angewendet** (Plan 01-18): `xunit.v3.mtp-off` 4.0.1 + `xunit.runner.visualstudio` 4.0.0 + `Microsoft.NET.Test.Sdk` 18.10.1 statt `xunit.v3.mtp-v2`, `test.runner` aus `global.json` entfernt. `dotnet test` danach grün (28/28, VSTest). Ob der Testexplorer die Tests jetzt findet, prüft Stephan noch einmal.
+
 ## Entscheidung
 
 **Entscheidung:** GO — CsWin32 0.3.360 und xunit.v3.mtp-v2 (MTP) über die CLI belegt; VS-Code-Testexplorer folgt im Handteil H6
@@ -45,6 +47,8 @@ Handteil H6 am 2026-10-19: nicht aussagekräftig. Das Skript startete VS Code mi
 Begründung: Alle CLI-messbaren Teile sind grün (Build ohne Warnung mit mehreren Listen, 19 von 19 Tests, Filter und Auflistung mit funktionierender Syntax). Der Testexplorer des C# Dev Kit hat keinen CLI-Weg und wird deshalb nicht hier entschieden. Fällt H6 durch, gilt der vorbereitete Rückfall B aus `STACK.md` § 12 (`xunit.v3.mtp-off` 4.0.1 + `xunit.runner.visualstudio` 4.0.0 + `Microsoft.NET.Test.Sdk` 18.10.1, `test`-Block aus `global.json` entfernen); die CLI-Ergebnisse sind laut `STACK.md` in beiden Modi gleich. Die Umstellung gehört dann in den Abschlussplan 01-18.
 
 ## Folgen für Phase 2/3
+
+- **Testläufer seit 2026-10-19: VSTest (Rückfall B)**, weil der VS-Code-Testexplorer die MTP-Tests nicht fand. Filter wieder mit `dotnet test --filter`; `OutputType Exe` bleibt.
 
 - **Filter-Syntax für alle späteren Prüfbefehle:** `dotnet test --filter-method "*Name*"` bzw. `--filter-class "*Klasse*"`; Auflisten mit `dotnet test --list-tests` (**nicht** `-- --list-tests`). Ein Lauf mit Exitcode 8 bedeutet „Filter hat nichts getroffen“ und ist in Verifikationsbefehlen als Fehler zu behandeln.
 - **`MehrBar.sln` bleibt** (klassisches Format). Ein Wechsel auf `.slnx` wäre erst nach einem belegten Dev-Kit-Test sinnvoll; er steht nicht an.
@@ -54,4 +58,4 @@ Begründung: Alle CLI-messbaren Teile sind grün (Build ohne Warnung mit mehrere
 
 ## Grenzfälle für Stephan
 
-1. **H6 — VS-Code-Testexplorer von Hand:** VS Code selbst mit dem Ordner `C:\Development\MehrBar` öffnen; erwartet: `MehrBar.sln` lädt im C# Dev Kit, der Testexplorer zeigt die Tests und „Alle Tests ausführen“ endet grün. Zeigt er nichts, wendet 01-18 Rückfall B an; kein Grund, Phase 2 anzuhalten.
+1. **H6 nach Rückfall B:** VS Code mit `C:\Development\MehrBar` öffnen und prüfen, ob der Testexplorer die 28 Tests jetzt zeigt und grün ausführt. Wenn nicht: Ursache im C# Dev Kit suchen, kein Grund, Phase 2 anzuhalten (die CLI läuft).
