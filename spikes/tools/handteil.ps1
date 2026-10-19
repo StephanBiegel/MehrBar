@@ -126,7 +126,8 @@ function Restore-Desktop {
 
 function Run-Driver([string[]]$driverArgs) {
     Write-Host ('> Driver.exe ' + ($driverArgs -join ' ')) -ForegroundColor DarkGray
-    & $driver @driverArgs
+    # Out-Host: the callers discard the function output with Out-Null, the Driver's lines must still reach the screen.
+    & $driver @driverArgs | Out-Host
     $code = $LASTEXITCODE
     Write-Host ('(Exit-Code ' + $code + ')') -ForegroundColor DarkGray
     return $code
