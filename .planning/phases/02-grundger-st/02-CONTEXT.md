@@ -38,6 +38,8 @@ Anforderungen: LEIS-01…07, ITEM-01, ITEM-03, DND-01, DND-02, MENU-03, CONF-01,
 ### Nach der Planung entschieden (2026-10-20)
 - **D-13:** Die Einzelinstanz-Sperre (benannter Mutex) kommt in Phase 2 (Teil von APP-02); dass ein zweiter Start die Konfiguration öffnet, bleibt Phase 6 (Stephan).
 
+- **D-14:** Symbolabstand `spacing` Standard **0** wie RocketDock (Raster 32 px, kalibrierungstreu); das Feld bleibt in der Konfiguration einstellbar (Stephan).
+
 ### Claude's Discretion
 - Farbe, Deckkraft und Eckenradius des Standard-Hintergrunds; Abstand der Symbole; Wortlaut der Meldung (Phase 4 ersetzt den Hintergrund durch Skins).
 - Ob das Meldungsfenster ein WPF-Fenster oder eine Windows-Meldung ist — Hauptsache, es nimmt der Leiste nicht dauerhaft die Ebene „ganz unten“.
