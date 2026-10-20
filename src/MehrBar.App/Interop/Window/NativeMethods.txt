@@ -1,0 +1,24 @@
+// Window, z-order, monitor and foreground names. Rule for every list under Interop/**: each name in exactly one list.
+SetWindowPos
+GetWindowLong
+SetWindowLong
+WINDOW_EX_STYLE
+WINDOW_LONG_PTR_INDEX
+SET_WINDOW_POS_FLAGS
+WM_WINDOWPOSCHANGING
+WINDOWPOS
+WM_MOUSEACTIVATE
+MA_NOACTIVATE
+HWND_BOTTOM
+HWND_TOPMOST
+HWND_NOTOPMOST
+MonitorFromPoint
+GetMonitorInfo
+MONITORINFO
+MONITOR_FROM_FLAGS
+WM_DISPLAYCHANGE
+WM_DPICHANGED
+ShowWindow
+SHOW_WINDOW_CMD
+AllowSetForegroundWindow
+ASFW_ANY
