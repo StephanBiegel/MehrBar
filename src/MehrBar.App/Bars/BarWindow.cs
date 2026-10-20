@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -5,6 +7,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using MehrBar.App.Interop;
 using MehrBar.Core.Layout;
+using MehrBar.Core.Logging;
 
 namespace MehrBar.App.Bars;
 
@@ -86,6 +89,17 @@ internal sealed class BarWindow : Window
         SetPixelSize(_windowRect);
 
         Native.Attach(source, _windowRect);
+        CompositionTarget.Rendering += OnFirstRendering;
+    }
+
+    // Logs once with the first frame, then unsubscribes: at rest the bar requests no frames.
+    private void OnFirstRendering(object? sender, EventArgs e)
+    {
+        CompositionTarget.Rendering -= OnFirstRendering;
+        long elapsed = (long)(DateTime.Now - Process.GetCurrentProcess().StartTime).TotalMilliseconds;
+        AppLog.Current.Info(string.Create(
+            CultureInfo.InvariantCulture,
+            $"bar-ready elapsed_ms={elapsed} window={_windowRect.Left},{_windowRect.Top},{_windowRect.Width},{_windowRect.Height} dpi={_scale}"));
     }
 
     private void OnLeftButtonDown(object sender, MouseButtonEventArgs e)
