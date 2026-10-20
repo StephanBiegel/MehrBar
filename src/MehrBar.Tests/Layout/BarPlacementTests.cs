@@ -56,6 +56,31 @@ public class BarPlacementTests
         Assert.Equal(1920, bar.Width);
     }
 
+    [Theory]
+    [InlineData(BarAlign.Start)]
+    [InlineData(BarAlign.Center)]
+    [InlineData(BarAlign.End)]
+    public void Offset_shifts_every_alignment_along_the_edge(BarAlign align)
+    {
+        RectI plain = BarPlacement.Compute(FullHd, new PlacementSpec(BarEdge.Top, align, 0, 0), 108, 44);
+        RectI shifted = BarPlacement.Compute(FullHd, new PlacementSpec(BarEdge.Top, align, 20, 0), 108, 44);
+
+        Assert.Equal(plain.Left + 20, shifted.Left);
+        Assert.Equal(plain.Top, shifted.Top);
+    }
+
+    [Theory]
+    [InlineData(BarEdge.Left)]
+    [InlineData(BarEdge.Right)]
+    public void Offset_on_the_side_edges_runs_along_y(BarEdge edge)
+    {
+        RectI plain = BarPlacement.Compute(FullHd, new PlacementSpec(edge, BarAlign.Center, 0, 0), 108, 44);
+        RectI shifted = BarPlacement.Compute(FullHd, new PlacementSpec(edge, BarAlign.Center, 20, 0), 108, 44);
+
+        Assert.Equal(plain.Top + 20, shifted.Top);
+        Assert.Equal(plain.Left, shifted.Left);
+    }
+
     [Fact]
     public void Monitor_with_a_negative_origin_is_respected()
     {
