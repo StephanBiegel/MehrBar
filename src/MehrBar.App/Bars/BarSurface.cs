@@ -6,7 +6,8 @@ namespace MehrBar.App.Bars;
 /// <summary>
 /// Draws the whole bar in one <see cref="OnRender"/> (R1, 01-SPIKE-render-cost.md), in window pixels: the alpha-1
 /// plate that makes the bar a hit target (D-02), then the plain semi-transparent default background (D-07). Nothing is
-/// drawn per frame at rest; the surface only redraws when its rectangle changes.
+/// drawn per frame at rest; the surface only redraws when its rectangle or slot count changes. The plate always covers
+/// the whole box, also when it is empty, so drops land on it (RESEARCH Pitfall 8).
 /// </summary>
 internal sealed class BarSurface : FrameworkElement
 {
@@ -16,9 +17,51 @@ internal sealed class BarSurface : FrameworkElement
     private static readonly Pen BorderPen = Frozen(new Pen(Frozen(new SolidColorBrush(Color.FromArgb(0x33, 0xFF, 0xFF, 0xFF))), 1));
     private static readonly Pen OutlinePen = Frozen(new Pen(Frozen(new SolidColorBrush(Color.FromRgb(0xFF, 0x00, 0xFF))), 1));
 
+    private static readonly Brush PlaceholderBrush = Frozen(new SolidColorBrush(Color.FromArgb(0x40, 0xFF, 0xFF, 0xFF)));
+
     private Brush _plateBrush = Frozen(new SolidColorBrush(Color.FromArgb(1, 0, 0, 0)));
     private byte _plateAlpha = 1;
     private Rect _barRect = Rect.Empty;
+    private int _slotCount;
+
+    /// <summary>Icon size of a slot in pixels (D-09).</summary>
+    public int IconSize { get; init; } = 32;
+
+    /// <summary>Inner margin between the box edge and the first slot, in pixels.</summary>
+    public int Padding { get; init; } = 6;
+
+    /// <summary>Number of entries drawn as slots.</summary>
+    public int SlotCount
+    {
+        get => _slotCount;
+        set
+        {
+            if (value == _slotCount)
+            {
+                return;
+            }
+
+            _slotCount = value;
+            InvalidateVisual();
+        }
+    }
+
+    /// <summary>Slot under a point in window pixels, or null.</summary>
+    public int? SlotAt(Point windowPixel)
+    {
+        for (int k = 0; k < _slotCount; k++)
+        {
+            if (SlotRect(k).Contains(windowPixel))
+            {
+                return k;
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>Rectangle of slot <paramref name="k"/> in window pixels.</summary>
+    public Rect SlotRect(int k) => new(_barRect.X + Padding + (k * IconSize), _barRect.Y + Padding, IconSize, IconSize);
 
     /// <summary>Alpha of the hit plate (1 by default; 4–8 is the measured fallback if a drop target needs more).</summary>
     public byte PlateAlpha
@@ -67,6 +110,14 @@ internal sealed class BarSurface : FrameworkElement
 
         var inner = new Rect(_barRect.X + 0.5, _barRect.Y + 0.5, _barRect.Width - 1, _barRect.Height - 1);
         dc.DrawRoundedRectangle(BackgroundBrush, BorderPen, inner, CornerRadius, CornerRadius);
+
+        // Neutral placeholder per entry until the icon cache arrives in 02-12.
+        for (int k = 0; k < _slotCount; k++)
+        {
+            Rect slot = SlotRect(k);
+            slot.Inflate(-2, -2);
+            dc.DrawRoundedRectangle(PlaceholderBrush, null, slot, 4, 4);
+        }
 
         if (ShowPlateOutline)
         {

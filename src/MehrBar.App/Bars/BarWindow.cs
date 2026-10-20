@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using MehrBar.App.Interop;
@@ -16,6 +17,7 @@ internal sealed class BarWindow : Window
     private readonly Grid _root = new();
     private RectI _windowRect;
     private double _scale = 1.0;
+    private int? _pressedSlot;
 
     public BarWindow(RectI windowRect, RectI barRectInWindow, BarSurface surface)
     {
@@ -41,7 +43,23 @@ internal sealed class BarWindow : Window
         _root.Children.Add(surface);
         Surface.BarRect = ToRect(barRectInWindow);
         Content = _root;
+
+        AllowDrop = true;
+        _ = new DropTarget(surface, paths => PathsDropped?.Invoke(paths));
+
+        surface.MouseLeftButtonDown += OnLeftButtonDown;
+        surface.MouseLeftButtonUp += OnLeftButtonUp;
+        surface.MouseRightButtonUp += OnRightButtonUp;
     }
+
+    /// <summary>A left click went down and up on the same slot.</summary>
+    public event Action<int>? SlotClicked;
+
+    /// <summary>Right click on the bar, with the screen point.</summary>
+    public event Action<Point>? ContextRequested;
+
+    /// <summary>Paths dropped from another program (only strings, nothing opened).</summary>
+    public event Action<IReadOnlyList<string>>? PathsDropped;
 
     /// <summary>Win32 side of the window (z-order, bounds).</summary>
     internal BarHwnd Native { get; } = new();
@@ -68,6 +86,30 @@ internal sealed class BarWindow : Window
         SetPixelSize(_windowRect);
 
         Native.Attach(source, _windowRect);
+    }
+
+    private void OnLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        _pressedSlot = Surface.SlotAt(e.GetPosition(Surface));
+        e.Handled = true;
+    }
+
+    private void OnLeftButtonUp(object sender, MouseButtonEventArgs e)
+    {
+        int? slot = Surface.SlotAt(e.GetPosition(Surface));
+        int? pressed = _pressedSlot;
+        _pressedSlot = null;
+        e.Handled = true;
+        if (slot is int k && pressed == k)
+        {
+            SlotClicked?.Invoke(k);
+        }
+    }
+
+    private void OnRightButtonUp(object sender, MouseButtonEventArgs e)
+    {
+        e.Handled = true;
+        ContextRequested?.Invoke(Surface.PointToScreen(e.GetPosition(Surface)));
     }
 
     private void SetPixelSize(RectI windowRect)
