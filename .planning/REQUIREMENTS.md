@@ -169,7 +169,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CONF-04 | Phase 6 | Pending |
 | CONF-05 | Phase 6 | Pending |
 | APP-01 | Phase 2 | Pending |
-| APP-02 | Phase 6 | Pending |
+| APP-02 | Phase 2 (Mutex, nur eine Instanz) / Phase 6 (zweiter Start öffnet die Konfiguration) | Pending |
 | APP-03 | Phase 7 | Pending |
 | APP-04 | Phase 7 | Pending |
 | APP-05 | Phase 2 | Pending |
